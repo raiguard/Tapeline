@@ -1,14 +1,15 @@
+function create_tapeline(player)
+    player.clean_cursor()
+    player.cursor_stack.set_stack({name = 'tapeline-item'})
+end
+
 script.on_event(defines.events.on_lua_shortcut, function(e)
 
-    if e.prototype_name == 'tapeline' then
+    if e.prototype_name ~= 'tapeline-shortcut' then return end
 
-        -- setup constants
-        local player = game.players[e.player_index]
+    -- setup local constants
+    local player = game.players[e.player_index]
 
-        -- clean player cursor, and insert tapeline item (for debugging purposes, insert blueprint)
-        player.clean_cursor()
-        player.cursor_stack.set_stack({name = 'blueprint'})
-
-    end
+    create_tapeline(player)
 
 end)
