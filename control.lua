@@ -34,5 +34,7 @@ script.on_event(defines.events.on_player_selected_area, function(e)
     -- rendering.draw_line{color={r=1,g=1,b=1}, width=6, from=area.left_top, to=area.right_bottom, surface=1}
     rendering.draw_line{color={r=1,g=0,b=0,a=0.1}, width=4, from={area.left_top.x,area.left_top.y}, to={area.left_top.x,area.right_bottom.y}, surface=1}
     rendering.draw_line{color={r=1,g=0,b=0,a=0.1}, width=4, from={area.left_top.x,area.left_top.y}, to={area.right_bottom.x,area.left_top.y}, surface=1}
+    rendering.draw_text{text=width, surface=1, target={(area.left_top.x + (width / 2)), (area.left_top.y - 1.8)}, color={r=1,g=0,b=0,a=0.8}, alignment='center', scale=3, draw_on_ground=true}
+    rendering.draw_text{text=height, surface=1, target={(area.left_top.x - 1.8), (area.left_top.y + (height / 2))}, color={r=1,g=0,b=0,a=0.8}, alignment='center', scale=3, orientation=0.75, draw_on_ground=true}
 
 end)
