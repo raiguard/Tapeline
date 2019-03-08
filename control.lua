@@ -41,13 +41,13 @@ function measure_area(e)
     Logger.log(area)
 
     -- draw tile grid
-    rendering.draw_rectangle{color=constants.colors.tilegrid_border, width=1.2, filled=false, left_top={area.left_top.x,area.left_top.y}, right_bottom={area.right_bottom.x,area.right_bottom.y}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
-    for i=1,area.height do
-        rendering.draw_line{color=constants.colors['tilegrid_div_' .. (i % 100 == 0 and 100 or (i % 25 == 0 and 25 or (i % 5 == 0 and 5 or 1)))], width=1.2, from={(area.left_top.x),(area.left_top.y + i)}, to={area.right_top.x,(area.left_top.y + i)}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
+    rendering.draw_rectangle{color=constants.colors.tilegrid_border, width=constants.tilegrid_width, filled=false, left_top={area.left_top.x,area.left_top.y}, right_bottom={area.right_bottom.x,area.right_bottom.y}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
+    for i=1,(area.height - 1) do
+        rendering.draw_line{color=constants.colors.tilegrid_div[(i % 100 == 0 and 100 or (i % 25 == 0 and 25 or (i % 5 == 0 and 5 or 1)))], width=constants.tilegrid_width, from={(area.left_top.x),(area.left_top.y + i)}, to={area.right_top.x,(area.left_top.y + i)}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
     end
 
-    for i=1,area.width do
-        rendering.draw_line{color=constants.colors['tilegrid_div_' .. (i % 100 == 0 and 100 or (i % 25 == 0 and 25 or (i % 5 == 0 and 5 or 1)))], width=1.2, from={(area.left_top.x + i),area.left_top.y}, to={(area.left_top.x + i),area.right_bottom.y}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
+    for i=1,(area.width - 1) do
+        rendering.draw_line{color=constants.colors.tilegrid_div[(i % 100 == 0 and 100 or (i % 25 == 0 and 25 or (i % 5 == 0 and 5 or 1)))], width=constants.tilegrid_width, from={(area.left_top.x + i),area.left_top.y}, to={(area.left_top.x + i),area.right_bottom.y}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
     end
 
     -- draw edge rulers
