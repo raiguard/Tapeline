@@ -40,7 +40,16 @@ function measure_area(e)
     area.midpoints = Area.center(area)
     Logger.log(area)
 
-    -- draw ruler on ground
+    -- draw tile grid
+    for i=0,area.height do
+        rendering.draw_line{color={r=0.5,g=0.5,b=0.5,a=0.000000001}, width=1, from={(area.left_top.x),(area.left_top.y + i)}, to={area.right_top.x,(area.left_top.y + i)}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
+    end
+
+    for i=0,area.width do
+        rendering.draw_line{color={r=0.5,g=0.5,b=0.5,a=0.000000001}, width=1, from={(area.left_top.x + i),area.left_top.y}, to={(area.left_top.x + i),area.right_bottom.y}, surface=surfaceIndex, time_to_live=180, draw_on_ground=1}
+    end
+
+    -- draw edge rulers
     if area.height > 1 and area.width > 1 then rendering.draw_rectangle{color={r=0.55,g=0.55,b=0.55,a=1}, filled=true, left_top={(area.left_top.x - 0.2),(area.left_top.y - 0.2)}, right_bottom={(area.left_top.x),(area.left_top.y)}, surface=surfaceIndex, time_to_live=180} end
 
     if area.height > 1 then
@@ -64,5 +73,5 @@ function measure_area(e)
 end
 
 Event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)
-Event.register(defines.events.on_lua_shortcut, on_shortcut_pressed)
 Event.register('get-tapeline-tool', on_custom_input)
+Event.register(defines.events.on_lua_shortcut, on_shortcut_pressed)
