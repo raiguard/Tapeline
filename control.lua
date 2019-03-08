@@ -8,18 +8,15 @@ function create_tapeline(player)
     player.cursor_stack.set_stack({name = constants.tapelineItemName})
 end
 
-function on_shortcut_pressed(e)
+function on_custom_input(e)
 
-    if e.prototype_name ~= constants.tapelineShortcutName then return end
-
-    -- setup local constants
-    local player = game.players[e.player_index]
-
-    create_tapeline(player)
+    create_tapeline(game.players[e.player_index])
 
 end
 
-function on_custom_input(e)
+function on_shortcut_pressed(e)
+
+    if e.prototype_name ~= constants.tapelineShortcutName then return end
 
     create_tapeline(game.players[e.player_index])
 
@@ -58,6 +55,26 @@ function measure_area(e)
 
 end
 
-Event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)
+function cleanup_planner(e)
+
+    local player = game.players[e.player_index]
+    local is_trash = e.name == defines.events.on_player_trash_inventory_changed
+    local inventory
+
+    if is_trash then inventory = player.get_inventory(defines.inventory.player_trash)
+    elseif is_trash == false then inventory = player.get_main_inventory()
+    else return
+    end
+
+    local tapeline_tool = game.item_prototypes[constants.tapelineItemName] and inventory.find_item_stack(constants.tapelineItemName)
+        
+    if tapeline_tool then return tapeline_tool.clear() end
+
+    return
+
+end
+
 Event.register('get-tapeline-tool', on_custom_input)
 Event.register(defines.events.on_lua_shortcut, on_shortcut_pressed)
+Event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)
+Event.register({defines.events.on_player_main_inventory_changed, defines.events.on_player_trash_inventory_changed}, cleanup_planner)
