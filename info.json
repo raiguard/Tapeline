@@ -6,6 +6,6 @@
     "contact": "https://reddit.com/u/Raiguard",
     "homepage": "https://github.com/raiguard/Tapeline",
     "factorio_version": "0.17",
-    "dependencies": ["base >= 0.17"],
+    "dependencies": ["base >= 0.17", "stdlib >= 1.0.2"],
     "description": "Add a simple tape measure (tapeline) to the toolbar."
 }

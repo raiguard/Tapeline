@@ -13,4 +13,8 @@ constants.itemAssetPath = constants.modAssetName .. '/graphics/icons/item/'
 constants.shortcutAssetPath = constants.modAssetName .. '/graphics/icons/shortcut-bar/'
 constants.scriptAssetPath = constants.modAssetName .. '/graphics/icons/script/'
 
+constants.stdlib = '__stdlib__/stdlib/'
+
+constants.isDebugMode = true
+
 return constants

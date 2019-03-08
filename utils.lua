@@ -2,7 +2,7 @@
 
 local utils = {}
 
-local debug = false
+local debug = true
 
 function utils.log(message, isDebug)
 
