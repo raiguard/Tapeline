@@ -24,5 +24,11 @@ data:extend({
         name = "tilegrid-clear-delay",
         setting_type = "runtime-per-user",
         default_value = 5
+    },
+    {
+        type = "int-setting",
+        name = "tilegrid-group-divisor",
+        setting_type = "runtime-per-user",
+        default_value  = 5
     }
 })

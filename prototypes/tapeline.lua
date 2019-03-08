@@ -35,7 +35,7 @@ data:extend({
   },
   {
       type = 'selection-tool',
-      name = constants.tapelineItemName,
+      name = 'tapeline-tool',
       icon = constants.itemAssetPath .. 'tapeline-tool.png',
       icon_size = 32,
       flags = {'hidden'},
