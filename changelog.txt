@@ -1,0 +1,6 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 08.03.2019
+  Features:
+    - Added tapeline tool
+    - Added tapeline tool shortcut to toolbar
