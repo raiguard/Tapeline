@@ -35,11 +35,32 @@ function measure_area(e)
     area = Area.corners(area)
     area.size,area.width,area.height = area:size()
     area.midpoints = Area.center(area)
+
     -- retrieve mod settings
     local draw_tilegrid_on_ground = player.mod_settings['draw-tilegrid-on-ground'].value
     local tilegrid_line_width = player.mod_settings['tilegrid-line-width'].value
     local tilegrid_clear_delay = player.mod_settings['tilegrid-clear-delay'].value * 60
     local tilegrid_group_divisor = player.mod_settings['tilegrid-group-divisor'].value
+
+    -- create color table
+    local tilegrid_colors = { x = {}, y = {} }
+    local is_alt_selection = e.name == defines.events.on_player_alt_selected_area
+
+    for i=1,(area.width - 1) do
+        if is_alt_selection then
+            tilegrid_colors.x[i] = constants.colors.tilegrid_div[1]
+        else
+            tilegrid_colors.x[i] = constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
+        end
+    end
+
+    for i=1,(area.height - 1) do
+        if is_alt_selection then
+            tilegrid_colors.y[i] = constants.colors.tilegrid_div[1]
+        else
+            tilegrid_colors.y[i] = constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
+        end
+    end
 
     -- draw tile grid
     rendering.draw_rectangle {
@@ -51,65 +72,64 @@ function measure_area(e)
         time_to_live=tilegrid_clear_delay,
         draw_on_ground=draw_tilegrid_on_ground
     }
-    
-    for i=1,(area.height - 1) do
-        rendering.draw_line {
-            color=constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))],
-            width=tilegrid_line_width,
-            from={(area.left_top.x),(area.left_top.y + i)},
-            to={area.right_top.x,(area.left_top.y + i)},
-            surface=surfaceIndex,
-            time_to_live=tilegrid_clear_delay,
-            draw_on_ground=draw_tilegrid_on_ground
-        }
-    end
 
     for i=1,(area.width - 1) do
         rendering.draw_line {
-            color=constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))],
-            width=tilegrid_line_width,
-            from={(area.left_top.x + i),area.left_top.y},
-            to={(area.left_top.x + i),area.right_bottom.y},
-            surface=surfaceIndex,
-            time_to_live=tilegrid_clear_delay,
-            draw_on_ground=draw_tilegrid_on_ground
+            color = tilegrid_colors.x[i],
+            width = tilegrid_line_width,
+            from = {(area.left_top.x + i),area.left_top.y},
+            to = {(area.left_top.x + i),area.right_bottom.y},
+            surface = surfaceIndex,
+            time_to_live = tilegrid_clear_delay,
+            draw_on_ground = draw_tilegrid_on_ground
+        }
+    end
+
+    for i=1,(area.height - 1) do
+        rendering.draw_line {
+            color = tilegrid_colors.y[i],
+            width = tilegrid_line_width,
+            from = {(area.left_top.x),(area.left_top.y + i)},
+            to = {area.right_top.x,(area.left_top.y + i)},
+            surface = surfaceIndex,
+            time_to_live = tilegrid_clear_delay,
+            draw_on_ground = draw_tilegrid_on_ground
         }
     end
 
     rendering.draw_rectangle {
-        color=constants.colors.tilegrid_border,
-        width=tilegrid_line_width,
-        filled=false,
-        left_top={area.left_top.x,area.left_top.y},
-        right_bottom={area.right_bottom.x,area.right_bottom.y},
-        surface=surfaceIndex,
-        time_to_live=tilegrid_clear_delay,
-        draw_on_ground=draw_tilegrid_on_ground
+        color = constants.colors.tilegrid_border,
+        width = tilegrid_line_width,
+        filled = false,
+        left_top = {area.left_top.x,area.left_top.y},
+        right_bottom = {area.right_bottom.x,area.right_bottom.y},
+        surface = surfaceIndex,
+        time_to_live = tilegrid_clear_delay,
+        draw_on_ground = draw_tilegrid_on_ground
     }
 
     if area.height > 1 then
         rendering.draw_text {
-            text=area.height,
-            surface=surfaceIndex,
-            target={(area.left_top.x - 1.2),
-            area.midpoints.y},
-            color=constants.colors.tilegrid_label,
-            alignment='center',
-            scale=2,
-            orientation=0.75,
-            time_to_live=tilegrid_clear_delay
+            text = area.height,
+            surface = surfaceIndex,
+            target = {(area.left_top.x - 1.2), area.midpoints.y},
+            color = constants.colors.tilegrid_label,
+            alignment = 'center',
+            scale = 2,
+            orientation = 0.75,
+            time_to_live = tilegrid_clear_delay
         }
     end
 
     if area.width > 1 then
         rendering.draw_text {
-            text=area.width,
-            surface=surfaceIndex,
-            target={area.midpoints.x, (area.left_top.y - 1.2)},
-            color=constants.colors.tilegrid_label,
-            alignment='center',
-            scale=2,
-            time_to_live=tilegrid_clear_delay
+            text = area.width,
+            surface = surfaceIndex,
+            target = {area.midpoints.x, (area.left_top.y - 1.2)},
+            color = constants.colors.tilegrid_label,
+            alignment = 'center',
+            scale = 2,
+            time_to_live = tilegrid_clear_delay
         }
     end
 
