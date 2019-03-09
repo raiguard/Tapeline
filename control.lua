@@ -29,18 +29,32 @@ function measure_area(e)
     local player = game.players[e.player_index]
     local surfaceIndex = player.surface.index
 
+    -- retrieve mod settings
+    local mod_settings = {}
+    mod_settings.draw_tilegrid_on_ground = player.mod_settings['draw-tilegrid-on-ground'].value
+    mod_settings.tilegrid_line_width = player.mod_settings['tilegrid-line-width'].value
+    mod_settings.tilegrid_clear_delay = player.mod_settings['tilegrid-clear-delay'].value * 60
+    mod_settings.tilegrid_group_divisor = player.mod_settings['tilegrid-group-divisor'].value
+
     -- calculate area constants
     local area = Area.new(e.area)
+    area = Area.normalize(area)
     area = Area.ceil(area)
     area = Area.corners(area)
     area.size,area.width,area.height = area:size()
     area.midpoints = Area.center(area)
 
-    -- retrieve mod settings
-    local draw_tilegrid_on_ground = player.mod_settings['draw-tilegrid-on-ground'].value
-    local tilegrid_line_width = player.mod_settings['tilegrid-line-width'].value
-    local tilegrid_clear_delay = player.mod_settings['tilegrid-clear-delay'].value * 60
-    local tilegrid_group_divisor = player.mod_settings['tilegrid-group-divisor'].value
+    -- calculate subpoints for alt-selection
+    local temp_setting_subpoints = 5
+    area.subpoints = { x = {}, y = {} }
+    for i=1,(temp_setting_subpoints - 1) do
+       area.subpoints.x[i] =  area.left_top.x + ((area.width / temp_setting_subpoints) * i)
+       area.subpoints.y[i] =  area.left_top.y + ((area.height / temp_setting_subpoints) * i)
+    end
+    Logger.log(area)
+
+    -- log dimensions to chat, if desired
+    if player.mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
 
     -- create color table
     local tilegrid_colors = { x = {}, y = {} }
@@ -50,7 +64,7 @@ function measure_area(e)
         if is_alt_selection then
             tilegrid_colors.x[i] = constants.colors.tilegrid_div[1]
         else
-            tilegrid_colors.x[i] = constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
+            tilegrid_colors.x[i] = constants.colors.tilegrid_div[(i % (mod_settings.tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (mod_settings.tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (mod_settings.tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
         end
     end
 
@@ -58,7 +72,7 @@ function measure_area(e)
         if is_alt_selection then
             tilegrid_colors.y[i] = constants.colors.tilegrid_div[1]
         else
-            tilegrid_colors.y[i] = constants.colors.tilegrid_div[(i % (tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
+            tilegrid_colors.y[i] = constants.colors.tilegrid_div[(i % (mod_settings.tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (mod_settings.tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (mod_settings.tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
         end
     end
 
@@ -69,43 +83,90 @@ function measure_area(e)
         left_top={area.left_top.x,area.left_top.y},
         right_bottom={area.right_bottom.x,area.right_bottom.y},
         surface=surfaceIndex,
-        time_to_live=tilegrid_clear_delay,
-        draw_on_ground=draw_tilegrid_on_ground
+        time_to_live=mod_settings.tilegrid_clear_delay,
+        draw_on_ground=mod_settings.draw_tilegrid_on_ground
     }
 
     for i=1,(area.width - 1) do
         rendering.draw_line {
             color = tilegrid_colors.x[i],
-            width = tilegrid_line_width,
+            width = mod_settings.tilegrid_line_width,
             from = {(area.left_top.x + i),area.left_top.y},
             to = {(area.left_top.x + i),area.right_bottom.y},
             surface = surfaceIndex,
-            time_to_live = tilegrid_clear_delay,
-            draw_on_ground = draw_tilegrid_on_ground
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground
         }
     end
 
     for i=1,(area.height - 1) do
         rendering.draw_line {
             color = tilegrid_colors.y[i],
-            width = tilegrid_line_width,
+            width = mod_settings.tilegrid_line_width,
             from = {(area.left_top.x),(area.left_top.y + i)},
             to = {area.right_top.x,(area.left_top.y + i)},
             surface = surfaceIndex,
-            time_to_live = tilegrid_clear_delay,
-            draw_on_ground = draw_tilegrid_on_ground
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground
+        }
+    end
+
+    if is_alt_selection then
+
+        -- draw subpoints
+        for i=1,(temp_setting_subpoints - 1) do
+            rendering.draw_line {
+                color = constants.colors.tilegrid_div[2],
+                width = mod_settings.tilegrid_line_width,
+                from = {area.subpoints.x[i],area.left_top.y},
+                to = {area.subpoints.x[i],area.right_bottom.y},
+                surface = surfaceIndex,
+                time_to_live = mod_settings.tilegrid_clear_delay,
+                draw_on_ground = mod_settings.draw_tilegrid_on_ground
+            }
+
+            rendering.draw_line {
+                color = constants.colors.tilegrid_div[2],
+                width = mod_settings.tilegrid_line_width,
+                from = {area.left_top.x,area.subpoints.y[i]},
+                to = {area.right_bottom.x,area.subpoints.y[i]},
+                surface = surfaceIndex,
+                time_to_live = mod_settings.tilegrid_clear_delay,
+                draw_on_ground = mod_settings.draw_tilegrid_on_ground
+            }
+        end
+
+        -- draw midpoints
+        rendering.draw_line {
+            color = constants.colors.tilegrid_div[3],
+            width = mod_settings.tilegrid_line_width,
+            from = {area.midpoints.x,area.left_top.y},
+            to = {area.midpoints.x,area.right_bottom.y},
+            surface = surfaceIndex,
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground
+        }
+
+        rendering.draw_line {
+            color = constants.colors.tilegrid_div[3],
+            width = mod_settings.tilegrid_line_width,
+            from = {area.left_top.x,area.midpoints.y},
+            to = {area.right_bottom.x,area.midpoints.y},
+            surface = surfaceIndex,
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground
         }
     end
 
     rendering.draw_rectangle {
         color = constants.colors.tilegrid_border,
-        width = tilegrid_line_width,
+        width = mod_settings.tilegrid_line_width,
         filled = false,
         left_top = {area.left_top.x,area.left_top.y},
         right_bottom = {area.right_bottom.x,area.right_bottom.y},
         surface = surfaceIndex,
-        time_to_live = tilegrid_clear_delay,
-        draw_on_ground = draw_tilegrid_on_ground
+        time_to_live = mod_settings.tilegrid_clear_delay,
+        draw_on_ground = mod_settings.draw_tilegrid_on_ground
     }
 
     if area.height > 1 then
@@ -117,7 +178,7 @@ function measure_area(e)
             alignment = 'center',
             scale = 2,
             orientation = 0.75,
-            time_to_live = tilegrid_clear_delay
+            time_to_live = mod_settings.tilegrid_clear_delay
         }
     end
 
@@ -129,12 +190,9 @@ function measure_area(e)
             color = constants.colors.tilegrid_label,
             alignment = 'center',
             scale = 2,
-            time_to_live = tilegrid_clear_delay
+            time_to_live = mod_settings.tilegrid_clear_delay
         }
     end
-
-    -- log dimensions to chat, if desired
-    if player.mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
 
 end
 
