@@ -10,7 +10,7 @@ constants.itemAssetPath = constants.modAssetName .. '/graphics/icons/item/'
 constants.shortcutAssetPath = constants.modAssetName .. '/graphics/icons/shortcut-bar/'
 
 -- debug logging
-constants.isDebugMode = true
+constants.isDebugMode = false
 
 -- colors
 constants.colors = {}
