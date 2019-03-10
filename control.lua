@@ -28,6 +28,7 @@ function measure_area(e)
 
     local player = game.players[e.player_index]
     local surfaceIndex = player.surface.index
+    local is_alt_selection = e.name == defines.events.on_player_alt_selected_area
 
     -- retrieve mod settings
     local mod_settings = {}
@@ -43,40 +44,30 @@ function measure_area(e)
     area = Area.ceil(area)
     area = Area.corners(area)
     area.size,area.width,area.height = area:size()
-    area.midpoints = Area.center(area)
+	area.midpoints = Area.center(area)
+	
+	-- calculate tilegrid divisors
+	local tilegrid_divisors = {}
 
-    -- calculate subpoints for alt-selection
-    area.subpoints = { x = {}, y = {} }
-    for i=1,(mod_settings.tilegrid_split_divisor - 1) do
-       area.subpoints.x[i] =  area.left_top.x + ((area.width / mod_settings.tilegrid_split_divisor) * i)
-       area.subpoints.y[i] =  area.left_top.y + ((area.height / mod_settings.tilegrid_split_divisor) * i)
-    end
-    Logger.log(area)
+	if is_alt_selection then
+		tilegrid_divisors[1] = { x = 1, y = 1 }
+		tilegrid_divisors[2] = { x = area.width / mod_settings.tilegrid_split_divisor, y = area.height / mod_settings.tilegrid_split_divisor }
+		tilegrid_divisors[3] = { x = area.midpoints.x - area.left_top.x, y = area.midpoints.y - area.left_top.y }
+	else
+		for i=1,4 do
+			table.insert(tilegrid_divisors, { x = mod_settings.tilegrid_group_divisor ^ (i - 1), y = mod_settings.tilegrid_group_divisor ^ (i - 1) })
+		end
+	end
+	
+	-- Logger.log({area = area, tilegrid_divisors = tilegrid_divisors})
 
-    -- log dimensions to chat, if desired
-    if player.mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
+	-- log dimensions to chat, if desired
+	if player.mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
 
-    -- create color table
-    local tilegrid_colors = { x = {}, y = {} }
-    local is_alt_selection = e.name == defines.events.on_player_alt_selected_area
+	-- ----------------------------------------------------------------------------------------------------
+	-- DRAW TILEGRID
 
-    for i=1,(area.width - 1) do
-        if is_alt_selection then
-            tilegrid_colors.x[i] = constants.colors.tilegrid_div[1]
-        else
-            tilegrid_colors.x[i] = constants.colors.tilegrid_div[(i % (mod_settings.tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (mod_settings.tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (mod_settings.tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
-        end
-    end
-
-    for i=1,(area.height - 1) do
-        if is_alt_selection then
-            tilegrid_colors.y[i] = constants.colors.tilegrid_div[1]
-        else
-            tilegrid_colors.y[i] = constants.colors.tilegrid_div[(i % (mod_settings.tilegrid_group_divisor ^ 3) == 0 and 4 or (i % (mod_settings.tilegrid_group_divisor ^ 2) == 0 and 3 or (i % (mod_settings.tilegrid_group_divisor ^ 1) == 0 and 2 or 1)))]
-        end
-    end
-
-    -- draw tile grid
+    -- background
     rendering.draw_rectangle {
         color=constants.colors.tilegrid_background,
         filled=true,
@@ -87,90 +78,34 @@ function measure_area(e)
         draw_on_ground=mod_settings.draw_tilegrid_on_ground,
         players = { player }
     }
-
-    for i=1,(area.width - 1) do
-        rendering.draw_line {
-            color = tilegrid_colors.x[i],
-            width = mod_settings.tilegrid_line_width,
-            from = {(area.left_top.x + i),area.left_top.y},
-            to = {(area.left_top.x + i),area.right_bottom.y},
-            surface = surfaceIndex,
-            time_to_live = mod_settings.tilegrid_clear_delay,
-            draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-            players = { player }
-        }
-    end
-
-    for i=1,(area.height - 1) do
-        rendering.draw_line {
-            color = tilegrid_colors.y[i],
-            width = mod_settings.tilegrid_line_width,
-            from = {(area.left_top.x),(area.left_top.y + i)},
-            to = {area.right_top.x,(area.left_top.y + i)},
-            surface = surfaceIndex,
-            time_to_live = mod_settings.tilegrid_clear_delay,
-            draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-            players = { player }
-        }
-    end
-
-    if is_alt_selection then
-
-        -- draw subpoints
-        if area.width > 1 then
-            for i=1,(mod_settings.tilegrid_split_divisor - 1) do
-                rendering.draw_line {
-                    color = constants.colors.tilegrid_div[2],
-                    width = mod_settings.tilegrid_line_width,
-                    from = {area.subpoints.x[i],area.left_top.y},
-                    to = {area.subpoints.x[i],area.right_bottom.y},
-                    surface = surfaceIndex,
-                    time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-                    players = { player }
-                }
-
-                rendering.draw_line {
-                    color = constants.colors.tilegrid_div[3],
-                    width = mod_settings.tilegrid_line_width,
-                    from = {area.midpoints.x,area.left_top.y},
-                    to = {area.midpoints.x,area.right_bottom.y},
-                    surface = surfaceIndex,
-                    time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-                    players = { player }
-                }
-            end
-        end
-
-        if area.height > 1 then
-            for i=1,(mod_settings.tilegrid_split_divisor - 1) do
-                rendering.draw_line {
-                    color = constants.colors.tilegrid_div[2],
-                    width = mod_settings.tilegrid_line_width,
-                    from = {area.left_top.x,area.subpoints.y[i]},
-                    to = {area.right_bottom.x,area.subpoints.y[i]},
-                    surface = surfaceIndex,
-                    time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-                    players = { player }
-                }
-            end
-
-            rendering.draw_line {
-                color = constants.colors.tilegrid_div[3],
-                width = mod_settings.tilegrid_line_width,
-                from = {area.left_top.x,area.midpoints.y},
-                to = {area.right_bottom.x,area.midpoints.y},
-                surface = surfaceIndex,
-                time_to_live = mod_settings.tilegrid_clear_delay,
-                draw_on_ground = mod_settings.draw_tilegrid_on_ground,
-                players = { player }
-            }
-        end
-        
-    end
-
+	-- grids
+	for k,t in pairs(tilegrid_divisors) do
+		for i=t.x,(area.width),t.x do
+			rendering.draw_line {
+				color = constants.colors.tilegrid_div[k],
+				width = mod_settings.tilegrid_line_width,
+				from = {(area.left_top.x + i),area.left_top.y},
+				to = {(area.left_bottom.x + i),area.left_bottom.y},
+				surface = surfaceIndex,
+				time_to_live = mod_settings.tilegrid_clear_delay,
+				draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+				players = { player }
+			}
+		end
+		for i=t.y,(area.height),t.y do
+			rendering.draw_line {
+				color = constants.colors.tilegrid_div[k],
+				width = mod_settings.tilegrid_line_width,
+				from = {area.left_top.x,(area.left_top.y + i)},
+				to = {area.right_top.x,(area.left_top.y + i)},
+				surface = surfaceIndex,
+				time_to_live = mod_settings.tilegrid_clear_delay,
+				draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+				players = { player }
+			}
+		end
+	end
+    -- border
     rendering.draw_rectangle {
         color = constants.colors.tilegrid_border,
         width = mod_settings.tilegrid_line_width,
@@ -181,9 +116,9 @@ function measure_area(e)
         time_to_live = mod_settings.tilegrid_clear_delay,
         draw_on_ground = mod_settings.draw_tilegrid_on_ground,
         players = { player }
-    }
-
-    if area.height > 1 then
+	}
+	-- labels
+	if area.height > 1 then
         rendering.draw_text {
             text = area.height,
             surface = surfaceIndex,
@@ -208,7 +143,9 @@ function measure_area(e)
             time_to_live = mod_settings.tilegrid_clear_delay,
             players = { player }
         }
-    end
+	end
+	
+	-- ----------------------------------------------------------------------------------------------------
 
 end
 
