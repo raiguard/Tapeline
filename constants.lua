@@ -1,3 +1,5 @@
+local color = require('__stdlib__/stdlib/utils/color')
+
 -- constants
 
 local constants = {}
@@ -16,13 +18,13 @@ constants.isDebugMode = false
 constants.colors = {}
 constants.colors.tilegrid_div = {}
 
-constants.colors.tilegrid_div[1] = {r=0.3,g=0.3,b=0.7,a=1}
-constants.colors.tilegrid_div[2] = {r=0.3,g=0.8,b=0.3,a=1}
-constants.colors.tilegrid_div[3] = {r=0.9,g=0.3,b=0.3,a=1}
-constants.colors.tilegrid_div[4] = {r=0.8,g=0.8,b=0.3,a=1}
-constants.colors.tilegrid_background = {r=0,g=0,b=0,a=0.4}
-constants.colors.tilegrid_border = {r=0.6,g=0.6,b=0.6,a=1}
-constants.colors.tilegrid_label = {r=0.7,g=0.7,b=0.7,a=0.8}
+constants.colors.tilegrid_div[1] = color.set(defines.color.grey)
+constants.colors.tilegrid_div[2] = color.set(defines.color.lightgreen)
+constants.colors.tilegrid_div[3] = color.set(defines.color.lightred)
+constants.colors.tilegrid_div[4] = color.set(defines.color.yellow)
+constants.colors.tilegrid_background = color.set(defines.color.black, 0.6)
+constants.colors.tilegrid_border = color.set(defines.color.grey)
+constants.colors.tilegrid_label = color.set(defines.color.lightgrey, 0.8)
 
 -- positioning / graphics
 constants.tilegrid_width = 1.4
