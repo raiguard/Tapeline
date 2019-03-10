@@ -30,5 +30,11 @@ data:extend({
         name = "tilegrid-group-divisor",
         setting_type = "runtime-per-user",
         default_value  = 5
+    },
+    {
+        type = "int-setting",
+        name = "tilegrid-split-divisor",
+        setting_type = "runtime-per-user",
+        default_value  = 4
     }
 })
