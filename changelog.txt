@@ -1,4 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 10.03.2019
+  Features:
+    - Added alternate selection mode (shift+select) that splits the tapeline into a configurable amount of groups, and displays the midpoint of both axes
+    - Added option to change the number of sections an alternate selection is split into
+  Changes:
+    - A tapeline is now only visible to the player placing it
+    - Made tapeline grid lines opaque to increase visibility
+
+---------------------------------------------------------------------------------------------------
 Version: 0.1.0
 Date: 08.03.2019
   Features:

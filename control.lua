@@ -84,7 +84,8 @@ function measure_area(e)
         right_bottom={area.right_bottom.x,area.right_bottom.y},
         surface=surfaceIndex,
         time_to_live=mod_settings.tilegrid_clear_delay,
-        draw_on_ground=mod_settings.draw_tilegrid_on_ground
+        draw_on_ground=mod_settings.draw_tilegrid_on_ground,
+        players = { player }
     }
 
     for i=1,(area.width - 1) do
@@ -95,7 +96,8 @@ function measure_area(e)
             to = {(area.left_top.x + i),area.right_bottom.y},
             surface = surfaceIndex,
             time_to_live = mod_settings.tilegrid_clear_delay,
-            draw_on_ground = mod_settings.draw_tilegrid_on_ground
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+            players = { player }
         }
     end
 
@@ -107,7 +109,8 @@ function measure_area(e)
             to = {area.right_top.x,(area.left_top.y + i)},
             surface = surfaceIndex,
             time_to_live = mod_settings.tilegrid_clear_delay,
-            draw_on_ground = mod_settings.draw_tilegrid_on_ground
+            draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+            players = { player }
         }
     end
 
@@ -123,7 +126,8 @@ function measure_area(e)
                     to = {area.subpoints.x[i],area.right_bottom.y},
                     surface = surfaceIndex,
                     time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground
+                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+                    players = { player }
                 }
 
                 rendering.draw_line {
@@ -133,7 +137,8 @@ function measure_area(e)
                     to = {area.midpoints.x,area.right_bottom.y},
                     surface = surfaceIndex,
                     time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground
+                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+                    players = { player }
                 }
             end
         end
@@ -147,7 +152,8 @@ function measure_area(e)
                     to = {area.right_bottom.x,area.subpoints.y[i]},
                     surface = surfaceIndex,
                     time_to_live = mod_settings.tilegrid_clear_delay,
-                    draw_on_ground = mod_settings.draw_tilegrid_on_ground
+                    draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+                    players = { player }
                 }
             end
 
@@ -158,7 +164,8 @@ function measure_area(e)
                 to = {area.right_bottom.x,area.midpoints.y},
                 surface = surfaceIndex,
                 time_to_live = mod_settings.tilegrid_clear_delay,
-                draw_on_ground = mod_settings.draw_tilegrid_on_ground
+                draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+                players = { player }
             }
         end
         
@@ -172,7 +179,8 @@ function measure_area(e)
         right_bottom = {area.right_bottom.x,area.right_bottom.y},
         surface = surfaceIndex,
         time_to_live = mod_settings.tilegrid_clear_delay,
-        draw_on_ground = mod_settings.draw_tilegrid_on_ground
+        draw_on_ground = mod_settings.draw_tilegrid_on_ground,
+        players = { player }
     }
 
     if area.height > 1 then
@@ -184,7 +192,8 @@ function measure_area(e)
             alignment = 'center',
             scale = 2,
             orientation = 0.75,
-            time_to_live = mod_settings.tilegrid_clear_delay
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            players = { player }
         }
     end
 
@@ -196,7 +205,8 @@ function measure_area(e)
             color = constants.colors.tilegrid_label,
             alignment = 'center',
             scale = 2,
-            time_to_live = mod_settings.tilegrid_clear_delay
+            time_to_live = mod_settings.tilegrid_clear_delay,
+            players = { player }
         }
     end
 
