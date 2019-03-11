@@ -2,9 +2,14 @@
 Version: 0.3.0
 Date: 10.03.2019
   Features:
-    - Added tapeline color customization options
+    - Added color customization settings
   Changes:
-    - Optimized tapeline drawing logic by 40x
+    - Optimized tilegrid drawing logic (it is now 40x faster!)
+    - Shift+selection color is now blue instead of green
+    - Updated locale
+    - Changed default color pallete
+    - Changed default hotkey to Alt+M (from Ctrl+M)
+
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 10.03.2019
