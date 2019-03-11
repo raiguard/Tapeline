@@ -15,16 +15,27 @@ constants.shortcutAssetPath = constants.modAssetName .. '/graphics/icons/shortcu
 constants.isDebugMode = false
 
 -- colors
-constants.colors = {}
-constants.colors.tilegrid_div = {}
-
-constants.colors.tilegrid_div[1] = color.set(defines.color.grey)
-constants.colors.tilegrid_div[2] = color.set(defines.color.lightgreen)
-constants.colors.tilegrid_div[3] = color.set(defines.color.lightred)
-constants.colors.tilegrid_div[4] = color.set(defines.color.yellow)
-constants.colors.tilegrid_background = color.set(defines.color.black, 0.6)
-constants.colors.tilegrid_border = color.set(defines.color.grey)
-constants.colors.tilegrid_label = color.set(defines.color.lightgrey, 0.8)
+constants.possible_colors = {
+    'white',
+    'black',
+    'darkgrey',
+    'grey',
+    'lightgrey',
+    'darkred',
+    'red',
+    'lightred',
+    'darkgreen',
+    'green',
+    'lightgreen',
+    'darkblue',
+    'blue',
+    'lightblue',
+    'orange',
+    'yellow',
+    'pink',
+    'purple',
+    'brown'
+}
 
 -- positioning / graphics
 constants.tilegrid_width = 1.4

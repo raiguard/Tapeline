@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.0
+Date: 10.03.2019
+  Features:
+    - Added tapeline color customization options
+  Changes:
+    - Optimized tapeline drawing logic by 40x
+---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 10.03.2019
   Features:
