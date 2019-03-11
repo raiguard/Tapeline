@@ -1,4 +1,24 @@
-local constants = require('constants')
+local possible_colors = {
+    'white',
+    'black',
+    'darkgrey',
+    'grey',
+    'lightgrey',
+    'darkred',
+    'red',
+    'lightred',
+    'darkgreen',
+    'green',
+    'lightgreen',
+    'darkblue',
+    'blue',
+    'lightblue',
+    'orange',
+    'yellow',
+    'pink',
+    'purple',
+    'brown'
+}
 
 data:extend({
     {
@@ -44,48 +64,48 @@ data:extend({
         name = 'tilegrid-background-color',
         setting_type = 'runtime-per-user',
         default_value = 'black',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-border-color',
         setting_type = 'runtime-per-user',
         default_value = 'grey',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-label-color',
         setting_type = 'runtime-per-user',
         default_value = 'lightgrey',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-1',
         setting_type = 'runtime-per-user',
         default_value = 'grey',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-2',
         setting_type = 'runtime-per-user',
         default_value = 'lightgreen',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-3',
         setting_type = 'runtime-per-user',
         default_value = 'lightred',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-4',
         setting_type = 'runtime-per-user',
         default_value = 'yellow',
-        allowed_values = constants.possible_colors
+        allowed_values = possible_colors
     }
 })

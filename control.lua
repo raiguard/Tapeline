@@ -1,8 +1,8 @@
-local constants = require('constants')
-local color = require('__stdlib__/stdlib/utils/color')
-local Event = require('__stdlib__/stdlib/event/event')
-local Area = require('__stdlib__/stdlib/area/area')
-local Logger = require('__stdlib__/stdlib/misc/logger').new('Tapeline', 'Tapeline_Debug', constants.isDebugMode)
+local stdlib = {}
+stdlib.color = require('__stdlib__/stdlib/utils/color')
+stdlib.event = require('__stdlib__/stdlib/event/event')
+stdlib.area = require('__stdlib__/stdlib/area/area')
+stdlib.logger = require('__stdlib__/stdlib/misc/logger').new('Tapeline', 'Tapeline_Debug', false)
 
 function on_custom_input(e)
 
@@ -28,22 +28,22 @@ function measure_area(e)
     mod_settings.tilegrid_group_divisor = player.mod_settings['tilegrid-group-divisor'].value
 	mod_settings.tilegrid_split_divisor = player.mod_settings['tilegrid-split-divisor'].value
 	
-	mod_settings.tilegrid_background_color = color.set(defines.color[player.mod_settings['tilegrid-background-color'].value], 0.6)
-	mod_settings.tilegrid_border_color = color.set(defines.color[player.mod_settings['tilegrid-border-color'].value])
-	mod_settings.tilegrid_label_color = color.set(defines.color[player.mod_settings['tilegrid-label-color'].value], 0.8)
+	mod_settings.tilegrid_background_color = stdlib.color.set(defines.color[player.mod_settings['tilegrid-background-color'].value], 0.6)
+	mod_settings.tilegrid_border_color = stdlib.color.set(defines.color[player.mod_settings['tilegrid-border-color'].value])
+	mod_settings.tilegrid_label_color = stdlib.color.set(defines.color[player.mod_settings['tilegrid-label-color'].value], 0.8)
 	mod_settings.tilegrid_div_color = {}
-	mod_settings.tilegrid_div_color[1] = color.set(defines.color[player.mod_settings['tilegrid-color-1'].value])
-	mod_settings.tilegrid_div_color[2] = color.set(defines.color[player.mod_settings['tilegrid-color-2'].value])
-	mod_settings.tilegrid_div_color[3] = color.set(defines.color[player.mod_settings['tilegrid-color-3'].value])
-	mod_settings.tilegrid_div_color[4] = color.set(defines.color[player.mod_settings['tilegrid-color-4'].value])
+	mod_settings.tilegrid_div_color[1] = stdlib.color.set(defines.color[player.mod_settings['tilegrid-color-1'].value])
+	mod_settings.tilegrid_div_color[2] = stdlib.color.set(defines.color[player.mod_settings['tilegrid-color-2'].value])
+	mod_settings.tilegrid_div_color[3] = stdlib.color.set(defines.color[player.mod_settings['tilegrid-color-3'].value])
+	mod_settings.tilegrid_div_color[4] = stdlib.color.set(defines.color[player.mod_settings['tilegrid-color-4'].value])
 
     -- calculate area constants
-    local area = Area.new(e.area)
-    area = Area.normalize(area)
-    area = Area.ceil(area)
-    area = Area.corners(area)
+    local area = stdlib.area.new(e.area)
+    area = stdlib.area.normalize(area)
+    area = stdlib.area.ceil(area)
+    area = stdlib.area.corners(area)
     area.size,area.width,area.height = area:size()
-	area.midpoints = Area.center(area)
+	area.midpoints = stdlib.area.center(area)
 	
 	-- calculate tilegrid divisors
 	local tilegrid_divisors = {}
@@ -58,7 +58,7 @@ function measure_area(e)
 		end
 	end
 	
-	-- Logger.log({area = area, tilegrid_divisors = tilegrid_divisors})
+	-- stdlib.logger.log({area = area, tilegrid_divisors = tilegrid_divisors})
 
 	-- log dimensions to chat, if desired
 	if player.mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
@@ -152,5 +152,5 @@ function measure_area(e)
 
 end
 
-Event.register('get-tapeline-tool', on_custom_input)
-Event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)
+stdlib.event.register('get-tapeline-tool', on_custom_input)
+stdlib.event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)

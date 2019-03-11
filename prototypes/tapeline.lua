@@ -1,6 +1,3 @@
-local constants = require('constants')
-local utils = require('utils')
-
 data:extend({
    {
       type = 'shortcut',
@@ -11,7 +8,7 @@ data:extend({
       localised_name = {'shortcut.tapeline'},
       icon =
       {
-        filename = constants.shortcutAssetPath .. 'tapeline-x32.png',
+        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x32.png',
         priority = 'extra-high-no-scale',
         size = 32,
         scale = 1,
@@ -19,7 +16,7 @@ data:extend({
       },
       small_icon =
       {
-        filename = constants.shortcutAssetPath .. 'tapeline-x24.png',
+        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x24.png',
         priority = 'extra-high-no-scale',
         size = 24,
         scale = 1,
@@ -27,7 +24,7 @@ data:extend({
       },
       disabled_small_icon =
       {
-        filename = constants.shortcutAssetPath .. 'tapeline-x24-white.png',
+        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x24-white.png',
         priority = 'extra-high-no-scale',
         size = 24,
         scale = 1,
@@ -37,7 +34,7 @@ data:extend({
   {
       type = 'selection-tool',
       name = 'tapeline-tool',
-      icon = constants.itemAssetPath .. 'tapeline-tool.png',
+      icon = '__Tapeline__/graphics/icons/item/tapeline-tool.png',
       icon_size = 32,
       flags = {'only-in-cursor'},
       subgroup = 'other',
