@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.3.1
+Date: 12.03.2019
+  Changes:
+    - Minor optimizations to tilegrid area logic (thanks Nexala!)
+  Bugfixes:
+    - Fixed that using the keyboard shortcut with a full inventory would delete whatever was in your hand
+    - Fixed default hotkey not actually being Alt+M
+
+---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 11.03.2019
   Features:
