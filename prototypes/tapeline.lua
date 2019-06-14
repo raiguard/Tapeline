@@ -36,7 +36,7 @@ data:extend({
       name = 'tapeline-tool',
       icon = '__Tapeline__/graphics/icons/item/tapeline-tool.png',
       icon_size = 32,
-      flags = {'only-in-cursor'},
+      flags = {'hidden', 'only-in-cursor'},
       subgroup = 'other',
       order = 'c[automated-construction]-a[blueprint]',
       stack_size = 1,
@@ -47,16 +47,6 @@ data:extend({
       alt_selection_mode = {'any-tile'},
       selection_cursor_box_type = 'copy',
       alt_selection_cursor_box_type = 'electricity',
-      --entity_filters = {'stone-furnace', 'steel-furnace'},
-      --entity_type_filters = {'furnace', 'assembling-machine'},
-      --tile_filters = {'concrete', 'stone-path'},
-      --entity_filter_mode = 'whitelist',
-      --tile_filter_mode = 'whitelist',
-      --alt_entity_filters = {'stone-furnace', 'steel-furnace'},
-      --alt_entity_type_filters = {'furnace', 'assembling-machine'},
-      --alt_tile_filters = {'concrete', 'stone-path'},
-      --alt_entity_filter_mode = 'whitelist',
-      --alt_tile_filter_mode = 'whitelist',
       show_in_library = false
   }
 })

@@ -22,7 +22,8 @@ function measure_area(e)
     -- retrieve mod settings
     local player_mod_settings = player.mod_settings
     local mod_settings = {}
-    mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
+	mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
+	mod_settings.show_corner_labels = player_mod_settings['show-corner-labels'].value
     mod_settings.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
     mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
     mod_settings.tilegrid_group_divisor = player_mod_settings['tilegrid-group-divisor'].value
@@ -36,6 +37,11 @@ function measure_area(e)
 	mod_settings.tilegrid_div_color[2] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-2'].value])
 	mod_settings.tilegrid_div_color[3] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-3'].value])
 	mod_settings.tilegrid_div_color[4] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-4'].value])
+
+	mod_settings.label_primary_size = 2
+	mod_settings.label_secondary_size = 1
+	mod_settings.label_primary_offset = 1.1
+	mod_settings.label_secondary_offset = 0.6
 
     -- generate area
     local area = stdlib.area(e.area):normalize():ceil():corners()
@@ -54,8 +60,6 @@ function measure_area(e)
 			table.insert(tilegrid_divisors, { x = mod_settings.tilegrid_group_divisor ^ (i - 1), y = mod_settings.tilegrid_group_divisor ^ (i - 1) })
 		end
 	end
-	
-	-- stdlib.logger.log({area = area, tilegrid_divisors = tilegrid_divisors})
 
 	-- log dimensions to chat, if desired
 	if player_mod_settings['log-selection-area'].value == true then player.print('Dimensions: ' .. area.width .. 'x' .. area.height) end
