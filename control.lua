@@ -23,7 +23,6 @@ function measure_area(e)
     local player_mod_settings = player.mod_settings
     local mod_settings = {}
 	mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
-	mod_settings.show_corner_labels = player_mod_settings['show-corner-labels'].value
     mod_settings.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
     mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
     mod_settings.tilegrid_group_divisor = player_mod_settings['tilegrid-group-divisor'].value
