@@ -4,6 +4,10 @@ GLOBAL TABLE STRUCTURE
 global
     tilegrid_index
         area
+            left_bottom
+            left_top
+            right_bottom
+            right_top
         time_of_creation
         lifetime
         grid_type
@@ -15,8 +19,8 @@ global
                 right
                 bottom
             lines
-    next_tilegrid_index
-    ticks_since_last_place
+    cur_tilegrid_index
+    last_capsule_tick
 
 
 --------------------------------------------------

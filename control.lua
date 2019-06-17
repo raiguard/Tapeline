@@ -5,6 +5,7 @@ stdlib.area = require("__stdlib__/stdlib/area/area")
 stdlib.logger = require("__stdlib__/stdlib/misc/logger").new("Tapeline_Debug", true)
 
 require("scripts/rendering")
+require("scripts/settings")
 require("scripts/tilegrid")
 
 
