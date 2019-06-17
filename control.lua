@@ -1,21 +1,38 @@
-local stdlib = {}
+stdlib = {}
 stdlib.color = require("__stdlib__/stdlib/utils/color")
 stdlib.event = require("__stdlib__/stdlib/event/event")
 stdlib.area = require("__stdlib__/stdlib/area/area")
-stdlib.logger = require("__stdlib__/stdlib/misc/logger").new("Tapeline", "Tapeline_Debug", false)
+stdlib.logger = require("__stdlib__/stdlib/misc/logger").new("Tapeline_Debug", true)
+
+require("scripts/rendering")
+require("scripts/tilegrid")
+
+
+
+
+
+
+
+
+
+
+-- ----------------------------------------------------------------------------------------------------
+-- OLD STUFF
+
+
 
 function on_custom_input(e)
 
     local player = game.players[e.player_index]
-    if player.clean_cursor() then player.cursor_stack.set_stack({name = "tapeline-dummy"}) end
+    if player.clean_cursor() then player.cursor_stack.set_stack({name = "tapeline-tool"}) end
 
 end
 
 function measure_area(e)
 
-    if e.item ~= "tapeline-tool" then return end
+	if e.item ~= "tapeline-tool" then return end
 
-    local player = game.players[e.player_index]
+	local player = game.players[e.player_index]
     local surfaceIndex = player.surface.index
     local is_alt_selection = e.name == defines.events.on_player_alt_selected_area
 
@@ -147,8 +164,6 @@ function measure_area(e)
             players = { player }
         }
 	end
-	
-	-- ----------------------------------------------------------------------------------------------------
 
 end
 

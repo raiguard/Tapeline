@@ -1,0 +1,26 @@
+--------------------------------------------------
+GLOBAL TABLE STRUCTURE
+
+global
+    tilegrid_index
+        area
+        time_of_creation
+        lifetime
+        grid_type
+        render_objects
+            background
+            labels
+                left
+                top
+                right
+                bottom
+            lines
+    next_tilegrid_index
+    ticks_since_last_place
+
+
+--------------------------------------------------
+TILEGRID TYPES
+
+0 = default (split every 5 tiles, three subgrids)
+1 = split (even sections, plus midpoints)

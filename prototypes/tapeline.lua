@@ -4,7 +4,7 @@ data:extend({
       name = "tapeline-shortcut",
       order = "a[alt-mode]-b[copy]",
       action = "create-blueprint-item",
-      item_to_create = "tapeline-dummy",
+      item_to_create = "tapeline-tool",
       localised_name = {"shortcut.tapeline"},
       icon =
       {
@@ -50,33 +50,6 @@ data:extend({
       show_in_library = false
   },
   {
-    type = "simple-entity",
-    name = "tapeline-dummy",
-    render_layer = "object",
-    icon = "__Tapeline__/graphics/icons/item/tapeline-tool.png",
-    icon_size = 32,
-    flags = {"placeable-neutral", "player-creation"},
-    order = "s-e-w-f",
-    picture =
-    {
-      filename = "__Tapeline__/graphics/icons/item/tapeline-tool.png",
-      priority = "extra-high",
-      width = 32,
-      height = 32
-    }
-  },
-  {
-    type = "item",
-    name = "tapeline-dummy",
-    icon = "__Tapeline__/graphics/icons/item/tapeline-tool.png",
-    icon_size = 32,
-    flags = {"hidden"},
-    subgroup = "other",
-    order = "s[simple-entity-with-force]-f[simple-entity-with-force]",
-    place_result = "tapeline-dummy",
-    stack_size = 50
-  },
-  {
     type = "capsule",
     name = "tapeline-capsule",
     icon = "__Tapeline__/graphics/icons/item/tapeline-tool.png",
@@ -88,8 +61,8 @@ data:extend({
       {
         type = "projectile",
         ammo_category = "capsule",
-        cooldown = 5,
-        range = 0,
+        cooldown = 1,
+        range = 9999999,
         ammo_type =
         {
           category = "capsule",
@@ -102,9 +75,8 @@ data:extend({
               type = "instant",
               target_effects =
               {
-                type = "create-entity",
-                entity_name = "tapeline-dummy",
-                trigger_created_entity = true
+                type = "damage",
+                damage = { type = 'physical', amount = 0 }
               }
             }
           }
@@ -113,6 +85,7 @@ data:extend({
     },
     subgroup = "capsule",
     order = "zz",
-    stack_size = 1
+    stack_size = 1000,
+    flags = {"hidden"}
   }
 })
