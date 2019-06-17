@@ -7,7 +7,7 @@ end
 
 function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
-    if e.item.name ~= "tapeline-capsule" then return end
+    if e.item.name ~= 'tapeline-capsule' then return end
     
     if game.ticks_played - global.last_capsule_tick > 1 then
         -- new tilegrid
@@ -53,5 +53,5 @@ function construct_tilegrid_data(e)
 
 end
 
-stdlib.event.register("on_init", on_init)
+stdlib.event.register('on_init', on_init)
 stdlib.event.register({defines.events.on_player_used_capsule}, on_capsule)

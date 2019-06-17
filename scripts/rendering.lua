@@ -13,7 +13,7 @@ end
 -- draw an object and add a reference to it to the global table
 function draw(type, data, tilegrid_index)
     
-    table.insert(global.render_objects[tilegrid_index][type], rendering["draw_" .. type](data))
+    table.insert(global.render_objects[tilegrid_index][type], rendering['draw_' .. type](data))
 
 end
 
