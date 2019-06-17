@@ -19,6 +19,9 @@ global
                 right
                 bottom
             lines
+        owner
+        owner_settings
+            (mod settings)
     cur_tilegrid_index
     last_capsule_tick
 

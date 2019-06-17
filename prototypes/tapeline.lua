@@ -61,8 +61,8 @@ data:extend({
       {
         type = 'projectile',
         ammo_category = 'capsule',
-        cooldown = 1,
-        range = 9999999,
+        cooldown = 2,
+        range = 1000,
         ammo_type =
         {
           category = 'capsule',
@@ -85,7 +85,7 @@ data:extend({
     },
     subgroup = 'capsule',
     order = 'zz',
-    stack_size = 1000,
+    stack_size = 10000,
     flags = {'hidden'}
   }
 })
