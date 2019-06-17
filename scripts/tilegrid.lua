@@ -17,12 +17,12 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
         global[global.cur_tilegrid_index] = construct_tilegrid_data(e)
         stdlib.logger.log(global[global.cur_tilegrid_index])
     else
-        
         -- update current tilegrid
         update_tilegrid_data(e)
     end
 
     global.last_capsule_tick = game.ticks_played
+    global[global.cur_tilegrid_index].time_of_creation = game.ticks_played
 	
 end
 
@@ -36,10 +36,11 @@ function construct_tilegrid_data(e)
     -- area
     data.area = stdlib.area.construct(e.position.x, e.position.y, e.position.x, e.position.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
-	data.area.midpoints = stdlib.area.center(data.area)
+    data.area.midpoints = stdlib.area.center(data.area)
+    data.area.origin = data.area.left_top
     -- metadata
     data.time_of_creation = game.ticks_played
-    data.time_to_live = 180
+    data.time_to_live = data.owner_settings.tilegrid_clear_delay
     data.grid_type = 0
     -- tilegrid divisors
 	data.tilegrid_divisors = {}
@@ -62,25 +63,32 @@ end
 -- update a tilegrid
 function update_tilegrid_data(e)
 
+    data = global[global.cur_tilegrid_index]
+    -- find new corners
+    local k = (e.position.x < data.area.origin.x) and 'left_top' or 'right_bottom'
+    data.area[k] = { x = e.position.x, y = e.position.y }
     -- update area
-    area = global[global.cur_tilegrid_index].area
-    area = stdlib.area.construct(area.left_top.x, area.left_top.y, e.position.x, e.position.y):normalize():ceil():corners()
-    area.size,area.width,area.height = area:size()
-    area.midpoints = stdlib.area.center(area)
-    global[global.cur_tilegrid_index].area = area
+    data.area = stdlib.area.construct(data.area.left_top.x, data.area.left_top.y, data.area.right_bottom.x, data.area.right_bottom.y):normalize():ceil():corners()
+    data.area.size,data.area.width,data.area.height = data.area:size()
+    data.area.midpoints = stdlib.area.center(data.area)
+    global[global.cur_tilegrid_index] = data
     -- update render objects
     destroy_render_objects(global[global.cur_tilegrid_index].render_objects)
     global[global.cur_tilegrid_index].render_objects = build_render_objects(global[global.cur_tilegrid_index])
 
 end
 
--- destroy a tilegrid and all associated data
-function destroy_tilegrid_data(e)
+-- once per second, delete any expired tilegrid data from GLOBAL to keep things clean
+function on_second(e)
 
-
+    for k,v in pairs(global) do
+        if type(v) == 'table' then
+            if  v.time_of_creation - game.ticks_played + v.time_to_live <= 0 then global[k] = nil end
+        end
+    end
 
 end
 
 stdlib.event.register('on_init', on_init)
--- stdlib.event.register(-60, on_second)
+stdlib.event.register(-60, on_second)
 stdlib.event.register({defines.events.on_player_used_capsule}, on_capsule)

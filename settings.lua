@@ -46,7 +46,7 @@ data:extend({
         type = 'double-setting',
         name = 'tilegrid-clear-delay',
         setting_type = 'runtime-per-user',
-        default_value = 5,
+        default_value = 2,
         order = 'e'
     },
     {
