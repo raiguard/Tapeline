@@ -106,3 +106,10 @@ function destroy_render_objects(table)
     end
 
 end
+
+-- based on the values of the data table, update the table's render objects, and add / remove any as needed
+function update_render_objects(data)
+
+    
+
+end

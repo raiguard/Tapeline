@@ -1,8 +1,10 @@
 stdlib = {}
+stdlib.area = require('__stdlib__/stdlib/area/area')
 stdlib.color = require('__stdlib__/stdlib/utils/color')
 stdlib.event = require('__stdlib__/stdlib/event/event')
-stdlib.area = require('__stdlib__/stdlib/area/area')
 stdlib.logger = require('__stdlib__/stdlib/misc/logger').new('Tapeline_Debug', true)
+stdlib.position = require('__stdlib__/stdlib/area/position')
+stdlib.tile = require('__stdlib__/stdlib/area/tile')
 
 require('scripts/rendering')
 require('scripts/settings')

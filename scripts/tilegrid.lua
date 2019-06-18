@@ -17,6 +17,7 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
         global[global.cur_tilegrid_index] = construct_tilegrid_data(e)
         stdlib.logger.log(global[global.cur_tilegrid_index])
     else
+        local e_tile = stdlib.tile.from_position({ x = e.position.x, y = e.position.y })
         -- update current tilegrid
         update_tilegrid_data(e)
     end
@@ -37,8 +38,9 @@ function construct_tilegrid_data(e)
     data.area = stdlib.area.construct(e.position.x, e.position.y, e.position.x, e.position.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
-    data.area.origin = data.area.left_top
+    stdlib.logger.log(data.area.left_top)
     -- metadata
+    data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
     data.time_to_live = data.owner_settings.tilegrid_clear_delay
     data.grid_type = 0
@@ -65,10 +67,11 @@ function update_tilegrid_data(e)
 
     data = global[global.cur_tilegrid_index]
     -- find new corners
-    local k = (e.position.x < data.area.origin.x) and 'left_top' or 'right_bottom'
-    data.area[k] = { x = e.position.x, y = e.position.y }
+    local new_area = {}
+    new_area.left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
+    new_area.right_bottom = { x = (e.position.x > data.origin.x and e.position.x or data.origin.x), y = (e.position.y > data.origin.y and e.position.y or data.origin.y) }
     -- update area
-    data.area = stdlib.area.construct(data.area.left_top.x, data.area.left_top.y, data.area.right_bottom.x, data.area.right_bottom.y):normalize():ceil():corners()
+    data.area = stdlib.area.construct(new_area.left_top.x, new_area.left_top.y, new_area.right_bottom.x, new_area.right_bottom.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
     global[global.cur_tilegrid_index] = data
@@ -78,8 +81,8 @@ function update_tilegrid_data(e)
 
 end
 
--- once per second, delete any expired tilegrid data from GLOBAL to keep things clean
-function on_second(e)
+-- once per minute, delete any expired tilegrid data from GLOBAL to keep things clean
+function on_minute(e)
 
     for k,v in pairs(global) do
         if type(v) == 'table' then
@@ -90,5 +93,5 @@ function on_second(e)
 end
 
 stdlib.event.register('on_init', on_init)
-stdlib.event.register(-60, on_second)
+stdlib.event.register(-3600, on_minute)
 stdlib.event.register({defines.events.on_player_used_capsule}, on_capsule)
