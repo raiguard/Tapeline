@@ -1,2 +1,3 @@
-require('prototypes.tapeline')
-require('prototypes.hotkeys')
+require('prototypes.hotkey')
+require('prototypes.item')
+require('prototypes.shortcut')

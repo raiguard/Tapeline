@@ -6,6 +6,8 @@ function on_init()
 
 end
 
+corner_index = { 'left_top', 'right_top', 'left_bottom', 'right_bottom' }
+
 -- when a capsule is thrown
 function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
@@ -15,11 +17,16 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
         -- new tilegrid
         global.cur_tilegrid_index = global.cur_tilegrid_index + 1
         global[global.cur_tilegrid_index] = construct_tilegrid_data(e)
-        stdlib.logger.log(global[global.cur_tilegrid_index])
+        -- stdlib.logger.log(global[global.cur_tilegrid_index])
     else
+        -- determine if the mouse is still on a corner tile
         local e_tile = stdlib.tile.from_position({ x = e.position.x, y = e.position.y })
-        -- update current tilegrid
-        update_tilegrid_data(e)
+        local data = global[global.cur_tilegrid_index]
+        local shrunk_area = stdlib.area.construct(data.area.left_top.x, data.area.left_top.y, data.area.right_bottom.x - 1, data.area.right_bottom.y - 1):corners()
+        if not stdlib.table.any(shrunk_area, function(v) return stdlib.position.equals(stdlib.tile.from_position(v), e_tile) end) then
+            -- update tilegrid data
+            update_tilegrid_data(e)
+        end
     end
 
     global.last_capsule_tick = game.ticks_played
@@ -67,11 +74,10 @@ function update_tilegrid_data(e)
 
     data = global[global.cur_tilegrid_index]
     -- find new corners
-    local new_area = {}
-    new_area.left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
-    new_area.right_bottom = { x = (e.position.x > data.origin.x and e.position.x or data.origin.x), y = (e.position.y > data.origin.y and e.position.y or data.origin.y) }
+    local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
+    local right_bottom = { x = (e.position.x > data.origin.x and e.position.x or data.origin.x), y = (e.position.y > data.origin.y and e.position.y or data.origin.y) }
     -- update area
-    data.area = stdlib.area.construct(new_area.left_top.x, new_area.left_top.y, new_area.right_bottom.x, new_area.right_bottom.y):normalize():ceil():corners()
+    data.area = stdlib.area.construct(left_top.x, left_top.y, right_bottom.x, right_bottom.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
     global[global.cur_tilegrid_index] = data
