@@ -1,36 +1,4 @@
 data:extend({
-   {
-      type = 'shortcut',
-      name = 'tapeline-shortcut',
-      order = 'a[alt-mode]-b[copy]',
-      action = 'create-blueprint-item',
-      item_to_create = 'tapeline-tool',
-      localised_name = {'shortcut.tapeline'},
-      icon =
-      {
-        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x32.png',
-        priority = 'extra-high-no-scale',
-        size = 32,
-        scale = 1,
-        flags = {'icon'}
-      },
-      small_icon =
-      {
-        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x24.png',
-        priority = 'extra-high-no-scale',
-        size = 24,
-        scale = 1,
-        flags = {'icon'}
-      },
-      disabled_small_icon =
-      {
-        filename = '__Tapeline__/graphics/icons/shortcut-bar/' .. 'tapeline-x24-white.png',
-        priority = 'extra-high-no-scale',
-        size = 24,
-        scale = 1,
-        flags = {'icon'}
-      }
-  },
   {
       type = 'selection-tool',
       name = 'tapeline-tool',
@@ -54,6 +22,13 @@ data:extend({
     name = 'tapeline-capsule',
     icon = '__Tapeline__/graphics/icons/item/tapeline-tool.png',
     icon_size = 32,
+    subgroup = 'capsule',
+    order = 'zz',
+    stack_size = 10000,
+    flags = {'hidden'}
+    -- When 0.17.51 comes out:
+    -- stack_size = 1,
+    -- uses_stack = false,
     capsule_action =
     {
       type = 'throw',
@@ -83,9 +58,5 @@ data:extend({
         }
       }
     },
-    subgroup = 'capsule',
-    order = 'zz',
-    stack_size = 10000,
-    flags = {'hidden'}
   }
 })
