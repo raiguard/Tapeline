@@ -33,7 +33,7 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
     if e.item.name ~= 'tapeline-capsule' then return end
     
-    if game.ticks_played - global.last_capsule_tick > 2 then
+    if game.ticks_played - global.last_capsule_tick > 3 then
         -- new tilegrid
         global.cur_tilegrid_index = global.cur_tilegrid_index + 1
         global[global.cur_tilegrid_index] = construct_tilegrid_data(e)
@@ -69,7 +69,11 @@ function construct_tilegrid_data(e)
     data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
     data.time_to_live = data.owner_settings.tilegrid_clear_delay
-    data.grid_type = 0
+    data.grid_type = 1
+    -- anchors
+    data.anchors = {}
+    data.anchors.horizontal = 'top'
+    data.anchors.vertical = 'left'
     -- tilegrid divisors
 	data.tilegrid_divisors = {}
 	if data.grid_type == 1 then
@@ -98,15 +102,32 @@ function update_tilegrid_data(e)
     data.area = stdlib.area.construct(left_top.x, left_top.y, right_bottom.x, right_bottom.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
-    global[global.cur_tilegrid_index] = data
-    -- tilegrid divisors
+    -- update anchors
+    if e.position.x < data.origin.x then
+        if e.position.y < data.origin.y then
+            data.anchors.horizontal = 'bottom'
+            data.anchors.vertical = 'right'
+        else
+            data.anchors.horizontal = 'top'
+            data.anchors.vertical = 'right'
+        end
+    elseif e.position.y < data.origin.y then
+        data.anchors.horizontal = 'bottom'
+        data.anchors.vertical = 'left'
+    else
+        data.anchors.horizontal = 'top'
+        data.anchors.vertical = 'left'
+    end
+    -- update tilegrid divisors
     if data.grid_type == 1 then
         data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.owner_settings.tilegrid_split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.owner_settings.tilegrid_split_divisor) or data.area.height) }
         data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
     end
     -- update render objects
-    destroy_render_objects(global[global.cur_tilegrid_index].render_objects)
-    global[global.cur_tilegrid_index].render_objects = build_render_objects(global[global.cur_tilegrid_index])
+    destroy_render_objects(data.render_objects)
+    data.render_objects = build_render_objects(data)
+    -- update global table
+    global[global.cur_tilegrid_index] = data
 
 end
 

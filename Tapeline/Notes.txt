@@ -28,6 +28,9 @@ global
     cur_tilegrid_index
     last_capsule_tick
     perish
+    anchors
+        horizontal
+        vertical
 
 --------------------------------------------------
 TILEGRID TYPES

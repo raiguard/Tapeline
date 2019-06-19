@@ -3,6 +3,8 @@ function build_render_objects(data)
 
     local objects = {}
     local surfaceIndex = data.owner.surface.index
+    local i_mod_v = data.anchors.vertical == 'left' and 1 or -1
+    local i_mod_h = data.anchors.horizontal == 'top' and 1 or -1
 
     -- background
     objects.background = rendering.draw_rectangle {
@@ -24,8 +26,8 @@ function build_render_objects(data)
 			objects.lines[k].vertical[i] = rendering.draw_line {
 				color = data.owner_settings.tilegrid_div_color[k],
 				width = data.owner_settings.tilegrid_line_width,
-				from = {(data.area.left_top.x + i),data.area.left_top.y},
-				to = {(data.area.left_bottom.x + i),data.area.left_bottom.y},
+				from = {(data.area[data.anchors.vertical .. '_top'].x + i * i_mod_v),data.area.left_top.y},
+				to = {(data.area[data.anchors.vertical .. '_bottom'].x + i * i_mod_v),data.area.left_bottom.y},
 				surface = surfaceIndex,
 				draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
                 players = { data.owner }
@@ -37,8 +39,8 @@ function build_render_objects(data)
 			objects.lines[k].horizontal[i] = rendering.draw_line {
 				color = data.owner_settings.tilegrid_div_color[k],
 				width = data.owner_settings.tilegrid_line_width,
-				from = {data.area.left_top.x,(data.area.left_top.y + i)},
-				to = {data.area.right_top.x,(data.area.left_top.y + i)},
+				from = {data.area.left_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
+				to = {data.area.right_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
 				surface = surfaceIndex,
 				draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
                 players = { data.owner }
@@ -98,12 +100,5 @@ function destroy_render_objects(table)
         -- check if exists, and if so, DESTROY!
         elseif rendering.is_valid(i) then rendering.destroy(i) end
     end
-
-end
-
--- based on the values of the data table, update the table's render objects, and add / remove any as needed
-function update_render_objects(data)
-
-    
 
 end
