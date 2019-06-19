@@ -3,6 +3,7 @@ Version: 0.5.0
 Date: 20.06.2019
   Changes:
     - Complete restructure of the mod to draw the tilegrid as you drag
+    - Updated tapeline icon
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.0
