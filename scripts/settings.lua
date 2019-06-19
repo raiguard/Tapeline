@@ -13,7 +13,6 @@ end
 -- retrieve mod settings for the specified player
 function retrieve_mod_settings(player)
 
-    stdlib.logger.log('retrieve mod settings')
     -- retrieve mod settings
     local player_mod_settings = player.mod_settings
     local mod_settings = {}
@@ -22,6 +21,8 @@ function retrieve_mod_settings(player)
     mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
     mod_settings.tilegrid_group_divisor = player_mod_settings['tilegrid-group-divisor'].value
 	mod_settings.tilegrid_split_divisor = player_mod_settings['tilegrid-split-divisor'].value
+
+	mod_settings.log_selection_area = player_mod_settings['log-selection-area'].value
 	
 	mod_settings.tilegrid_background_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-background-color'].value], 0.6)
 	mod_settings.tilegrid_border_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-border-color'].value])

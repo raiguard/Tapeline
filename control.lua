@@ -7,6 +7,7 @@ stdlib.position = require('__stdlib__/stdlib/area/position')
 stdlib.table = require('__stdlib__/stdlib/utils/table')
 stdlib.tile = require('__stdlib__/stdlib/area/tile')
 
+require('scripts/hotkey')
 require('scripts/rendering')
 require('scripts/settings')
 require('scripts/tilegrid')
@@ -25,12 +26,12 @@ require('scripts/tilegrid')
 
 
 
-function on_custom_input(e)
+-- function on_custom_input(e)
 
-    local player = game.players[e.player_index]
-    if player.clean_cursor() then player.cursor_stack.set_stack({name = 'tapeline-tool'}) end
+--     local player = game.players[e.player_index]
+--     if player.clean_cursor() then player.cursor_stack.set_stack({name = 'tapeline-tool'}) end
 
-end
+-- end
 
 function measure_area(e)
 
@@ -171,5 +172,4 @@ function measure_area(e)
 
 end
 
-stdlib.event.register('get-tapeline-tool', on_custom_input)
 stdlib.event.register({defines.events.on_player_selected_area, defines.events.on_player_alt_selected_area}, measure_area)

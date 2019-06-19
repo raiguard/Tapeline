@@ -3,10 +3,30 @@ function on_init()
 
     global.last_capsule_tick = 0
     global.cur_tilegrid_index = 0
+    global.perish = {}
 
 end
 
-corner_index = { 'left_top', 'right_top', 'left_bottom', 'right_bottom' }
+-- check to see if a tilegrid drag has finished
+function on_tick()
+
+    if global.cur_tilegrid_index > 0 then
+        if game.ticks_played - global.last_capsule_tick == 3 then
+            local data = global[global.cur_tilegrid_index]
+            global.perish[global.cur_tilegrid_index] = game.ticks_played + data.time_to_live
+            if data.owner_settings.log_selection_area then data.owner.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height) end
+        end
+
+        stdlib.table.each(global.perish, function(v,k)
+            if v <= game.ticks_played then
+                destroy_tilegrid_data(k)
+                global.perish[k] = nil
+            end
+        end)
+    end
+
+
+end
 
 -- when a capsule is thrown
 function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
@@ -45,12 +65,11 @@ function construct_tilegrid_data(e)
     data.area = stdlib.area.construct(e.position.x, e.position.y, e.position.x, e.position.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
-    stdlib.logger.log(data.area.left_top)
     -- metadata
     data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
     data.time_to_live = data.owner_settings.tilegrid_clear_delay
-    data.grid_type = 1
+    data.grid_type = 0
     -- tilegrid divisors
 	data.tilegrid_divisors = {}
 	if data.grid_type == 1 then
@@ -71,7 +90,6 @@ end
 
 -- update a tilegrid
 function update_tilegrid_data(e)
-
     data = global[global.cur_tilegrid_index]
     -- find new corners
     local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
@@ -92,17 +110,14 @@ function update_tilegrid_data(e)
 
 end
 
--- once per minute, delete any expired tilegrid data from GLOBAL to keep things clean
-function on_minute(e)
+-- destroy a tilegrid's data
+function destroy_tilegrid_data(tilegrid_index)
 
-    for k,v in pairs(global) do
-        if type(v) == 'table' then
-            if  v.time_of_creation - game.ticks_played + v.time_to_live <= 0 then global[k] = nil end
-        end
-    end
+    destroy_render_objects(global[tilegrid_index].render_objects)
+    global[tilegrid_index] = nil
 
 end
 
 stdlib.event.register('on_init', on_init)
-stdlib.event.register(-3600, on_minute)
 stdlib.event.register({defines.events.on_player_used_capsule}, on_capsule)
+stdlib.event.register(defines.events.on_tick, on_tick)

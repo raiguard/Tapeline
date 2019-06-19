@@ -13,18 +13,21 @@ global
         grid_type
         render_objects
             background
+            border
             labels
                 left
                 top
                 right
                 bottom
             lines
+                horizontal
+                vertical
         owner
         owner_settings
             (mod settings)
     cur_tilegrid_index
     last_capsule_tick
-
+    perish
 
 --------------------------------------------------
 TILEGRID TYPES

@@ -4,7 +4,7 @@ data:extend({
        name = 'tapeline-shortcut',
        order = 'a[alt-mode]-b[copy]',
        action = 'create-blueprint-item',
-       item_to_create = 'tapeline-tool',
+       item_to_create = 'tapeline-capsule',
        localised_name = {'shortcut.tapeline'},
        icon =
        {

@@ -1,3 +1,3 @@
-require('prototypes.hotkey')
-require('prototypes.item')
-require('prototypes.shortcut')
+require('prototypes/hotkey')
+require('prototypes/item')
+require('prototypes/shortcut')

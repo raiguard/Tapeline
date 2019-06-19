@@ -25,12 +25,11 @@ data:extend({
     subgroup = 'capsule',
     order = 'zz',
     stack_size = 10000,
-    flags = {'hidden'}
+    flags = {'hidden'},
     -- When 0.17.51 comes out:
     -- stack_size = 1,
     -- uses_stack = false,
-    capsule_action =
-    {
+    capsule_action = {
       type = 'throw',
       attack_parameters =
       {
@@ -57,6 +56,6 @@ data:extend({
           }
         }
       }
-    },
+    }
   }
 })

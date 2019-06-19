@@ -12,8 +12,7 @@ function build_render_objects(data)
         right_bottom = {data.area.right_bottom.x,data.area.right_bottom.y},
         surface = surfaceIndex,
         draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
-        players = { data.owner },
-        time_to_live = data.time_to_live
+        players = { data.owner }
 	}
 	
     -- grids
@@ -29,8 +28,7 @@ function build_render_objects(data)
 				to = {(data.area.left_bottom.x + i),data.area.left_bottom.y},
 				surface = surfaceIndex,
 				draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
-                players = { data.owner },
-                time_to_live = data.time_to_live
+                players = { data.owner }
 			}
 		end
 
@@ -43,8 +41,7 @@ function build_render_objects(data)
 				to = {data.area.right_top.x,(data.area.left_top.y + i)},
 				surface = surfaceIndex,
 				draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
-                players = { data.owner },
-                time_to_live = data.time_to_live
+                players = { data.owner }
 			}
 		end
 	end
@@ -58,8 +55,7 @@ function build_render_objects(data)
         right_bottom = {data.area.right_bottom.x,data.area.right_bottom.y},
         surface = surfaceIndex,
         draw_on_ground = data.owner_settings.draw_tilegrid_on_ground,
-        players = { data.owner },
-        time_to_live = data.time_to_live
+        players = { data.owner }
 	}
 
     -- labels
@@ -73,8 +69,7 @@ function build_render_objects(data)
             alignment = 'center',
             scale = 2,
             orientation = 0.75,
-            players = { data.owner },
-            time_to_live = data.time_to_live
+            players = { data.owner }
         }
 	end
 	
@@ -86,8 +81,7 @@ function build_render_objects(data)
             color = data.owner_settings.tilegrid_label_color,
             alignment = 'center',
             scale = 2,
-            players = { data.owner },
-            time_to_live = data.time_to_live
+            players = { data.owner }
         }
 	end
 
