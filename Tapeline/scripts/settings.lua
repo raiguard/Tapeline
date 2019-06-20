@@ -1,6 +1,6 @@
-function on_load(e)
+function on_init()
 
-
+	global.player_settings = {}
 
 end
 
@@ -14,13 +14,17 @@ end
 function retrieve_mod_settings(player)
 
     -- retrieve mod settings
-    local player_mod_settings = player.mod_settings
+	local player_mod_settings = player.mod_settings
+	local global_player_settings = global.player_settings[player.index]
     local mod_settings = {}
 	mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
     mod_settings.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
-    mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
-    mod_settings.tilegrid_group_divisor = player_mod_settings['tilegrid-group-divisor'].value
-	mod_settings.tilegrid_split_divisor = player_mod_settings['tilegrid-split-divisor'].value
+	mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
+	
+	mod_settings.increment_divisor = global_player_settings.increment_divisor
+	mod_settings.split_divisor = global_player_settings.split_divisor
+	mod_settings.grid_type = global_player_settings.grid_type
+	mod_settings.grid_autoclear = global_player_settings.grid_autoclear
 
 	mod_settings.log_selection_area = player_mod_settings['log-selection-area'].value
 	
@@ -42,4 +46,44 @@ function retrieve_mod_settings(player)
 
 end
 
-stdlib.event.register({defines.events.on_runtime_mod_setting_changed, defines.events.on_player_joined_game}, on_change)
+function create_settings(player_index)
+
+	local settings = {}
+	settings.increment_divisor = 5
+	settings.split_divisor = 4
+	settings.grid_type = 1
+	settings.grid_autoclear = true
+
+	global.player_settings[player_index] = settings
+
+	stdlib.logger.log(global.player_settings[player_index])
+
+end
+
+local setting_associations = {
+	grid_type_dropdown = 'grid_type',
+	autoclear_checkbox = 'grid_autoclear',
+	increment_divisor_textfield = 'increment_divisor',
+	split_divisor_textfield = 'split_divisor'
+}
+
+function change_setting(e)
+
+	local value
+	local type = e.element.type
+	if e.element.type == 'drop-down' then
+		value = e.element.selected_index
+	elseif type == 'textfield' then
+		value = e.element.text
+	elseif type == 'checkbox' then
+		value = e.element.state
+	end
+
+	global.player_settings[e.player_index][setting_associations[e.match]] = value
+
+	stdlib.logger.log(global.player_settings[e.player_index])
+
+end
+
+-- stdlib.event.register({defines.events.on_runtime_mod_setting_changed, defines.events.on_player_joined_game}, on_change)
+stdlib.event.register('on_init', on_init)

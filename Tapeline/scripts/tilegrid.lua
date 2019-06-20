@@ -13,7 +13,8 @@ function on_tick()
     if global.cur_tilegrid_index > 0 then
         if game.ticks_played - global.last_capsule_tick == 3 then
             local data = global[global.cur_tilegrid_index]
-            global.perish[global.cur_tilegrid_index] = game.ticks_played + data.time_to_live
+            if data.owner_settings.grid_autoclear then global.perish[global.cur_tilegrid_index] = game.ticks_played + data.time_to_live
+            else create_settings_button(global[global.cur_tilegrid_index]) end
             if data.owner_settings.log_selection_area then data.owner.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height) end
         end
 
@@ -25,6 +26,12 @@ function on_tick()
         end)
     end
 
+
+end
+
+function create_close_button(index)
+
+    game.print('Create close button for tilegrid ' .. index)
 
 end
 
@@ -69,20 +76,19 @@ function construct_tilegrid_data(e)
     data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
     data.time_to_live = data.owner_settings.tilegrid_clear_delay
-    data.grid_type = 0
     -- anchors
     data.anchors = {}
     data.anchors.horizontal = 'top'
     data.anchors.vertical = 'left'
     -- tilegrid divisors
 	data.tilegrid_divisors = {}
-	if data.grid_type == 1 then
+	if data.owner_settings.grid_type == 2 then
 		data.tilegrid_divisors[1] = { x = 1, y = 1 }
-		data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.owner_settings.tilegrid_split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.owner_settings.tilegrid_split_divisor) or data.area.height) }
+		data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.owner_settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.owner_settings.split_divisor) or data.area.height) }
 		data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
 	else
 		for i=1,4 do
-			table.insert(data.tilegrid_divisors, { x = data.owner_settings.tilegrid_group_divisor ^ (i - 1), y = data.owner_settings.tilegrid_group_divisor ^ (i - 1) })
+			table.insert(data.tilegrid_divisors, { x = data.owner_settings.increment_divisor ^ (i - 1), y = data.owner_settings.increment_divisor ^ (i - 1) })
 		end
     end
     -- render objects
@@ -119,8 +125,8 @@ function update_tilegrid_data(e)
         data.anchors.vertical = 'left'
     end
     -- update tilegrid divisors
-    if data.grid_type == 1 then
-        data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.owner_settings.tilegrid_split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.owner_settings.tilegrid_split_divisor) or data.area.height) }
+    if data.owner_settings.grid_type == 2 then
+        data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.owner_settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.owner_settings.split_divisor) or data.area.height) }
         data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
     end
     -- update render objects

@@ -8,6 +8,13 @@ function create_menu(player, flow)
     }
 
     flow.tapeline_menu_frame.add {
+        type = 'label',
+        name = 'menu_title',
+        caption = 'Editing Tilegrid #32',
+        style = 'caption_label'
+    }
+
+    flow.tapeline_menu_frame.add {
         type = 'table',
         name = 'settings_table',
         column_count = 2
@@ -16,30 +23,31 @@ function create_menu(player, flow)
     local settings_table = flow.tapeline_menu_frame.settings_table
 
     -- -- AUTO CLEAR
-    -- settings_table.add {
-    --     type = 'label',
-    --     name = 'autoclear_label',
-    --     caption = 'Auto clear',
-    --     style = 'bold_label'
-    -- }
-    -- settings_table.add {
-    --     type = 'checkbox',
-    --     name = 'autoclear_checkbox',
-    --     state = true
-    -- }
+    settings_table.add {
+        type = 'label',
+        name = 'autoclear_label',
+        caption = {'gui-label.autoclear-caption'},
+        tooltip = {'gui-label.autoclear-tooltip', player.mod_settings['tilegrid-clear-delay'].value},
+        style = 'bold_label'
+    }
+    settings_table.add {
+        type = 'checkbox',
+        name = 'autoclear_checkbox',
+        state = true
+    }
 
     -- GRID TYPE
     settings_table.add {
         type = 'label',
         name = 'grid_type_label',
-        caption = 'Grid type',
+        caption = {'gui-label.gridtype-caption'},
         style = 'bold_label'
     }
 
     settings_table.add {
         type = 'drop-down',
         name = 'grid_type_dropdown',
-        items = { 'increment', 'split' },
+        items = { {'gui-label.gridtype-increment'}, {'gui-label.gridtype-split'} },
         selected_index = 1
     }
 
@@ -47,7 +55,8 @@ function create_menu(player, flow)
     settings_table.add {
         type = 'label',
         name = 'increment_divisor_label',
-        caption = 'Increment Divisor',
+        caption = {'gui-label.increment-divisor-caption'},
+        tooltip = {'gui-label.increment-divisor-tooltip'},
         style = 'bold_label'
     }
     settings_table.add {
@@ -61,7 +70,8 @@ function create_menu(player, flow)
     settings_table.add {
         type = 'label',
         name = 'split_divisor_label',
-        caption = 'Split Divisor',
+        caption = {'gui-label.split-divisor-caption'},
+        tooltip = {'gui-label.split-divisor-tooltip'},
         style = 'bold_label'
     }
     settings_table.add {
@@ -102,6 +112,9 @@ function on_item(e)
     local player = game.players[e.player_index]
     local stack = player.cursor_stack
     if stack and stack.valid_for_read and stack.name == 'tapeline-capsule' then
+        if global.player_settings[e.player_index] == nil then
+            create_settings(e.player_index)
+        end
         show_menu(player)
     else
         hide_menu(player)
@@ -109,11 +122,13 @@ function on_item(e)
 
 end
 
-function on_dropdown_changed(e)
-    stdlib.logger.log(e)
-    game.print('Player ' .. game.players[e.player_index].name .. 'changed dropdown to ' .. e.element.items[e.element.selected_index])
+function on_setting_changed(e)
+    change_setting(e)
 end
 
-stdlib.gui.on_selection_state_changed('grid_type_dropdown', on_dropdown_changed)
+stdlib.gui.on_selection_state_changed('grid_type_dropdown', on_setting_changed)
+stdlib.gui.on_text_changed('increment_divisor_textfield', on_setting_changed)
+stdlib.gui.on_text_changed('split_divisor_textfield', on_setting_changed)
+stdlib.gui.on_checked_state_changed('autoclear_checkbox', on_setting_changed)
 
 stdlib.event.register(defines.events.on_player_cursor_stack_changed, on_item)
