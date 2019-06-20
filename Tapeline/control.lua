@@ -7,10 +7,13 @@ stdlib.position = require('__stdlib__/stdlib/area/position')
 stdlib.table = require('__stdlib__/stdlib/utils/table')
 stdlib.tile = require('__stdlib__/stdlib/area/tile')
 
+require('scripts/gui')
 require('scripts/hotkey')
 require('scripts/rendering')
 require('scripts/settings')
 require('scripts/tilegrid')
+
+mod_gui = require('mod-gui')
 
 
 

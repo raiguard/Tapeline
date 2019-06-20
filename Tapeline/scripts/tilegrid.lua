@@ -69,7 +69,7 @@ function construct_tilegrid_data(e)
     data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
     data.time_to_live = data.owner_settings.tilegrid_clear_delay
-    data.grid_type = 1
+    data.grid_type = 0
     -- anchors
     data.anchors = {}
     data.anchors.horizontal = 'top'
