@@ -14,7 +14,7 @@ function show_menu(player)
             name = 'tapeline_menu_frame',
             direction = 'vertical',
             caption = 'Tapeline'
-        }@
+        }
 
         menu_frame.add {
             type = 'label',
