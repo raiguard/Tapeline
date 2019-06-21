@@ -2,6 +2,7 @@
 function on_init()
 
     global.last_capsule_tick = 0
+    global.last_capsule_pos = { x = 0, y = 0 }
     global.cur_tilegrid_index = 0
     global.perish = {}
 
@@ -46,16 +47,15 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
         global[global.cur_tilegrid_index] = construct_tilegrid_data(e)
         -- stdlib.logger.log(global[global.cur_tilegrid_index])
     else
-        -- determine if the mouse is still on a corner tile
-        local e_tile = stdlib.tile.from_position({ x = e.position.x, y = e.position.y })
-        local data = global[global.cur_tilegrid_index]
-        local shrunk_area = stdlib.area.construct(data.area.left_top.x, data.area.left_top.y, data.area.right_bottom.x - 1, data.area.right_bottom.y - 1):corners()
-        if not stdlib.table.any(shrunk_area, function(v) return stdlib.position.equals(stdlib.tile.from_position(v), e_tile) end) then
+        -- check to see if tile position has changed
+        local from_pos = stdlib.tile.from_position
+        if not stdlib.position.equals(from_pos(global.last_capsule_pos), from_pos(e.position)) then
             -- update tilegrid data
             update_tilegrid_data(e)
         end
     end
 
+    global.last_capsule_pos = e.position
     global.last_capsule_tick = game.ticks_played
     global[global.cur_tilegrid_index].time_of_creation = game.ticks_played
 	
