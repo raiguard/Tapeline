@@ -7,25 +7,47 @@ function create_menu(player, flow)
         direction = 'vertical'
     }
 
-    local title_flow = flow.tapeline_menu_frame.add {
+    -- HEADER
+    local header_flow = flow.tapeline_menu_frame.add {
         type = 'flow',
-        name = 'title_flow',
+        name = 'header_flow',
         direction = 'horizontal'
     }
 
-    title_flow.add {
+    header_flow.style.horizontally_stretchable = true
+
+    header_flow.add {
         type = 'label',
         name = 'menu_title',
         caption = 'Editing Tilegrid #32',
-        style = 'caption_label'
+        style = 'heading_1_label'
     }
 
-    title_flow.add {
-        type = 'button',
+    header_flow.add {
+        type = 'flow',
+        name = 'header_spacer',
+        direction = 'horizontal'
+    }
+
+    header_flow.header_spacer.style.horizontally_stretchable = true
+
+    header_flow.add {
+        type = 'sprite-button',
+        name = 'confirm',
+        style = 'green_icon_button',
+        sprite = 'check-mark',
+        tooltip = {'gui-button.confirm-tooltip'}
+    }
+    
+    header_flow.add {
+        type = 'sprite-button',
         name = 'delete',
-        style = 'red_icon_button'
+        style = 'red_icon_button',
+        sprite = 'trash-black',
+        tooltip = {'gui-button.delete-tooltip'}
     }
 
+    -- SETTINGS
     flow.tapeline_menu_frame.add {
         type = 'table',
         name = 'settings_table',
@@ -34,7 +56,7 @@ function create_menu(player, flow)
 
     local settings_table = flow.tapeline_menu_frame.settings_table
 
-    -- -- AUTO CLEAR
+    -- auto clear
     settings_table.add {
         type = 'label',
         name = 'autoclear_label',
@@ -48,7 +70,7 @@ function create_menu(player, flow)
         state = true
     }
 
-    -- GRID TYPE
+    -- grid type
     settings_table.add {
         type = 'label',
         name = 'grid_type_label',
@@ -63,7 +85,7 @@ function create_menu(player, flow)
         selected_index = 1
     }
 
-    -- INCREMENT DIVISOR
+    -- increment divisor
     settings_table.add {
         type = 'label',
         name = 'increment_divisor_label',
@@ -78,7 +100,7 @@ function create_menu(player, flow)
     }
     settings_table.increment_divisor_textfield.style.width = 40
 
-    -- SPLIT DIVISOR
+    -- split divisor
     settings_table.add {
         type = 'label',
         name = 'split_divisor_label',
@@ -92,8 +114,6 @@ function create_menu(player, flow)
         text = '4'
     }
     settings_table.split_divisor_textfield.style.width = 40
-
-
 
 end
 

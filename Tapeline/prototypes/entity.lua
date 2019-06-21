@@ -9,7 +9,7 @@ data:extend({
         },
         collision_mask = {},
         picture = {
-            filename = '__Tapeline__/graphics/icons/settings_button.png',
+            filename = '__Tapeline__/graphics/icons/entity/settings_button.png',
             width = 28,
             height = 26,
             scale = 0.5

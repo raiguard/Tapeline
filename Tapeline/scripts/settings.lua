@@ -13,18 +13,20 @@ end
 -- retrieve mod settings for the specified player
 function retrieve_mod_settings(player)
 
-    -- retrieve mod settings
 	local player_mod_settings = player.mod_settings
 	local global_player_settings = global.player_settings[player.index]
     local mod_settings = {}
-	mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
-    mod_settings.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
-	mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
-	
+
+	-- runtime-changeable settings
 	mod_settings.increment_divisor = global_player_settings.increment_divisor
 	mod_settings.split_divisor = global_player_settings.split_divisor
 	mod_settings.grid_type = global_player_settings.grid_type
 	mod_settings.grid_autoclear = global_player_settings.grid_autoclear
+
+    -- real actual settings
+	mod_settings.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
+    mod_settings.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
+	mod_settings.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
 
 	mod_settings.log_selection_area = player_mod_settings['log-selection-area'].value
 	

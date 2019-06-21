@@ -22,11 +22,11 @@ global
             lines
                 horizontal
                 vertical
-        owner
-        owner_settings
-            (mod settings)
+        player
+        settings
     cur_tilegrid_index
     last_capsule_tick
+    last_capsule_pos
     perish
     anchors
         horizontal

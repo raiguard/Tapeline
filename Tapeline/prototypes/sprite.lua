@@ -1,8 +1,16 @@
 data:extend({
     {
         type = 'sprite',
-        name = 'tapeline-sprite-settings-button',
-        filename = '__Tapeline__/graphics/icons/settings_button.png',
-        size={28,26}
+        name = 'trash-black',
+        filename = '__core__/graphics/icons/trash.png',
+        size = 32,
+        flags = {'icon'}
+    },
+    {
+        type = 'sprite',
+        name = 'check-mark',
+        filename = '__Tapeline__/graphics/icons/gui/check-mark.png',
+        size = 32,
+        flags = {'icon'}
     }
 })
