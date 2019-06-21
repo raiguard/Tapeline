@@ -85,5 +85,16 @@ function change_setting(e)
 
 end
 
+function on_leftclick(e)
+
+	local selected = game.players[e.player_index].selected
+
+	if selected and selected.name == 'tapeline-settings-button' then
+		game.print('open gui')
+	end
+
+end
+
 -- stdlib.event.register({defines.events.on_runtime_mod_setting_changed, defines.events.on_player_joined_game}, on_change)
 stdlib.event.register('on_init', on_init)
+stdlib.event.register('mouse-leftclick', on_leftclick)

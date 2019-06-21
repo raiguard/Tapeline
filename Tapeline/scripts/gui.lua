@@ -7,11 +7,23 @@ function create_menu(player, flow)
         direction = 'vertical'
     }
 
-    flow.tapeline_menu_frame.add {
+    local title_flow = flow.tapeline_menu_frame.add {
+        type = 'flow',
+        name = 'title_flow',
+        direction = 'horizontal'
+    }
+
+    title_flow.add {
         type = 'label',
         name = 'menu_title',
         caption = 'Editing Tilegrid #32',
         style = 'caption_label'
+    }
+
+    title_flow.add {
+        type = 'button',
+        name = 'delete',
+        style = 'red_icon_button'
     }
 
     flow.tapeline_menu_frame.add {
@@ -80,6 +92,8 @@ function create_menu(player, flow)
         text = '4'
     }
     settings_table.split_divisor_textfield.style.width = 40
+
+
 
 end
 

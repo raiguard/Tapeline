@@ -1,4 +1,5 @@
-require('prototypes/hotkey')
+require('prototypes/entity')
+require('prototypes/input')
 require('prototypes/item')
 require('prototypes/shortcut')
 require('prototypes/sprite')
