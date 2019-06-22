@@ -35,12 +35,6 @@ function on_tick()
 
 end
 
-function create_close_button(index)
-
-    game.print('Create close button for tilegrid ' .. index)
-
-end
-
 -- when a capsule is thrown
 function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
@@ -146,6 +140,7 @@ end
 function destroy_tilegrid_data(tilegrid_index)
 
     destroy_render_objects(global[tilegrid_index].render_objects)
+    data.button.destroy()
     global[tilegrid_index] = nil
 
 end

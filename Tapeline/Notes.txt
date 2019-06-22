@@ -24,16 +24,44 @@ global
                 vertical
         player
         settings
+        anchors
+            horizontal
+            vertical
+        button
     cur_tilegrid_index
     last_capsule_tick
     last_capsule_pos
     perish
-    anchors
-        horizontal
-        vertical
 
 --------------------------------------------------
 TILEGRID TYPES
 
-0 = default (split every 5 tiles, three subgrids)
-1 = split (even sections, plus midpoints)
+1 = default (split every 5 tiles, three subgrids)
+2 = split (even sections, plus midpoints)
+
+--------------------------------------------------
+SETTINGS GUI HIERARCHY
+
+mod_gui flow
+    tapeline_menu_frame
+        header_flow
+            menu_title
+            header_spacer
+            confirm_button
+            delete_button
+        autoclear_checkbox
+        gridtype_flow
+            gridtype_label
+            gridtype_spacer
+            gridtype_dropdown
+        divisor_label_flow
+            divisor_label
+        increment_divisor_flow
+            increment_divisor_slider
+            increment_divisor_textfield
+        split_divisor_flow
+            split_divisor_slider
+            split_divisor_textfield
+
+center flow
+    tapeline_dialog_frame

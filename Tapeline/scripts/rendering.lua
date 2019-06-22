@@ -105,17 +105,7 @@ end
 
 function create_settings_button(data)
 
-    -- data.render_objects.button = rendering.draw_sprite {
-    --     sprite = 'tapeline-sprite-settings-button',
-    --     x_scale = 0.5,
-    --     y_scale = 0.5,
-    --     render_layer = 255,
-    --     target = stdlib.position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
-    --     surface = data.player.surface.index,
-    --     players = { data.player }
-    -- }
-
-    data.player.surface.create_entity{
+    global[global.cur_tilegrid_index].button = data.player.surface.create_entity{
         name = 'tapeline-settings-button',
         position = stdlib.position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
         player = data.player

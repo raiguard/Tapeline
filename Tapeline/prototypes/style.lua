@@ -32,3 +32,9 @@ styles['green_icon_button'] = {
     padding = 3,
     size = 28
 }
+
+styles['bold_notice_textbox'] = {
+    type = 'textbox_style',
+    parent = 'notice_textbox',
+    font = "default-bold"
+}

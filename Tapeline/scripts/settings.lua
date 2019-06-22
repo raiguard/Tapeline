@@ -54,7 +54,7 @@ function create_settings(player_index)
 	settings.increment_divisor = 5
 	settings.split_divisor = 4
 	settings.grid_type = 1
-	settings.grid_autoclear = true
+	settings.grid_autoclear = false
 
 	global.player_settings[player_index] = settings
 
@@ -63,9 +63,9 @@ function create_settings(player_index)
 end
 
 local setting_associations = {
-	grid_type_dropdown = 'grid_type',
+	gridtype_dropdown = 'grid_type',
 	autoclear_checkbox = 'grid_autoclear',
-	increment_divisor_textfield = 'increment_divisor',
+	increment_textfield = 'increment_divisor',
 	split_divisor_textfield = 'split_divisor',
 	increment_divisor_slider = 'increment_divisor'
 }
@@ -92,10 +92,11 @@ end
 
 function on_leftclick(e)
 
-	local selected = game.players[e.player_index].selected
+	local player = game.players[e.player_index]
+	local selected = player.selected
 
 	if selected and selected.name == 'tapeline-settings-button' then
-		game.print('open gui')
+		open_settings_menu(player)
 	end
 
 end
