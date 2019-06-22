@@ -99,6 +99,7 @@ function create_menu(player, flow)
         text = '5'
     }
     settings_table.increment_divisor_textfield.style.width = 40
+    settings_table.increment_divisor_textfield.style.horizontal_align = 'center'
 
     -- split divisor
     settings_table.add {
@@ -114,6 +115,15 @@ function create_menu(player, flow)
         text = '4'
     }
     settings_table.split_divisor_textfield.style.width = 40
+    settings_table.split_divisor_textfield.style.horizontal_align = 'center'
+
+    flow.tapeline_menu_frame.add {
+        type = 'slider',
+        name = 'increment_divisor_slider',
+        minimum_value = 1,
+        maximum_value = 10,
+        value = 5
+    }
 
 end
 
@@ -123,7 +133,7 @@ function show_menu(player)
     local flow = mod_gui.get_frame_flow(player)
     local menu_frame = flow.tapeline_menu_frame
     if not menu_frame then
-       create_menu(player, flow)
+        create_menu(player, flow)
     else
         menu_frame.visible = true
     end
@@ -160,9 +170,15 @@ function on_setting_changed(e)
     change_setting(e)
 end
 
+function on_slider(e)
+    mod_gui.get_frame_flow(game.players[e.player_index]).tapeline_menu_frame.settings_table.increment_divisor_textfield.text = e.element.slider_value
+    on_setting_changed(e)
+end
+
 stdlib.gui.on_selection_state_changed('grid_type_dropdown', on_setting_changed)
 stdlib.gui.on_text_changed('increment_divisor_textfield', on_setting_changed)
 stdlib.gui.on_text_changed('split_divisor_textfield', on_setting_changed)
 stdlib.gui.on_checked_state_changed('autoclear_checkbox', on_setting_changed)
+stdlib.gui.on_value_changed('increment_divisor_slider', on_slider)
 
 stdlib.event.register(defines.events.on_player_cursor_stack_changed, on_item)

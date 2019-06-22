@@ -66,7 +66,8 @@ local setting_associations = {
 	grid_type_dropdown = 'grid_type',
 	autoclear_checkbox = 'grid_autoclear',
 	increment_divisor_textfield = 'increment_divisor',
-	split_divisor_textfield = 'split_divisor'
+	split_divisor_textfield = 'split_divisor',
+	increment_divisor_slider = 'increment_divisor'
 }
 
 function change_setting(e)
@@ -79,6 +80,8 @@ function change_setting(e)
 		value = e.element.text
 	elseif type == 'checkbox' then
 		value = e.element.state
+	elseif type == 'slider' then
+		value = e.element.slider_value
 	end
 
 	global.player_settings[e.player_index][setting_associations[e.match]] = value
