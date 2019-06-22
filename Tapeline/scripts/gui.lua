@@ -184,6 +184,7 @@ function on_setting_changed(e)
 end
 
 function on_slider(e)
+    e.element.slider_value = math.floor(e.element.slider_value + 0.5)
     mod_gui.get_frame_flow(game.players[e.player_index]).tapeline_menu_frame.increment_divisor_flow.increment_divisor_textfield.text = e.element.slider_value
     on_setting_changed(e)
 end
