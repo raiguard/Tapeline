@@ -32,6 +32,12 @@ global
     last_capsule_tick
     last_capsule_pos
     perish
+    player_data
+        player_index
+            cur_drawing (bool)
+            cur_tilegrid_index (int)
+            last_capsule_tick (int)
+            last_capsule_pos (pos)
 
 --------------------------------------------------
 TILEGRID TYPES

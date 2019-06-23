@@ -14,7 +14,7 @@ end
 function retrieve_mod_settings(player)
 
 	local player_mod_settings = player.mod_settings
-	local global_player_settings = global.player_settings[player.index]
+	local global_player_settings = global.player_data[player.index].settings
     local mod_settings = {}
 
 	-- runtime-changeable settings
@@ -54,11 +54,11 @@ function create_settings(player_index)
 	settings.increment_divisor = 5
 	settings.split_divisor = 4
 	settings.grid_type = 1
-	settings.grid_autoclear = false
+	settings.grid_autoclear = true
 
-	global.player_settings[player_index] = settings
+	global.player_data[player_index].settings = settings
 
-	stdlib.logger.log(global.player_settings[player_index])
+	stdlib.logger.log(global.player_data[player_index].settings)
 
 end
 
@@ -84,9 +84,9 @@ function change_setting(e)
 		value = e.element.slider_value
 	end
 
-	global.player_settings[e.player_index][setting_associations[e.match]] = value
+	global.player_data[e.player_index].settings[setting_associations[e.match]] = value
 
-	stdlib.logger.log(global.player_settings[e.player_index])
+	stdlib.logger.log(global.player_data[e.player_index].settings)
 
 end
 

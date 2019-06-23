@@ -51,7 +51,7 @@ function create_settings_menu(player, flow)
         tooltip = {'gui-button.delete-tooltip'}
     }
 
-    header_flow.visible = true
+    header_flow.visible = false
 
     -- auto clear
     menu_frame.add {
@@ -222,13 +222,6 @@ function create_dialog_menu(center_gui)
         style = 'back_button',
         caption = {'gui.cancel'}
     }
-
-    -- buttons_flow.add {
-    --     type = 'empty_widget',
-    --     name = 'dialog_spacer',
-    --     style = 'draggable_space',
-    -- }
-    -- buttons_flow.dialog_spacer.style.horizontally_stretchable = true
 
     buttons_flow.add {
         type = 'flow',
