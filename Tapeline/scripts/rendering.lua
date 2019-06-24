@@ -23,7 +23,7 @@ function build_render_objects(data)
         objects.lines[k].vertical = {}
 		for i=t.x,data.area.width,t.x do
 			objects.lines[k].vertical[i] = rendering.draw_line {
-				color = data.settings.tilegrid_div_color[k],
+				color = data.settings['tilegrid_div_color_' .. k],
 				width = data.settings.tilegrid_line_width,
 				from = {(data.area[data.anchors.vertical .. '_top'].x + i * i_mod_v),data.area.left_top.y},
 				to = {(data.area[data.anchors.vertical .. '_bottom'].x + i * i_mod_v),data.area.left_bottom.y},
@@ -35,7 +35,7 @@ function build_render_objects(data)
         objects.lines[k].horizontal = {}
 		for i=t.y,data.area.height,t.y do
 			objects.lines[k].horizontal[i] = rendering.draw_line {
-				color = data.settings.tilegrid_div_color[k],
+				color = data.settings['tilegrid_div_color_' .. k],
 				width = data.settings.tilegrid_line_width,
 				from = {data.area.left_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
 				to = {data.area.right_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},

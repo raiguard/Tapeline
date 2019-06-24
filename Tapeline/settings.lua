@@ -40,14 +40,14 @@ data:extend({
         name = 'tilegrid-line-width',
         setting_type = 'runtime-per-user',
         default_value = 2.0,
-        order = 'd'
+        order = 'c'
     },
     {
         type = 'double-setting',
         name = 'tilegrid-clear-delay',
         setting_type = 'runtime-per-user',
-        default_value = 2,
-        order = 'e'
+        default_value = 1,
+        order = 'd'
     },
     {
         type = 'string-setting',
@@ -55,7 +55,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'black',
         allowed_values = possible_colors,
-        order = 'h'
+        order = 'e'
     },
     {
         type = 'string-setting',
@@ -63,7 +63,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'grey',
         allowed_values = possible_colors,
-        order = 'i'
+        order = 'f'
     },
     {
         type = 'string-setting',
@@ -71,7 +71,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'lightgrey',
         allowed_values = possible_colors,
-        order = 'j'
+        order = 'g'
     },
     {
         type = 'string-setting',
@@ -79,7 +79,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'grey',
         allowed_values = possible_colors,
-        order = 'k'
+        order = 'h'
     },
     {
         type = 'string-setting',
@@ -87,7 +87,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'lightgreen',
         allowed_values = possible_colors,
-        order = 'l'
+        order = 'i'
     },
     {
         type = 'string-setting',
@@ -95,7 +95,7 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'lightred',
         allowed_values = possible_colors,
-        order = 'm'
+        order = 'j'
     },
     {
         type = 'string-setting',
@@ -103,6 +103,6 @@ data:extend({
         setting_type = 'runtime-per-user',
         default_value = 'yellow',
         allowed_values = possible_colors,
-        order = 'n'
+        order = 'k'
     }
 })

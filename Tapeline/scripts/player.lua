@@ -65,11 +65,10 @@ function create_player_settings(player_index)
 	data.tilegrid_background_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-background-color'].value], 0.6)
 	data.tilegrid_border_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-border-color'].value])
 	data.tilegrid_label_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-label-color'].value], 0.8)
-	data.tilegrid_div_color = {}
-	data.tilegrid_div_color[1] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-1'].value])
-	data.tilegrid_div_color[2] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-2'].value])
-	data.tilegrid_div_color[3] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-3'].value])
-	data.tilegrid_div_color[4] = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-4'].value])
+	data.tilegrid_div_color_1 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-1'].value])
+	data.tilegrid_div_color_2 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-2'].value])
+	data.tilegrid_div_color_3 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-3'].value])
+	data.tilegrid_div_color_4 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-4'].value])
 
 	return data
 
@@ -78,7 +77,30 @@ end
 -- when a player changes a setting in the mod settings GUI
 function on_player_mod_setting_changed(e)
 
-	global.player_data[e.player_index].settings = create_player_settings(e.player_index)
+	-- metadata
+	local name = e.setting:gsub('-', '_')
+	local setting_value = game.players[e.player_index].mod_settings[e.setting].value
+	local result
+	-- functions
+	local s_contains = stdlib.string.contains
+	local to_color = stdlib.color.set
+
+	if s_contains(name, 'color') then
+		local def_color = defines.color[setting_value]
+		if s_contains(name, 'background') then
+			result = set_color(def_color, 0.6)
+		elseif s_contains(name, 'label') then
+			result = set_color(def_color, 0.8)
+		else
+			result = set_color(def_color)
+		end
+	elseif name == 'tilegrid_clear_delay' then
+		result = setting_value * 60
+	else
+		result = setting_value
+	end
+
+	global.player_data[e.player_index].settings[name] = result
 
 end
 
