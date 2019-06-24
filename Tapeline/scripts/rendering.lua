@@ -13,8 +13,7 @@ function build_render_objects(data)
         left_top = {data.area.left_top.x,data.area.left_top.y},
         right_bottom = {data.area.right_bottom.x,data.area.right_bottom.y},
         surface = surfaceIndex,
-        draw_on_ground = data.settings.draw_tilegrid_on_ground,
-        players = { data.player }
+        draw_on_ground = data.settings.draw_tilegrid_on_ground
 	}
 	
     -- grids
@@ -29,8 +28,7 @@ function build_render_objects(data)
 				from = {(data.area[data.anchors.vertical .. '_top'].x + i * i_mod_v),data.area.left_top.y},
 				to = {(data.area[data.anchors.vertical .. '_bottom'].x + i * i_mod_v),data.area.left_bottom.y},
 				surface = surfaceIndex,
-				draw_on_ground = data.settings.draw_tilegrid_on_ground,
-                players = { data.player }
+				draw_on_ground = data.settings.draw_tilegrid_on_ground
 			}
 		end
 
@@ -42,8 +40,7 @@ function build_render_objects(data)
 				from = {data.area.left_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
 				to = {data.area.right_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
 				surface = surfaceIndex,
-				draw_on_ground = data.settings.draw_tilegrid_on_ground,
-                players = { data.player }
+				draw_on_ground = data.settings.draw_tilegrid_on_ground
 			}
 		end
 	end
@@ -56,8 +53,7 @@ function build_render_objects(data)
         left_top = {data.area.left_top.x,data.area.left_top.y},
         right_bottom = {data.area.right_bottom.x,data.area.right_bottom.y},
         surface = surfaceIndex,
-        draw_on_ground = data.settings.draw_tilegrid_on_ground,
-        players = { data.player }
+        draw_on_ground = data.settings.draw_tilegrid_on_ground
 	}
 
     -- labels
@@ -70,8 +66,7 @@ function build_render_objects(data)
             color = data.settings.tilegrid_label_color,
             alignment = 'center',
             scale = 2,
-            orientation = 0.75,
-            players = { data.player }
+            orientation = 0.75
         }
 	end
 	
@@ -82,8 +77,7 @@ function build_render_objects(data)
             target = {data.area.midpoints.x, (data.area.left_top.y - 1.1)},
             color = data.settings.tilegrid_label_color,
             alignment = 'center',
-            scale = 2,
-            players = { data.player }
+            scale = 2
         }
 	end
 
@@ -105,7 +99,7 @@ end
 
 function create_settings_button(data)
 
-    global[global.cur_tilegrid_index].button = data.player.surface.create_entity{
+    global[global.player_data[data.player.index].cur_tilegrid_index].button = data.player.surface.create_entity {
         name = 'tapeline-settings-button',
         position = stdlib.position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
         player = data.player

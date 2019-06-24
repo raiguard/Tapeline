@@ -1,11 +1,16 @@
+local end_wait = 3
+
 -- set up constants
 function on_init()
 
-    -- global.last_capsule_tick = 0
-    -- global.last_capsule_pos = { x = 0, y = 0 }
-    global.next_tilegrid_index = 1
-    global.perish = {}
-    global.player_data = {}
+    global.next_tilegrid_index = global.next_tilegrid_index or 1
+    global.perish = global.perish or {}
+
+end
+
+function on_load()
+
+    if game.is_multiplayer then end_wait = 90; game.print('Multiplayer detected, end_wait increased') end
 
 end
 
@@ -16,7 +21,7 @@ function on_tick()
 
     -- for each player in player_data, if they're doing a drag, check to see if it's finished
     stdlib.table.each(global.player_data, function(t,i)
-        if t.cur_drawing and cur_tick - t.last_capsule_tick > 3 then
+        if t.cur_drawing and cur_tick - t.last_capsule_tick > end_wait then
             t.cur_drawing = false
             local data = global[t.cur_tilegrid_index]
             local from_pos = stdlib.tile.from_position
@@ -45,26 +50,37 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
     if e.item.name ~= 'tapeline-capsule' then return end
 
-    local player_table = global.player_data[e.player_index]
+    local player_data = global.player_data[e.player_index]
 
-    if player_table and game.ticks_played - player_table.last_capsule_tick > 3 then
+    if game.ticks_played - player_data.last_capsule_tick > 3 then
         -- create tilegrid
-        player_table.cur_tilegrid_index = global.next_tilegrid_index
-        player_table.cur_drawing = true
+        player_data.cur_tilegrid_index = global.next_tilegrid_index
+        player_data.cur_drawing = true
         global[global.next_tilegrid_index] = construct_tilegrid_data(e)
         global.next_tilegrid_index = global.next_tilegrid_index + 1
     else
         local from_pos = stdlib.tile.from_position
-        if not stdlib.position.equals(from_pos(player_table.last_capsule_pos), from_pos(e.position)) then
+        local cur_pos = e.position
+        if not stdlib.position.equals(from_pos(player_data.last_capsule_pos), from_pos(cur_pos)) then
+            -- if ignore cardinals, adjust thrown position
+            if player_data.settings.restrict_to_cardinals then
+                local tilegrid = global[player_data.cur_tilegrid_index]
+                local cur_tile = from_pos(cur_pos)
+                if math.abs(cur_tile.x - tilegrid.origin.x) >= math.abs(cur_tile.y - tilegrid.origin.y) then
+                    cur_pos.y = tilegrid.origin.y
+                else
+                    cur_pos.x = tilegrid.origin.x
+                end
+            end
             -- update tilegrid data
             update_tilegrid_data(e)
         end
     end
 
-    player_table.last_capsule_pos = e.position
-    player_table.last_capsule_tick = game.ticks_played
-    global.player_data[e.player_index] = player_table
-    global[player_table.cur_tilegrid_index].time_of_creation = game.ticks_played
+    player_data.last_capsule_pos = e.position
+    player_data.last_capsule_tick = game.ticks_played
+    global.player_data[e.player_index] = player_data
+    global[player_data.cur_tilegrid_index].time_of_creation = game.ticks_played
 	
 end
 
@@ -74,7 +90,7 @@ function construct_tilegrid_data(e)
     local data = {}
     -- initial settings
     data.player = game.players[e.player_index]
-    data.settings = retrieve_mod_settings(data.player)
+    data.settings = global.player_data[e.player_index].settings
     -- area
     data.area = stdlib.area.construct(e.position.x, e.position.y, e.position.x, e.position.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
@@ -107,6 +123,7 @@ end
 
 -- update a tilegrid
 function update_tilegrid_data(e)
+
     data = global[global.player_data[e.player_index].cur_tilegrid_index]
     -- find new corners
     local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
@@ -148,25 +165,12 @@ end
 function destroy_tilegrid_data(tilegrid_index)
 
     destroy_render_objects(global[tilegrid_index].render_objects)
-    if data.button then data.button.destroy() end
+    if global[tilegrid_index].button then global[tilegrid_index].button.destroy() end
     global[tilegrid_index] = nil
 
 end
 
--- create player data
-function on_player_joined(e)
-
-    local data = {}
-    data.cur_drawing = false
-    data.cur_tilegrid_index = global.next_tilegrid_index
-    data.last_capsule_tick = 0
-    data.last_capsule_pos = { x = 0, y = 0 }
-
-    global.player_data[e.player_index] = data
-
-end
-
 stdlib.event.register('on_init', on_init)
-stdlib.event.register(defines.events.on_player_joined_game, on_player_joined)
-stdlib.event.register({defines.events.on_player_used_capsule}, on_capsule)
+-- stdlib.event.register('on_load', on_load)
+stdlib.event.register(defines.events.on_player_used_capsule, on_capsule)
 stdlib.event.register(defines.events.on_tick, on_tick)

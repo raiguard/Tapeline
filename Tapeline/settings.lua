@@ -50,20 +50,6 @@ data:extend({
         order = 'e'
     },
     {
-        type = 'int-setting',
-        name = 'tilegrid-group-divisor',
-        setting_type = 'runtime-per-user',
-        default_value = 5,
-        order = 'f'
-    },
-    {
-        type = 'int-setting',
-        name = 'tilegrid-split-divisor',
-        setting_type = 'runtime-per-user',
-        default_value = 4,
-        order = 'g'
-    },
-    {
         type = 'string-setting',
         name = 'tilegrid-background-color',
         setting_type = 'runtime-per-user',

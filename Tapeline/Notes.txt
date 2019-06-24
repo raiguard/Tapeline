@@ -38,6 +38,10 @@ global
             cur_tilegrid_index (int)
             last_capsule_tick (int)
             last_capsule_pos (pos)
+            mod_gui (userdata)
+            center_gui (userdata)
+            settings
+                (settings)
 
 --------------------------------------------------
 TILEGRID TYPES
@@ -48,14 +52,18 @@ TILEGRID TYPES
 --------------------------------------------------
 SETTINGS GUI HIERARCHY
 
-mod_gui flow
+mod_gui frame flow
     tapeline_menu_frame
         header_flow
             menu_title
             header_spacer
             confirm_button
             delete_button
-        autoclear_checkbox
+        checkbox_flow
+            autoclear_checkbox
+            checkboxes_spacer
+            restrict_to_cardinals_checkbox
+        redraw_tilegrid_button
         gridtype_flow
             gridtype_label
             gridtype_spacer
@@ -71,3 +79,7 @@ mod_gui flow
 
 center flow
     tapeline_dialog_frame
+        dialog_text_box
+        dialog_buttons_flow
+            dialog_back_button
+            dialog_confirm_button
