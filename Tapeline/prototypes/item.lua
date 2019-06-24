@@ -1,42 +1,43 @@
 data:extend({
-  {
-    type = 'capsule',
-    name = 'tapeline-capsule',
-    icon = '__Tapeline__/graphics/icons/item/tapeline-tool.png',
-    icon_size = 64,
-    subgroup = 'capsule',
-    order = 'zz',
-    flags = {'hidden', 'only-in-cursor'},
-    stack_size = 10000,
-    -- stackable = false,
-    uses_stack = false,
-    capsule_action = {
-      type = 'throw',
-      attack_parameters =
-      {
-        type = 'projectile',
-        ammo_category = 'capsule',
-        cooldown = 2,
-        range = 1000,
-        ammo_type =
+    {
+        type = 'capsule',
+        name = 'tapeline-capsule',
+        icon = '__Tapeline__/graphics/icons/item/tapeline-tool.png',
+        icon_size = 64,
+        subgroup = 'capsule',
+        order = 'zz',
+        flags = {'hidden', 'only-in-cursor'},
+        stack_size = 1,
+        stackable = false,
+        capsule_action =
         {
-          category = 'capsule',
-          target_type = 'position',
-          action =
-          {
-            type = 'direct',
-            action_delivery =
+            type = 'throw',
+            uses_stack = false,
+            attack_parameters =
             {
-              type = 'instant',
-              target_effects =
-              {
-                type = 'damage',
-                damage = { type = 'physical', amount = 0 }
-              }
+                type = 'projectile',
+                ammo_category = 'capsule',
+                cooldown = 2,
+                range = 1000,
+                ammo_type =
+                {
+                    category = 'capsule',
+                    target_type = 'position',
+                    action =
+                    {
+                        type = 'direct',
+                        action_delivery =
+                        {
+                            type = 'instant',
+                            target_effects =
+                            {
+                                type = 'damage',
+                                damage = { type = 'physical', amount = 0 }
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
-  }
 })

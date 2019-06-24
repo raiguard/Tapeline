@@ -6,6 +6,6 @@
     "contact": "https://reddit.com/u/Raiguard",
     "homepage": "https://github.com/raiguard/Tapeline",
     "factorio_version": "0.17",
-    "dependencies": ["base >= 0.17.50", "stdlib >= 1.1.1"],
-    "description": "Adds a simple tape measure (tapeline) to the shortcut bar."
+    "dependencies": ["base >= 0.17.52", "stdlib >= 1.2.0"],
+    "description": "Allows the measurement of distances using a tilegrid. Can be used as a tape measure, or to create clean temporary surfaces to do work on. Includes various tools to fit every situation."
 }
