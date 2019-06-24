@@ -283,6 +283,17 @@ function on_gridtype_dropdown(e)
 
 end
 
+-- set frame contents to the specified configuration
+function set_settings_frame_mode(mode, player)
+
+    if mode then -- editing mode
+
+    else -- drawing mode
+
+    end
+
+end
+
 -- ------------------------------------------------------------
 -- DIALOG WINDOW
 
@@ -351,7 +362,7 @@ function on_dialog_back_button(e)
     local player = game.players[e.player_index]
     local settings_frame = global.player_data[e.player_index].mod_gui.tapeline_menu_frame
 
-    menu_frame.ignored_by_interaction = false
+    settings_frame.ignored_by_interaction = false
     player.gui.center.tapeline_dialog_frame.destroy()
 
 end
@@ -381,28 +392,35 @@ end
 function on_leftclick(e)
 
 	local player = game.players[e.player_index]
-	local selected = player.selected
-	local player_data = global.player_data[e.player_index]
+    local selected = player.selected
+    local player_data = global.player_data[e.player_index]
 
-	if selected and selected.name == 'tapeline-settings-button' then
-		player_data.is_editing = true
-		for k,v in pairs(global) do
-			if type(v) == 'table' and v.button and v.button == selected then
-				player_data.cur_tilegrid_index = k
-				break
-			end
-		end
+    if selected and selected.name == 'tapeline-settings-button' then
+        if player.cursor_stack and player.cursor_stack.valid_for_read and player.cursor_stack.name == 'tapeline-capsule' then
+            player.surface.create_entity {
+                name = 'flying-text',
+                position = selected.position,
+                text = {'flying-text.capsule-warning'}
+            }
+        else
+            player_data.is_editing = true
+            for k,v in pairs(global) do
+                if type(v) == 'table' and v.button and v.button == selected then
+                    player_data.cur_tilegrid_index = k
+                    break
+                end
+            end
 
-		open_settings_menu(player)
+            open_settings_menu(player)
 
-		local settings_frame = player_data.mod_gui.tapeline_menu_frame
+            local settings_frame = player_data.mod_gui.tapeline_menu_frame
 
-        settings_frame.header_flow.visible = true
-        settings_frame.header_flow.menu_title.caption={'gui-caption.settings-header-caption', player_data.cur_tilegrid_index}
-		settings_frame.checkboxes_flow.visible = false
+            settings_frame.header_flow.visible = true
+            settings_frame.header_flow.menu_title.caption={'gui-caption.settings-header-caption', player_data.cur_tilegrid_index}
+            settings_frame.checkboxes_flow.visible = false
 
-        global.player_data[e.player_index] = player_data
-
+            global.player_data[e.player_index] = player_data
+        end
 	end
 
 end
