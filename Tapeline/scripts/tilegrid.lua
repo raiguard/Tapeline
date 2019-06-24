@@ -8,9 +8,10 @@ function on_init()
 
 end
 
-function on_load()
+-- check if the game is multiplayer and set end_wait accordingly
+function check_mp_config(e)
 
-    if game.is_multiplayer then end_wait = 90; game.print('Multiplayer detected, end_wait increased') end
+    if game.is_multiplayer then end_wait = 60; game.print('Multiplayer detected, end_wait increased') end
 
 end
 
@@ -52,7 +53,7 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
     local player_data = global.player_data[e.player_index]
 
-    if game.ticks_played - player_data.last_capsule_tick > 3 then
+    if game.ticks_played - player_data.last_capsule_tick > end_wait then
         -- create tilegrid
         player_data.cur_tilegrid_index = global.next_tilegrid_index
         player_data.cur_drawing = true
@@ -171,6 +172,6 @@ function destroy_tilegrid_data(tilegrid_index)
 end
 
 stdlib.event.register('on_init', on_init)
--- stdlib.event.register('on_load', on_load)
+stdlib.event.register(defines.events.on_player_joined_game, check_mp_config)
 stdlib.event.register(defines.events.on_player_used_capsule, on_capsule)
 stdlib.event.register(defines.events.on_tick, on_tick)
