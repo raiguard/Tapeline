@@ -28,10 +28,9 @@ global
             horizontal
             vertical
         button
-    cur_tilegrid_index
-    last_capsule_tick
-    last_capsule_pos
+    next_tilegrid_index
     perish
+        tilegrid_index = time_of_death
     player_data
         player_index
             cur_drawing (bool)

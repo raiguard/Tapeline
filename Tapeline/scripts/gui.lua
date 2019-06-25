@@ -307,7 +307,6 @@ function set_settings_frame_mode(mode, player)
         cur_settings = player_data.settings
     end
 
-    stdlib.logger.log(global.player_data[player.index].settings)
     stdlib.logger.log(cur_settings)
 
     settings_frame.gridtype_flow.gridtype_dropdown.selected_index = cur_settings.grid_type
@@ -315,6 +314,16 @@ function set_settings_frame_mode(mode, player)
     settings_frame.increment_divisor_flow.increment_divisor_textfield.text = cur_settings.increment_divisor
     settings_frame.split_divisor_flow.split_divisor_slider.slider_value = cur_settings.split_divisor
     settings_frame.split_divisor_flow.split_divisor_textfield.text = cur_settings.split_divisor
+
+    if cur_settings.grid_type == 1 then
+        settings_frame.divisor_label_flow.divisor_label.caption = {'gui-caption.increment-divisor-caption'}
+        settings_frame.increment_divisor_flow.visible = true
+        settings_frame.split_divisor_flow.visible = false
+    else
+        settings_frame.divisor_label_flow.divisor_label.caption = {'gui-caption.split-divisor-caption'}
+        settings_frame.increment_divisor_flow.visible = false
+        settings_frame.split_divisor_flow.visible = true
+    end
 
 end
 
