@@ -52,8 +52,6 @@ function create_settings_menu(player, mod_gui)
         tooltip = {'gui-tooltip.delete-tooltip'}
     }
 
-    header_flow.visible = false
-
     -- CHECKBOXES
 
     local checkboxes_flow = menu_frame.add {
@@ -209,6 +207,9 @@ function create_settings_menu(player, mod_gui)
 
     split_divisor_flow.visible = false
 
+    set_settings_frame_mode(false, player)
+    
+
 end
 
 function open_settings_menu(player)
@@ -286,11 +287,57 @@ end
 -- set frame contents to the specified configuration
 function set_settings_frame_mode(mode, player)
 
+    local player_data = global.player_data[player.index]
+    local settings_frame = player_data.mod_gui.tapeline_menu_frame
+    local cur_settings
+
+    -- show/hide elements
     if mode then -- editing mode
+        global.player_data[player.index].cur_editing = true
+        settings_frame.header_flow.visible = true
+        settings_frame.header_flow.menu_title.caption={'gui-caption.settings-header-caption', player_data.cur_tilegrid_index}
+        settings_frame.checkboxes_flow.visible = false
 
+        cur_settings = global[player_data.cur_tilegrid_index].settings
     else -- drawing mode
+        global.player_data[player.index].cur_editing = false
+        settings_frame.header_flow.visible = false
+        settings_frame.checkboxes_flow.visible = true
 
+        cur_settings = player_data.settings
     end
+
+    stdlib.logger.log(global.player_data[player.index].settings)
+    stdlib.logger.log(cur_settings)
+
+    settings_frame.gridtype_flow.gridtype_dropdown.selected_index = cur_settings.grid_type
+    settings_frame.increment_divisor_flow.increment_divisor_slider.slider_value = cur_settings.increment_divisor
+    settings_frame.increment_divisor_flow.increment_divisor_textfield.text = cur_settings.increment_divisor
+    settings_frame.split_divisor_flow.split_divisor_slider.slider_value = cur_settings.split_divisor
+    settings_frame.split_divisor_flow.split_divisor_textfield.text = cur_settings.split_divisor
+
+end
+
+function on_delete_button(e)
+
+    local player = game.players[e.player_index]
+    local player_data = global.player_data[e.player_index]
+
+    if not player_data.center_gui.tapeline_dialog_frame then
+        player_data.mod_gui.tapeline_menu_frame.ignored_by_interaction = true
+        create_dialog_menu(player, player_data.center_gui)
+    end
+
+end
+
+function on_confirm_button(e)
+
+    local player = game.players[e.player_index]
+    local player_data = global.player_data[e.player_index]
+
+    player_data.mod_gui.tapeline_menu_frame.visible = false
+
+    set_settings_frame_mode(false, player)
 
 end
 
@@ -345,18 +392,6 @@ function create_dialog_menu(player, center_gui)
 
 end
 
-function on_delete_button(e)
-
-    local player = game.players[e.player_index]
-    local player_data = global.player_data[e.player_index]
-
-    if not player_data.center_gui.tapeline_dialog_frame then
-        player_data.mod_gui.tapeline_menu_frame.ignored_by_interaction = true
-        create_dialog_menu(player, player_data.center_gui)
-    end
-
-end
-
 function on_dialog_back_button(e)
 
     local player = game.players[e.player_index]
@@ -378,8 +413,8 @@ function on_dialog_confirm_button(e)
 
     close_settings_menu(player)
     settings_frame.ignored_by_interaction = false
-    settings_frame.header_flow.visible = false
-    settings_frame.checkboxes_flow.visible = true
+    
+    set_settings_frame_mode(false, player)
 
     global.player_data[e.player_index] = player_data
 
@@ -403,7 +438,6 @@ function on_leftclick(e)
                 text = {'flying-text.capsule-warning'}
             }
         else
-            player_data.is_editing = true
             for k,v in pairs(global) do
                 if type(v) == 'table' and v.button and v.button == selected then
                     player_data.cur_tilegrid_index = k
@@ -411,15 +445,12 @@ function on_leftclick(e)
                 end
             end
 
+            global.player_data[e.player_index] = player_data
+
             open_settings_menu(player)
 
-            local settings_frame = player_data.mod_gui.tapeline_menu_frame
+            set_settings_frame_mode(true, player)
 
-            settings_frame.header_flow.visible = true
-            settings_frame.header_flow.menu_title.caption={'gui-caption.settings-header-caption', player_data.cur_tilegrid_index}
-            settings_frame.checkboxes_flow.visible = false
-
-            global.player_data[e.player_index] = player_data
         end
 	end
 
@@ -436,6 +467,7 @@ stdlib.gui.on_text_changed('increment_divisor_textfield', on_setting_changed)
 stdlib.gui.on_text_changed('split_divisor_textfield', on_setting_changed)
 -- gui buttons
 stdlib.gui.on_click('delete_button', on_delete_button)
+stdlib.gui.on_click('confirm_button', on_confirm_button)
 stdlib.gui.on_click('dialog_back_button', on_dialog_back_button)
 stdlib.gui.on_click('dialog_confirm_button', on_dialog_confirm_button)
 -- tilegrid settings button

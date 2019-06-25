@@ -100,7 +100,14 @@ function on_player_mod_setting_changed(e)
 		result = setting_value
 	end
 
-	global.player_data[e.player_index].settings[name] = result
+	-- if global.player_data[e.player_index].cur_editing == true then
+	-- 	local index = global.player_data[e.player_index].cur_tilegrid_index
+	-- 	global[index].settings[name] = result
+	-- 	destroy_render_objects(global[index].render_objects)
+    -- 	global[index].render_objects = build_render_objects(global[index])
+	-- else
+		global.player_data[e.player_index].settings[name] = result
+	-- end
 
 end
 
@@ -132,7 +139,13 @@ function change_setting(e)
 		value = e.element.slider_value
 	end
 
-	global.player_data[e.player_index].settings[setting_associations[e.match]] = value
+	if global.player_data[e.player_index].cur_editing == true then
+		local index = global.player_data[e.player_index].cur_tilegrid_index
+		global[index].settings[setting_associations[e.match]] = value
+		update_tilegrid_settings(e.player_index)
+	else
+		global.player_data[e.player_index].settings[setting_associations[e.match]] = value
+	end
 
 end
 

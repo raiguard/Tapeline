@@ -165,6 +165,31 @@ function update_tilegrid_data(e)
 
 end
 
+-- update tilegrid based on new settings
+function update_tilegrid_settings(player_index)
+
+    data = global[global.player_data[player_index].cur_tilegrid_index]
+    stdlib.logger.log(data.settings)
+    data.tilegrid_divisors = {}
+    -- update tilegrid divisors
+    if data.settings.grid_type == 2 then
+        data.tilegrid_divisors[1] = { x = 1, y = 1 }
+        data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height) }
+        data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
+    else
+        for i=1,4 do
+			data.tilegrid_divisors[i] = { x = data.settings.increment_divisor ^ (i - 1), y = data.settings.increment_divisor ^ (i - 1) }
+		end
+    end
+    -- destroy and rebuild render objects
+    destroy_render_objects(data.render_objects)
+    data.render_objects = build_render_objects(data)
+    -- update global table
+    global[global.player_data[player_index].cur_tilegrid_index] = data
+
+
+end
+
 -- destroy a tilegrid's data
 function destroy_tilegrid_data(tilegrid_index)
 
