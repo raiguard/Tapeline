@@ -11,7 +11,7 @@ end
 -- check if the game is multiplayer and set end_wait accordingly
 function check_mp_config(e)
 
-    if game.is_multiplayer then
+    if game.is_multiplayer() then
         end_wait = 60
         game.print('Multiplayer detected, end_wait increased')
     end
