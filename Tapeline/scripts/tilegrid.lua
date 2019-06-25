@@ -1,19 +1,17 @@
-local end_wait = 3
-
 -- set up constants
 function on_init()
 
     global.next_tilegrid_index = global.next_tilegrid_index or 1
     global.perish = global.perish or {}
+    global.end_wait = global.end_wait or 3
 
 end
 
--- check if the game is multiplayer and set end_wait accordingly
+-- check if the game is multiplayer and set global.end_wait accordingly
 function check_mp_config(e)
 
     if game.is_multiplayer() then
-        end_wait = 60
-        game.print('Multiplayer detected, end_wait increased')
+        global.end_wait = 60
     end
 
 end
@@ -25,7 +23,7 @@ function on_tick()
 
     -- for each player in player_data, if they're doing a drag, check to see if it's finished
     stdlib.table.each(global.player_data, function(t,i)
-        if t.cur_drawing and cur_tick - t.last_capsule_tick > end_wait then
+        if t.cur_drawing and cur_tick - t.last_capsule_tick > global.end_wait then
             t.cur_drawing = false
             local data = global[t.cur_tilegrid_index]
             local from_pos = stdlib.tile.from_position
@@ -56,7 +54,7 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
     local player_data = global.player_data[e.player_index]
 
-    if game.ticks_played - player_data.last_capsule_tick > end_wait then
+    if game.ticks_played - player_data.last_capsule_tick > global.end_wait then
         -- create tilegrid
         player_data.cur_tilegrid_index = global.next_tilegrid_index
         player_data.cur_drawing = true
