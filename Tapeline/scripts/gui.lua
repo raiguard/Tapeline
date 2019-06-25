@@ -191,8 +191,8 @@ function create_settings_menu(player, mod_gui)
         type = 'slider',
         name = 'split_divisor_slider',
         style = 'notched_slider',
-        minimum_value = 1,
-        maximum_value = 10,
+        minimum_value = 2,
+        maximum_value = 12,
         value = 4
     }
 
