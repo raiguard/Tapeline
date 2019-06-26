@@ -34,7 +34,6 @@ function on_tick()
             else
                 destroy_tilegrid_data(t.cur_tilegrid_index)
             end
-            -- global.player_data[i] = t
         end
     end)
 

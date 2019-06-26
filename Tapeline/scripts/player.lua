@@ -100,14 +100,7 @@ function on_player_mod_setting_changed(e)
 		result = setting_value
 	end
 
-	-- if global.player_data[e.player_index].cur_editing == true then
-	-- 	local index = global.player_data[e.player_index].cur_tilegrid_index
-	-- 	global[index].settings[name] = result
-	-- 	destroy_render_objects(global[index].render_objects)
-    -- 	global[index].render_objects = build_render_objects(global[index])
-	-- else
-		global.player_data[e.player_index].settings[name] = result
-	-- end
+	global.player_data[e.player_index].settings[name] = result
 
 end
 
@@ -149,6 +142,23 @@ function change_setting(e)
 
 end
 
+-- detect if the player is holding the tapeline capsule, and show/hide the settings menu accordingly
+function on_item(e)
+
+    local player = game.players[e.player_index]
+    local stack = player.cursor_stack
+    if stack and stack.valid_for_read and stack.name == 'tapeline-capsule' then
+        -- if holding the tapeline
+		open_settings_menu(player) 
+		set_settings_frame_mode(false, player)
+    else
+        -- hide settings GUI
+        close_settings_menu(player)
+    end
+
+end
+
 stdlib.event.register('on_init', on_init)
 stdlib.event.register(defines.events.on_player_created, on_player_created)
 stdlib.event.register(defines.events.on_runtime_mod_setting_changed, on_player_mod_setting_changed)
+stdlib.event.register(defines.events.on_player_cursor_stack_changed, on_item)

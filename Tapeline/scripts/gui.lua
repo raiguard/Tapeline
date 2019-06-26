@@ -233,21 +233,6 @@ function close_settings_menu(player)
 
 end
 
--- detect if the player is holding the tapeline capsule, and show/hide the settings menu accordingly
-function on_item(e)
-
-    local player = game.players[e.player_index]
-    local stack = player.cursor_stack
-    if stack and stack.valid_for_read and stack.name == 'tapeline-capsule' then
-        -- if holding the tapeline
-        open_settings_menu(player) 
-    else
-        -- hide settings GUI
-        close_settings_menu(player)
-    end
-
-end
-
 function on_setting_changed(e)
 
     change_setting(e)
@@ -481,5 +466,3 @@ stdlib.gui.on_click('dialog_back_button', on_dialog_back_button)
 stdlib.gui.on_click('dialog_confirm_button', on_dialog_confirm_button)
 -- tilegrid settings button
 stdlib.event.register('mouse-leftclick', on_leftclick)
--- held item
-stdlib.event.register(defines.events.on_player_cursor_stack_changed, on_item)
