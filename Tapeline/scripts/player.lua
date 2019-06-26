@@ -143,10 +143,8 @@ function change_setting(e)
 		local index = global.player_data[e.player_index].cur_tilegrid_index
 		global[index].settings[setting_associations[e.match]] = value
 		update_tilegrid_settings(e.player_index)
-		game.print('cur_editing: ' .. setting_associations[e.match] .. ' = ' .. tostring(value))
 	else
 		global.player_data[e.player_index].settings[setting_associations[e.match]] = value
-		game.print('player_settings: ' .. setting_associations[e.match] .. ' = ' .. tostring(value))
 	end
 
 end

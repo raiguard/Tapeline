@@ -34,7 +34,7 @@ function on_tick()
             else
                 destroy_tilegrid_data(t.cur_tilegrid_index)
             end
-            global.player_data[i] = t
+            -- global.player_data[i] = t
         end
     end)
 
@@ -81,7 +81,6 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
 
     player_data.last_capsule_pos = e.position
     player_data.last_capsule_tick = game.ticks_played
-    global.player_data[e.player_index] = player_data
     global[player_data.cur_tilegrid_index].time_of_creation = game.ticks_played
 	
 end
@@ -92,7 +91,7 @@ function construct_tilegrid_data(e)
     local data = {}
     -- initial settings
     data.player = game.players[e.player_index]
-    data.settings = global.player_data[e.player_index].settings
+    data.settings = stdlib.table.deep_copy(global.player_data[e.player_index].settings)
     -- area
     data.area = stdlib.area.construct(e.position.x, e.position.y, e.position.x, e.position.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
@@ -126,7 +125,7 @@ end
 -- update a tilegrid
 function update_tilegrid_data(e)
 
-    data = global[global.player_data[e.player_index].cur_tilegrid_index]
+    local data = global[global.player_data[e.player_index].cur_tilegrid_index]
     -- find new corners
     local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
     local right_bottom = { x = (e.position.x > data.origin.x and e.position.x or data.origin.x), y = (e.position.y > data.origin.y and e.position.y or data.origin.y) }
@@ -158,8 +157,6 @@ function update_tilegrid_data(e)
     -- destroy and rebuild render objects
     destroy_render_objects(data.render_objects)
     data.render_objects = build_render_objects(data)
-    -- update global table
-    global[global.player_data[e.player_index].cur_tilegrid_index] = data
 
 end
 
@@ -182,8 +179,6 @@ function update_tilegrid_settings(player_index)
     -- destroy and rebuild render objects
     destroy_render_objects(data.render_objects)
     data.render_objects = build_render_objects(data)
-    -- update global table
-    global[global.player_data[player_index].cur_tilegrid_index] = data
 
 
 end
@@ -196,6 +191,7 @@ function destroy_tilegrid_data(tilegrid_index)
     global[tilegrid_index] = nil
 
 end
+
 
 stdlib.event.register('on_init', on_init)
 stdlib.event.register(defines.events.on_player_joined_game, check_mp_config)
