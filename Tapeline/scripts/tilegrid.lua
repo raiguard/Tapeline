@@ -218,6 +218,7 @@ function on_setting_changed(e)
 
     if e.setting_type == 'runtime-global' then
         global.map_settings = get_global_settings()
+        update_tilegrid_visual_settings()
     end
 
 end

@@ -350,7 +350,6 @@ function create_dialog_menu(player, center_gui)
         type = 'text-box',
         name = 'dialog_text_box',
         style = 'bold_notice_textbox',
-        -- text = {'gui-caption.dialog-warning-caption', global.player_data[player.index].cur_tilegrid_index}
         text = 'You are about to permanently delete Tilegrid #' .. global.player_data[player.index].cur_tilegrid_index
     }
 

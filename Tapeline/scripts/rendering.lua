@@ -98,6 +98,7 @@ function destroy_render_objects(table)
 
 end
 
+-- create settings button entity
 function create_settings_button(data)
 
     global[global.player_data[data.player.index].cur_tilegrid_index].button = data.player.surface.create_entity {
@@ -105,5 +106,42 @@ function create_settings_button(data)
         position = stdlib.position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
         player = data.player
     }
+
+end
+
+-- update visuals of all tilegrids
+function update_tilegrid_visual_settings()
+
+    local settings = global.map_settings
+    local table_each = stdlib.table.each
+    local set_color = rendering.set_color
+    local set_width = rendering.set_width
+    local set_draw_on_ground = rendering.set_draw_on_ground
+
+    table_each(global, function(v,k)
+        if type(k) == 'number' then 
+            local objects = global[k].render_objects
+            -- labels
+            table_each(objects.labels, function(v)
+                set_color(v, settings.tilegrid_label_color)
+            end)
+            -- grids
+            table_each(objects.lines, function(v,k)
+                table_each(v, function(d)
+                    table_each(d, function(o)
+                        set_color(o, settings['tilegrid_div_color_' .. k])
+                        set_width(o, settings.tilegrid_line_width)
+                        set_draw_on_ground(o, settings.draw_tilegrid_on_ground)
+                    end)
+                end)
+            end)
+            -- border
+            set_color(objects.border, settings.tilegrid_border_color)
+            set_draw_on_ground(objects.border, settings.draw_tilegrid_on_ground)
+            -- background
+            set_color(objects.background, settings.tilegrid_background_color)
+            set_draw_on_ground(objects.background, settings.draw_tilegrid_on_ground)
+        end
+    end)
 
 end
