@@ -244,12 +244,12 @@ function on_slider(e)
     e.element.slider_value = math.floor(e.element.slider_value + 0.5)
     local textfield = e.element.parent.increment_divisor_textfield or e.element.parent.split_divisor_textfield
     textfield.text = e.element.slider_value
-    on_setting_changed(e)
+    change_setting(e)
 
 end
 
 function on_gridtype_dropdown(e)
-
+    
     local value = e.element.selected_index
     local increment_flow = e.element.parent.parent.increment_divisor_flow
     local split_flow = e.element.parent.parent.split_divisor_flow
@@ -265,7 +265,7 @@ function on_gridtype_dropdown(e)
         split_flow.visible = true
     end
 
-    on_setting_changed(e)
+    change_setting(e)
 
 end
 
@@ -442,7 +442,6 @@ function on_leftclick(e)
             open_settings_menu(player)
 
             set_settings_frame_mode(true, player)
-
         end
 	end
 

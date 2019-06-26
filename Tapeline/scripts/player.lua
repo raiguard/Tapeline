@@ -97,7 +97,7 @@ function change_setting(e)
 		value = e.element.slider_value
 	end
 
-	if global.player_data[e.player_index].cur_editing == true then
+	if global.player_data[e.player_index].cur_editing then
 		global[global.player_data[e.player_index].cur_tilegrid_index].settings[setting_associations[e.match]] = value
 		update_tilegrid_settings(e.player_index)
 	else
