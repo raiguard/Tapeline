@@ -187,7 +187,6 @@ end
 function update_tilegrid_settings(player_index)
 
     data = global[global.player_data[player_index].cur_tilegrid_index]
-    stdlib.logger.log(data.settings)
     data.tilegrid_divisors = {}
     -- update tilegrid divisors
     if data.settings.grid_type == 2 then
