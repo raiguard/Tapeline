@@ -174,6 +174,7 @@ function create_settings_menu(player, mod_gui)
     }
 
     increment_divisor_flow.style.vertical_align = 'center'
+    increment_divisor_flow.style.horizontal_spacing = 8
     increment_divisor_slider.style.horizontally_stretchable = true
     increment_divisor_textfield.style.width = 50
     increment_divisor_textfield.style.horizontal_align = 'center'
@@ -201,6 +202,7 @@ function create_settings_menu(player, mod_gui)
     }
 
     split_divisor_flow.style.vertical_align = 'center'
+    split_divisor_flow.style.horizontal_spacing = 8
     split_divisor_slider.style.horizontally_stretchable = true
     split_divisor_textfield.style.width = 50
     split_divisor_textfield.style.horizontal_align = 'center'
