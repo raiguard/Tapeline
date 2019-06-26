@@ -244,7 +244,7 @@ function on_slider(e)
     e.element.slider_value = math.floor(e.element.slider_value + 0.5)
     local textfield = e.element.parent.increment_divisor_textfield or e.element.parent.split_divisor_textfield
     textfield.text = e.element.slider_value
-    change_setting(e)
+    check_slider_change(e)
 
 end
 

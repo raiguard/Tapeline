@@ -122,6 +122,26 @@ function on_item(e)
 
 end
 
+-- detect if the current slider value is different from the setting, and if so, change it
+function check_slider_change(e)
+
+	local value = e.element.slider_value
+	local player_data = global.player_data[e.player_index]
+	local settings
+
+	if player_data.cur_editing then
+		settings = global[player_data.cur_tilegrid_index].settings
+	else
+		settings = player_data.settings
+	end
+
+	if value ~= settings[setting_associations[e.match]] then
+		game.print(value)
+		change_setting(e)
+	end
+
+end
+
 stdlib.event.register('on_init', on_init)
 stdlib.event.register(defines.events.on_player_created, on_player_created)
 stdlib.event.register(defines.events.on_runtime_mod_setting_changed, on_player_mod_setting_changed)
