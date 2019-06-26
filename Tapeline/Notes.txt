@@ -41,6 +41,8 @@ global
             center_gui (userdata)
             settings
                 (settings)
+    map_settings
+        (map settings)
 
 --------------------------------------------------
 TILEGRID TYPES

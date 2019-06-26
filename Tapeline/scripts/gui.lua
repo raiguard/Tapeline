@@ -66,7 +66,7 @@ function create_settings_menu(player, mod_gui)
         name = 'autoclear_checkbox',
         state = true,
         caption = {'gui-caption.autoclear-caption'},
-        tooltip = {'gui-tooltip.autoclear-tooltip', player.mod_settings['tilegrid-clear-delay'].value},
+        tooltip = {'gui-tooltip.autoclear-tooltip', settings.global['tilegrid-clear-delay'].value},
         style = 'caption_checkbox'
     }
 
@@ -291,8 +291,6 @@ function set_settings_frame_mode(mode, player)
 
         cur_settings = player_data.settings
     end
-
-    stdlib.logger.log(cur_settings)
 
     settings_frame.gridtype_flow.gridtype_dropdown.selected_index = cur_settings.grid_type
     settings_frame.increment_divisor_flow.increment_divisor_slider.slider_value = cur_settings.increment_divisor

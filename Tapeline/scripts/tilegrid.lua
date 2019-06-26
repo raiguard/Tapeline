@@ -4,6 +4,7 @@ function on_init()
     global.next_tilegrid_index = global.next_tilegrid_index or 1
     global.perish = global.perish or {}
     global.end_wait = global.end_wait or 3
+    global.map_settings = global.map_settings or get_global_settings()
 
 end
 
@@ -13,6 +14,29 @@ function check_mp_config(e)
     if game.is_multiplayer() then
         global.end_wait = 60
     end
+
+end
+
+-- retrieve global settings
+function get_global_settings()
+
+	local data = {}
+	local settings = settings.global
+
+	data.tilegrid_line_width = settings['tilegrid-line-width'].value
+	data.tilegrid_clear_delay = settings['tilegrid-clear-delay'].value * 60
+
+	data.draw_tilegrid_on_ground = settings['draw-tilegrid-on-ground'].value
+	
+	data.tilegrid_background_color = stdlib.color.set(defines.color[settings['tilegrid-background-color'].value], 0.6)
+	data.tilegrid_border_color = stdlib.color.set(defines.color[settings['tilegrid-border-color'].value])
+	data.tilegrid_label_color = stdlib.color.set(defines.color[settings['tilegrid-label-color'].value], 0.8)
+	data.tilegrid_div_color_1 = stdlib.color.set(defines.color[settings['tilegrid-color-1'].value])
+	data.tilegrid_div_color_2 = stdlib.color.set(defines.color[settings['tilegrid-color-2'].value])
+	data.tilegrid_div_color_3 = stdlib.color.set(defines.color[settings['tilegrid-color-3'].value])
+	data.tilegrid_div_color_4 = stdlib.color.set(defines.color[settings['tilegrid-color-4'].value])
+
+	return data
 
 end
 
@@ -98,7 +122,7 @@ function construct_tilegrid_data(e)
     -- metadata
     data.origin = stdlib.position.add(data.area.left_top, { x = 0.5, y = 0.5 })
     data.time_of_creation = game.ticks_played
-    data.time_to_live = data.settings.tilegrid_clear_delay
+    data.time_to_live = settings.global['tilegrid-clear-delay'].value * 60
     -- anchors
     data.anchors = {}
     data.anchors.horizontal = 'top'
@@ -191,8 +215,17 @@ function destroy_tilegrid_data(tilegrid_index)
 
 end
 
+function on_setting_changed(e)
+
+    if e.setting_type == 'runtime-global' then
+        global.map_settings = get_global_settings()
+    end
+
+end
+
 
 stdlib.event.register('on_init', on_init)
 stdlib.event.register(defines.events.on_player_joined_game, check_mp_config)
 stdlib.event.register(defines.events.on_player_used_capsule, on_capsule)
 stdlib.event.register(defines.events.on_tick, on_tick)
+stdlib.event.register(defines.events.on_runtime_mod_setting_changed, on_setting_changed)

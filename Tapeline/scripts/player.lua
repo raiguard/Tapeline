@@ -54,22 +54,8 @@ function create_player_settings(player_index)
 	data.grid_autoclear = true
 	data.restrict_to_cardinals = false
 
-	-- real actual settings
-	local player_mod_settings = game.players[player_index].mod_settings
-    data.tilegrid_line_width = player_mod_settings['tilegrid-line-width'].value
-	data.tilegrid_clear_delay = player_mod_settings['tilegrid-clear-delay'].value * 60
-
-	data.log_selection_area = player_mod_settings['log-selection-area'].value
-	data.draw_tilegrid_on_ground = player_mod_settings['draw-tilegrid-on-ground'].value
+	data.log_selection_area = game.players[player_index].mod_settings['log-selection-area'].value
 	
-	data.tilegrid_background_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-background-color'].value], 0.6)
-	data.tilegrid_border_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-border-color'].value])
-	data.tilegrid_label_color = stdlib.color.set(defines.color[player_mod_settings['tilegrid-label-color'].value], 0.8)
-	data.tilegrid_div_color_1 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-1'].value])
-	data.tilegrid_div_color_2 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-2'].value])
-	data.tilegrid_div_color_3 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-3'].value])
-	data.tilegrid_div_color_4 = stdlib.color.set(defines.color[player_mod_settings['tilegrid-color-4'].value])
-
 	return data
 
 end
@@ -77,30 +63,9 @@ end
 -- when a player changes a setting in the mod settings GUI
 function on_player_mod_setting_changed(e)
 
-	-- metadata
-	local name = e.setting:gsub('-', '_')
-	local setting_value = game.players[e.player_index].mod_settings[e.setting].value
-	local result
-	-- functions
-	local s_contains = stdlib.string.contains
-	local to_color = stdlib.color.set
-
-	if s_contains(name, 'color') then
-		local def_color = defines.color[setting_value]
-		if s_contains(name, 'background') then
-			result = set_color(def_color, 0.6)
-		elseif s_contains(name, 'label') then
-			result = set_color(def_color, 0.8)
-		else
-			result = set_color(def_color)
-		end
-	elseif name == 'tilegrid_clear_delay' then
-		result = setting_value * 60
-	else
-		result = setting_value
+	if e.setting_type == 'runtime-per-user' then
+		global.player_data[e.player_index].settings.log_selection_area = game.players[e.player_index].mod_settings['log-selection-area'].value
 	end
-
-	global.player_data[e.player_index].settings[name] = result
 
 end
 
@@ -133,8 +98,7 @@ function change_setting(e)
 	end
 
 	if global.player_data[e.player_index].cur_editing == true then
-		local index = global.player_data[e.player_index].cur_tilegrid_index
-		global[index].settings[setting_associations[e.match]] = value
+		global[global.player_data[e.player_index].cur_tilegrid_index].settings[setting_associations[e.match]] = value
 		update_tilegrid_settings(e.player_index)
 	else
 		global.player_data[e.player_index].settings[setting_associations[e.match]] = value
