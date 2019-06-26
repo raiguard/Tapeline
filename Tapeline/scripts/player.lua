@@ -136,7 +136,6 @@ function check_slider_change(e)
 	end
 
 	if value ~= settings[setting_associations[e.match]] then
-		game.print(value)
 		change_setting(e)
 	end
 

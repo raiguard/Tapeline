@@ -239,12 +239,36 @@ function on_setting_changed(e)
 
 end
 
+-- step slider, set value of adjoining textfield when slider value changes
 function on_slider(e)
 
     e.element.slider_value = math.floor(e.element.slider_value + 0.5)
     local textfield = e.element.parent.increment_divisor_textfield or e.element.parent.split_divisor_textfield
     textfield.text = e.element.slider_value
     check_slider_change(e)
+
+end
+
+-- santitize user input and set slider state
+function on_textfield(e)
+
+    local text = e.element.text:gsub('%D','')
+    e.element.text = text
+
+    if text == '' or tonumber(text) < 1 or tonumber(text) > 100 then
+        e.element.tooltip = 'Must be an integer between 1-100'
+        return nil
+    else
+        e.element.tooltip = ''
+    end
+
+    -- set slider value
+    local slider = e.element.parent.increment_divisor_slider or e.element.parent.split_divisor_slider
+    local max = slider.name == 'increment_divisor_slider' and 10 or 12
+    slider.slider_value = math.min(tonumber(text), max)
+
+    change_setting(e)
+
 
 end
 
@@ -314,6 +338,11 @@ function on_delete_button(e)
 
     local player = game.players[e.player_index]
     local player_data = global.player_data[e.player_index]
+
+    if e.shift then
+        on_dialog_confirm_button(e)
+        return nil
+    end
 
     if not player_data.center_gui.tapeline_dialog_frame then
         player_data.mod_gui.tapeline_menu_frame.ignored_by_interaction = true
@@ -398,8 +427,9 @@ function on_dialog_confirm_button(e)
     local player = game.players[e.player_index]
     local player_data = global.player_data[e.player_index]
     local settings_frame = player_data.mod_gui.tapeline_menu_frame
+    local dialog_frame = player_data.center_gui.tapeline_dialog_frame
     
-    player_data.center_gui.tapeline_dialog_frame.destroy()
+    if dialog_frame then dialog_frame.destroy() end
     destroy_tilegrid_data(player_data.cur_tilegrid_index)
 
     close_settings_menu(player)
@@ -448,13 +478,12 @@ end
 
 -- settings
 stdlib.gui.on_selection_state_changed('gridtype_dropdown', on_gridtype_dropdown)
-stdlib.gui.on_text_changed('split_divisor_textfield', on_setting_changed)
 stdlib.gui.on_checked_state_changed('autoclear_checkbox', on_setting_changed)
 stdlib.gui.on_checked_state_changed('restrict_to_cardinals_checkbox', on_setting_changed)
 stdlib.gui.on_value_changed('increment_divisor_slider', on_slider)
 stdlib.gui.on_value_changed('split_divisor_slider', on_slider)
-stdlib.gui.on_text_changed('increment_divisor_textfield', on_setting_changed)
-stdlib.gui.on_text_changed('split_divisor_textfield', on_setting_changed)
+stdlib.gui.on_text_changed('increment_divisor_textfield', on_textfield)
+stdlib.gui.on_text_changed('split_divisor_textfield', on_textfield)
 -- gui buttons
 stdlib.gui.on_click('delete_button', on_delete_button)
 stdlib.gui.on_click('confirm_button', on_confirm_button)
