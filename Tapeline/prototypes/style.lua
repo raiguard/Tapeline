@@ -1,8 +1,8 @@
 local styles = data.raw['gui-style'].default
 
 styles['green_button'] = {
-    type = "button_style",
-    parent = "button",
+    type = 'button_style',
+    parent = 'button',
     default_graphical_set =
     {
         base = {position = {68, 17}, corner_size = 8},
@@ -27,14 +27,25 @@ styles['green_button'] = {
 }
 
 styles['green_icon_button'] = {
-    type = "button_style",
-    parent = "green_button",
+    type = 'button_style',
+    parent = 'green_button',
     padding = 3,
     size = 28
 }
 
-styles['bold_notice_textbox'] = {
-    type = 'textbox_style',
-    parent = 'notice_textbox',
-    font = "default-bold"
+styles['dialog_info'] = {
+    type = 'label_style',
+    font = 'default-bold',
+    single_line = false,
+    maximal_width = 400
+}
+
+styles['draggable_space_filler'] = {
+    type = 'frame_style',
+    height = 32,
+    graphical_set = styles['draggable_space'].graphical_set,
+    use_header_filler = false,
+    horizontally_stretchable = 'on',
+    left_margin = styles['draggable_space'].left_margin,
+    right_margin = styles['draggable_space'].right_margin,
 }

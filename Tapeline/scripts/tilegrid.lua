@@ -12,6 +12,9 @@ end
 function check_mp_config(e)
 
     if game.is_multiplayer() then
+        if global.end_wait == 3 then
+            create_warning_dialog(e.player_index)
+        end
         global.end_wait = 60
     end
 
