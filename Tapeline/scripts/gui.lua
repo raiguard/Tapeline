@@ -40,7 +40,7 @@ function create_settings_menu(player, mod_gui)
         type = 'sprite-button',
         name = 'confirm_button',
         style = 'green_icon_button',
-        sprite = 'check-mark',
+        sprite = 'check_mark',
         tooltip = {'gui-tooltip.confirm-tooltip'}
     }
     
@@ -48,7 +48,7 @@ function create_settings_menu(player, mod_gui)
         type = 'sprite-button',
         name = 'delete_button',
         style = 'red_icon_button',
-        sprite = 'trash-black',
+        sprite = 'utility/trash',
         tooltip = {'gui-tooltip.delete-tooltip'}
     }
 

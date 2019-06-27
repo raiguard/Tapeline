@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
-Date: 20.06.2019
+Date: 27.06.2019
   Features:
     - Added tilegrid settings GUI
     - Added the ability to restrict a tilegrid to cardinal directions when drawing

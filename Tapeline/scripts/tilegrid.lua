@@ -1,5 +1,5 @@
 -- set up constants
-function on_init()
+function setup_global()
 
     global.next_tilegrid_index = global.next_tilegrid_index or 1
     global.perish = global.perish or {}
@@ -227,7 +227,7 @@ function on_setting_changed(e)
 end
 
 
-stdlib.event.register('on_init', on_init)
+stdlib.event.register({'on_init', 'on_configuration_changed'}, setup_global)
 stdlib.event.register(defines.events.on_player_joined_game, check_mp_config)
 stdlib.event.register(defines.events.on_player_used_capsule, on_capsule)
 stdlib.event.register(defines.events.on_tick, on_tick)

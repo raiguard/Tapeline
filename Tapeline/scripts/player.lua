@@ -1,5 +1,5 @@
 -- initialize all player-related globals
-function on_init()
+function setup_global()
 
 	global.player_data = global.player_data or {}
 
@@ -141,7 +141,7 @@ function check_slider_change(e)
 
 end
 
-stdlib.event.register('on_init', on_init)
+stdlib.event.register({'on_init', 'on_configuration_changed'}, setup_global)
 stdlib.event.register(defines.events.on_player_created, on_player_created)
 stdlib.event.register(defines.events.on_runtime_mod_setting_changed, on_player_mod_setting_changed)
 stdlib.event.register(defines.events.on_player_cursor_stack_changed, on_item)
