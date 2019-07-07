@@ -31,6 +31,8 @@ function get_global_settings()
 
 	data.draw_tilegrid_on_ground = settings['draw-tilegrid-on-ground'].value
 	
+  data.draw_diagonal = settings['draw-diagonal'].value
+
 	data.tilegrid_background_color = stdlib.color.set(defines.color[settings['tilegrid-background-color'].value], 0.6)
 	data.tilegrid_border_color = stdlib.color.set(defines.color[settings['tilegrid-border-color'].value])
 	data.tilegrid_label_color = stdlib.color.set(defines.color[settings['tilegrid-label-color'].value], 0.8)
@@ -38,6 +40,7 @@ function get_global_settings()
 	data.tilegrid_div_color_2 = stdlib.color.set(defines.color[settings['tilegrid-color-2'].value])
 	data.tilegrid_div_color_3 = stdlib.color.set(defines.color[settings['tilegrid-color-3'].value])
 	data.tilegrid_div_color_4 = stdlib.color.set(defines.color[settings['tilegrid-color-4'].value])
+	data.tilegrid_diagonal_color = stdlib.color.set(defines.color[settings['tilegrid-diagonal-color'].value])
 
 	return data
 
@@ -57,7 +60,8 @@ function on_tick()
             if not stdlib.position.equals(from_pos(t.last_capsule_pos), from_pos(data.origin)) then
                 if data.settings.grid_autoclear then global.perish[t.cur_tilegrid_index] = game.ticks_played + data.time_to_live
                 else create_settings_button(global[t.cur_tilegrid_index]) end
-                if data.settings.log_selection_area then data.player.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height) end
+                if data.settings.log_selection_area then data.player.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height ..
+                                                                            (data.diagonal_text and ' Diagonal: ' .. data.diagonal_text or '')) end
             else
                 destroy_tilegrid_data(t.cur_tilegrid_index)
             end
@@ -159,6 +163,11 @@ function update_tilegrid_data(e)
     data.area = stdlib.area.construct(left_top.x, left_top.y, right_bottom.x, right_bottom.y):normalize():ceil():corners()
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = stdlib.area.center(data.area)
+    -- diagonal measurement
+    if global.map_settings.draw_diagonal then
+      data.diagonal = math.sqrt ( (data.area.width * data.area.width) + (data.area.height * data.area.height) )
+      data.diagonal_text = string.format("%.2f", data.diagonal) -- round to two decimal places.
+    end
     -- update anchors
     if e.position.x < data.origin.x then
         if e.position.y < data.origin.y then

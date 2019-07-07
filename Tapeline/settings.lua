@@ -38,6 +38,13 @@ data:extend({
         order = 'b'
     },
     {
+        type = 'bool-setting',
+        name = 'draw-diagonal',
+        setting_type = 'runtime-global',
+        default_value = false,
+        order = 'ba'
+    },
+    {
         type = 'double-setting',
         name = 'tilegrid-line-width',
         setting_type = 'runtime-global',
@@ -106,5 +113,13 @@ data:extend({
         default_value = 'yellow',
         allowed_values = possible_colors,
         order = 'k'
+    },
+    {
+        type = 'string-setting',
+        name = 'tilegrid-diagonal-color',
+        setting_type = 'runtime-global',
+        default_value = 'white',
+        allowed_values = possible_colors,
+        order = 'l'
     }
 })
