@@ -84,24 +84,24 @@ function build_render_objects(data)
 
   --diagonal line and label
   if map_settings.draw_diagonal and data.area.height > 1 and data.area.width > 1 then
-			objects.diagonal_line = rendering.draw_line {
-				color = map_settings.tilegrid_diagonal_color,
-				width = map_settings.tilegrid_line_width,
-				from = {data.area.left_top.x, data.area.left_top.y},
-				to = {data.area.right_bottom.x, data.area.right_bottom.y},
-				surface = surfaceIndex,
-				draw_on_ground = map_settings.draw_tilegrid_on_ground
-      }
+    objects.diagonal_line = rendering.draw_line {
+      color = map_settings.tilegrid_diagonal_color,
+      width = map_settings.tilegrid_line_width,
+      from = {data.area.left_top.x, data.area.left_top.y},
+      to = {data.area.right_bottom.x, data.area.right_bottom.y},
+      surface = surfaceIndex,
+      draw_on_ground = map_settings.draw_tilegrid_on_ground
+    }
 
-      objects.labels.diagonal = rendering.draw_text {
-        text = data.diagonal_text,
-        surface = surfaceIndex,
-        target = {data.area.midpoints.x, data.area.midpoints.y},
-        color = map_settings.tilegrid_label_color,
-        alignment = 'center',
-        scale = 2
-      }
-	end
+   objects.labels.diagonal = rendering.draw_text {
+     text = data.diagonal_text,
+     surface = surfaceIndex,
+     target = {data.area.midpoints.x, data.area.midpoints.y},
+     color = map_settings.tilegrid_label_color,
+     alignment = 'center',
+     scale = 2
+    }
+  end
 
     return objects
 
