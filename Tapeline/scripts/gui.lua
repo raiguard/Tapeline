@@ -239,7 +239,7 @@ function create_warning_dialog(player_index)
     warning_frame.warning_dialog_info.style.maximal_width = 300
 
     local buttons_flow = warning_frame.add{type='flow', name='warning_dialog_buttons_flow', direction='horizontal'}
-    buttons_flow.add{type='frame', name='warning_dialog_footer_filler', style='draggable_space_filler', direction='horizontal'
+    buttons_flow.add{type='frame', name='warning_dialog_footer_filler', style='draggable_space_filler', direction='horizontal'}
     buttons_flow.warning_dialog_footer_filler.style.left_margin = 0
     buttons_flow.add{type='button', name='warning_dialog_confirm_button', style='confirm_button', caption={'gui.confirm'}}
 end

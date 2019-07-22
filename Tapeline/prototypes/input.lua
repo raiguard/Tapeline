@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
     {
         type = 'custom-input',
         name = 'get-tapeline-tool',
@@ -12,4 +12,4 @@ data:extend({
         key_sequence = '',
         linked_game_control = 'open-gui'
     }
-})
+}

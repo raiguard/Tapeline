@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
     {
         type = 'simple-entity',
         name = 'tapeline-settings-button',
@@ -17,4 +17,4 @@ data:extend({
         flags = {'placeable-off-grid', 'not-on-map', 'not-blueprintable', 'not-deconstructable', 'not-upgradable', 'no-copy-paste'},
         selection_priority = 100
     }
-})
+}

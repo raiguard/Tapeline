@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
     {
         type = 'capsule',
         name = 'tapeline-capsule',
@@ -9,30 +9,24 @@ data:extend({
         flags = {'hidden', 'only-in-cursor'},
         stack_size = 1,
         stackable = false,
-        capsule_action =
-        {
+        capsule_action = {
             type = 'throw',
             uses_stack = false,
-            attack_parameters =
-            {
+            attack_parameters = {
                 type = 'projectile',
                 ammo_category = 'capsule',
                 cooldown = 2,
                 range = 1000,
-                ammo_type =
-                {
+                ammo_type = {
                     category = 'capsule',
                     target_type = 'position',
-                    action =
-                    {
+                    action = {
                         type = 'direct',
-                        action_delivery =
-                        {
+                        action_delivery = {
                             type = 'instant',
-                            target_effects =
-                            {
+                            target_effects = {
                                 type = 'damage',
-                                damage = { type = 'physical', amount = 0 }
+                                damage = {type='physical', amount=0}
                             }
                         }
                     }
@@ -40,4 +34,4 @@ data:extend({
             }
         }
     }
-})
+}

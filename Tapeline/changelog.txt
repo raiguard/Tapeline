@@ -1,4 +1,11 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 31.12.2019
+  Changes:
+    - Significant optimizations across the board
+    - The mod no longer uses update time when no tilegrids are being actively drawn or perished
+
+---------------------------------------------------------------------------------------------------
 Version: 0.5.0
 Date: 27.06.2019
   Features:

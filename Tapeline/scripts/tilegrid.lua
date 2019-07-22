@@ -1,21 +1,3 @@
--- set up constants
-function setup_global()
-    global.next_tilegrid_index = global.next_tilegrid_index or 1
-    global.perish = global.perish or {}
-    global.end_wait = global.end_wait or 3
-    global.map_settings = global.map_settings or get_global_settings()
-end
-
--- check if the game is multiplayer and set global.end_wait accordingly
-function check_mp_config(e)
-    if game.is_multiplayer() then
-        if global.end_wait == 3 then
-            create_warning_dialog(e.player_index)
-        end
-        global.end_wait = 60
-    end
-end
-
 -- retrieve global settings
 function get_global_settings()
 	local data = {}
@@ -203,9 +185,6 @@ function on_setting_changed(e)
     end
 end
 
-
-stdlib.event.register({'on_init', 'on_configuration_changed'}, setup_global)
-stdlib.event.register(defines.events.on_player_joined_game, check_mp_config)
 stdlib.event.register(defines.events.on_player_used_capsule, on_capsule)
 stdlib.event.register(defines.events.on_tick, on_tick)
 stdlib.event.register(defines.events.on_runtime_mod_setting_changed, on_setting_changed)

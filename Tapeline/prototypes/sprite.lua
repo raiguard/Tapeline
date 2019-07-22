@@ -1,4 +1,4 @@
-data:extend({
+data:extend{
     {
         type = 'sprite',
         name = 'check_mark',
@@ -6,4 +6,4 @@ data:extend({
         size = 32,
         flags = {'icon'}
     }
-})
+}
