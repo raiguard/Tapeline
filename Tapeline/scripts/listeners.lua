@@ -19,7 +19,14 @@ event.on_init(function()
     -- global.map_settings = get_global_settings()
 end)
 
--- check if the game is multiplayer and set global.end_wait accordingly
+-- re-register on_tick event if necessary
+event.on_load(function()
+    if table_size(global.perish) > 0 then
+        -- reregister
+    end
+end)
+
+-- check if the game is multiplayer and take appropriate action
 on_event(defines.events.on_player_joined_game, function(e)
     if game.is_multiplayer() then
         if global.end_wait == 3 then
@@ -28,3 +35,4 @@ on_event(defines.events.on_player_joined_game, function(e)
         global.end_wait = 60
     end
 end)
+
