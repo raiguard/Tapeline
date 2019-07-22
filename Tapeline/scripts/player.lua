@@ -1,26 +1,20 @@
 -- initialize all player-related globals
 function setup_global()
-
 	global.player_data = global.player_data or {}
-
     for i,_ in pairs(game.players) do
         if not global.player_data[i] then
             global.player_data[i] = create_player_data(i)
         end
 	end
-	
 end
 
 -- when a new player first joins the game, create their data
 function on_player_created(e)
-
     global.player_data[e.player_index] = create_player_data(e.player_index)
-
 end
 
 -- create player data
 function create_player_data(player_index)
-
     if global.player_data[player_index] then return global.player_data[player_index] end
 
     local data = {}
@@ -40,12 +34,10 @@ function create_player_data(player_index)
     data.settings = create_player_settings(player_index)
 
     return data
-
 end
 
 -- create player settings
 function create_player_settings(player_index)
-
 	local data = {}
 	-- runtime settings
 	data.increment_divisor = 5
@@ -57,16 +49,13 @@ function create_player_settings(player_index)
 	data.log_selection_area = game.players[player_index].mod_settings['log-selection-area'].value
 	
 	return data
-
 end
 
 -- when a player changes a setting in the mod settings GUI
 function on_player_mod_setting_changed(e)
-
 	if e.setting_type == 'runtime-per-user' then
 		global.player_data[e.player_index].settings.log_selection_area = game.players[e.player_index].mod_settings['log-selection-area'].value
 	end
-
 end
 
 local setting_associations = {
@@ -84,7 +73,6 @@ local setting_associations = {
 
 -- when a setting is changed in the tapeline settings GUI
 function change_setting(e)
-
 	local value
 	local type = e.element.type
 	if e.element.type == 'drop-down' then
@@ -103,12 +91,10 @@ function change_setting(e)
 	else
 		global.player_data[e.player_index].settings[setting_associations[e.match]] = value
 	end
-
 end
 
 -- detect if the player is holding the tapeline capsule, and show/hide the settings menu accordingly
 function on_item(e)
-
     local player = game.players[e.player_index]
     local stack = player.cursor_stack
     if stack and stack.valid_for_read and stack.name == 'tapeline-capsule' then
@@ -119,12 +105,10 @@ function on_item(e)
         -- hide settings GUI
         close_settings_menu(player)
     end
-
 end
 
 -- detect if the current slider value is different from the setting, and if so, change it
 function check_slider_change(e)
-
 	local value = e.element.slider_value
 	local player_data = global.player_data[e.player_index]
 	local settings
@@ -138,7 +122,6 @@ function check_slider_change(e)
 	if value ~= settings[setting_associations[e.match]] then
 		change_setting(e)
 	end
-
 end
 
 stdlib.event.register({'on_init', 'on_configuration_changed'}, setup_global)

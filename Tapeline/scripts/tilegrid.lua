@@ -1,28 +1,23 @@
 -- set up constants
 function setup_global()
-
     global.next_tilegrid_index = global.next_tilegrid_index or 1
     global.perish = global.perish or {}
     global.end_wait = global.end_wait or 3
     global.map_settings = global.map_settings or get_global_settings()
-
 end
 
 -- check if the game is multiplayer and set global.end_wait accordingly
 function check_mp_config(e)
-
     if game.is_multiplayer() then
         if global.end_wait == 3 then
             create_warning_dialog(e.player_index)
         end
         global.end_wait = 60
     end
-
 end
 
 -- retrieve global settings
 function get_global_settings()
-
 	local data = {}
 	local settings = settings.global
 
@@ -40,14 +35,11 @@ function get_global_settings()
 	data.tilegrid_div_color_4 = stdlib.color.set(defines.color[settings['tilegrid-color-4'].value])
 
 	return data
-
 end
 
 -- check to see if a tilegrid drag has finished
 function on_tick()
-
     local cur_tick = game.ticks_played
-
     -- for each player in player_data, if they're doing a drag, check to see if it's finished
     stdlib.table.each(global.player_data, function(t,i)
         if t.cur_drawing and cur_tick - t.last_capsule_tick > global.end_wait then
@@ -63,19 +55,16 @@ function on_tick()
             end
         end
     end)
-
     stdlib.table.each(global.perish, function(v,k)
         if v <= game.ticks_played then
             destroy_tilegrid_data(k)
             global.perish[k] = nil
         end
     end)
-
 end
 
 -- when a capsule is thrown
 function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
-
     if e.item.name ~= 'tapeline-capsule' then return end
 
     local player_data = global.player_data[e.player_index]
@@ -108,12 +97,10 @@ function on_capsule(e)  -- EVENT ARGUMENTS: player_index, item, position
     player_data.last_capsule_pos = e.position
     player_data.last_capsule_tick = game.ticks_played
     global[player_data.cur_tilegrid_index].time_of_creation = game.ticks_played
-	
 end
 
 -- create a new tilegrid data structure in GLOBAL
 function construct_tilegrid_data(e)
-
     local data = {}
     -- initial settings
     data.player = game.players[e.player_index]
@@ -145,12 +132,10 @@ function construct_tilegrid_data(e)
     data.render_objects = build_render_objects(data)
 
     return data
-
 end
 
 -- update a tilegrid
 function update_tilegrid_data(e)
-
     local data = global[global.player_data[e.player_index].cur_tilegrid_index]
     -- find new corners
     local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
@@ -183,12 +168,10 @@ function update_tilegrid_data(e)
     -- destroy and rebuild render objects
     destroy_render_objects(data.render_objects)
     data.render_objects = build_render_objects(data)
-
 end
 
 -- update tilegrid based on new settings
 function update_tilegrid_settings(player_index)
-
     data = global[global.player_data[player_index].cur_tilegrid_index]
     data.tilegrid_divisors = {}
     -- update tilegrid divisors
@@ -204,26 +187,20 @@ function update_tilegrid_settings(player_index)
     -- destroy and rebuild render objects
     destroy_render_objects(data.render_objects)
     data.render_objects = build_render_objects(data)
-
-
 end
 
 -- destroy a tilegrid's data
 function destroy_tilegrid_data(tilegrid_index)
-
     destroy_render_objects(global[tilegrid_index].render_objects)
     if global[tilegrid_index].button then global[tilegrid_index].button.destroy() end
     global[tilegrid_index] = nil
-
 end
 
 function on_setting_changed(e)
-
     if e.setting_type == 'runtime-global' then
         global.map_settings = get_global_settings()
         update_tilegrid_visual_settings()
     end
-
 end
 
 
