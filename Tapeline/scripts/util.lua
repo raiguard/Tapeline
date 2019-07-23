@@ -8,3 +8,9 @@ function util.get_player(obj)
     else return game.players[obj.player_index]
     end
 end
+
+function util.player_table(player)
+    return type(player) == 'number' and global.players[player] or global.players[player.index]
+end
+
+return util

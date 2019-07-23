@@ -229,26 +229,6 @@ function on_dialog_confirm_button(e)
 end
 
 -- ------------------------------------------------------------
--- MULTIPLAYER WARNING PROMPT
-
-function create_warning_dialog(player_index)
-    local center_gui = global.player_data[player_index].center_gui
-
-    local warning_frame = center_gui.add{type='frame', name='warning_dialog_frame', style='dialog_frame', caption={'gui.notice'}, direction='vertical'}
-    warning_frame.add{type='label', name='warning_dialog_info', style='dialog_info', caption={'gui-caption.warning-dialog-info'}}
-    warning_frame.warning_dialog_info.style.maximal_width = 300
-
-    local buttons_flow = warning_frame.add{type='flow', name='warning_dialog_buttons_flow', direction='horizontal'}
-    buttons_flow.add{type='frame', name='warning_dialog_footer_filler', style='draggable_space_filler', direction='horizontal'}
-    buttons_flow.warning_dialog_footer_filler.style.left_margin = 0
-    buttons_flow.add{type='button', name='warning_dialog_confirm_button', style='confirm_button', caption={'gui.confirm'}}
-end
-
-function on_warning_confirm_button(e)
-    global.player_data[e.player_index].center_gui.warning_dialog_frame.destroy()
-end
-
--- ------------------------------------------------------------
 -- TILEGRID SETTINGS BUTTON
 
 -- when a player invokes the 'open-gui' button
@@ -290,7 +270,6 @@ stdlib.gui.on_value_changed('split_divisor_slider', on_slider)
 stdlib.gui.on_text_changed('increment_divisor_textfield', on_textfield)
 stdlib.gui.on_text_changed('split_divisor_textfield', on_textfield)
 -- gui buttons
-stdlib.gui.on_click('warning_dialog_confirm_button', on_warning_confirm_button)
 stdlib.gui.on_click('delete_button', on_delete_button)
 stdlib.gui.on_click('confirm_button', on_confirm_button)
 stdlib.gui.on_click('dialog_back_button', on_dialog_back_button)

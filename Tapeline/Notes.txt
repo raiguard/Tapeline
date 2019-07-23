@@ -29,16 +29,18 @@ global
             vertical
         button
     next_tilegrid_index
+    drawing
+        tilegrid_index
+            player_index
+            last_capsule_tick
+            last_capsule_pos
     perish
         tilegrid_index = time_of_death
     player_data
         player_index
-            cur_drawing (bool)
-            cur_tilegrid_index (int)
-            last_capsule_tick (int)
-            last_capsule_pos (pos)
+            cur_drawing (int)
+            cur_editing (int)
             mod_gui (userdata)
-            center_gui (userdata)
             settings
                 (settings)
     map_settings

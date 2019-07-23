@@ -1,5 +1,11 @@
+local position = require('__stdlib__/stdlib/area/position')
+local draw_line = rendering.draw_line
+local draw_rectangle = rendering.draw_rectangle
+local draw_text = rendering.draw_text
+local lib = {}
+
 -- build render objects for a tilegrid
-function build_render_objects(data)
+function lib.build_objects(data)
     local objects = {}
     local surfaceIndex = data.player.surface.index
     local i_mod_v = data.anchors.vertical == 'left' and 1 or -1
@@ -7,7 +13,7 @@ function build_render_objects(data)
     local map_settings = global.map_settings
 
     -- background
-    objects.background = rendering.draw_rectangle {
+    objects.background = draw_rectangle{
         color = map_settings.tilegrid_background_color,
         filled = true,
         left_top = {data.area.left_top.x,data.area.left_top.y},
@@ -22,7 +28,7 @@ function build_render_objects(data)
         objects.lines[k] = {}
         objects.lines[k].vertical = {}
 		for i=t.x,data.area.width,t.x do
-			objects.lines[k].vertical[i] = rendering.draw_line {
+			objects.lines[k].vertical[i] = draw_line{
 				color = map_settings['tilegrid_div_color_' .. k],
 				width = map_settings.tilegrid_line_width,
 				from = {(data.area[data.anchors.vertical .. '_top'].x + i * i_mod_v),data.area.left_top.y},
@@ -34,7 +40,7 @@ function build_render_objects(data)
 
         objects.lines[k].horizontal = {}
 		for i=t.y,data.area.height,t.y do
-			objects.lines[k].horizontal[i] = rendering.draw_line {
+			objects.lines[k].horizontal[i] = draw_line{
 				color = map_settings['tilegrid_div_color_' .. k],
 				width = map_settings.tilegrid_line_width,
 				from = {data.area.left_top.x,(data.area['left_' .. data.anchors.horizontal].y + i * i_mod_h)},
@@ -46,7 +52,7 @@ function build_render_objects(data)
 	end
 
     -- border
-    objects.border = rendering.draw_rectangle {
+    objects.border = draw_rectangle{
         color = map_settings.tilegrid_border_color,
         width = map_settings.tilegrid_line_width,
         filled = false,
@@ -59,7 +65,7 @@ function build_render_objects(data)
     -- labels
     objects.labels = {}
 	if data.area.height > 1 then
-        objects.labels.left = rendering.draw_text {
+        objects.labels.left = draw_text{
             text = data.area.height,
             surface = surfaceIndex,
             target = {(data.area.left_top.x - 1.1), data.area.midpoints.y},
@@ -71,7 +77,7 @@ function build_render_objects(data)
 	end
 	
     if data.area.width > 1 then
-        objects.labels.top = rendering.draw_text {
+        objects.labels.top = draw_text{
             text = data.area.width,
             surface = surfaceIndex,
             target = {data.area.midpoints.x, (data.area.left_top.y - 1.1)},
@@ -85,26 +91,26 @@ function build_render_objects(data)
 end
 
 -- destroy all render objects for a tilegrid
-function destroy_render_objects(table)
+function lib.destroy_objects(table)
     for n,i in pairs(table) do
         -- recursive tables
-        if type(i) == 'table' then destroy_render_objects(i)
+        if type(i) == 'table' then lib.destroy_objects(i)
         -- check if exists, and if so, DESTROY!
         elseif rendering.is_valid(i) then rendering.destroy(i) end
     end
 end
 
 -- create settings button entity
-function create_settings_button(data)
-    global[global.player_data[data.player.index].cur_tilegrid_index].button = data.player.surface.create_entity {
+function lib.create_settings_button(data)
+    global[global.players[data.player.index].cur_drawing].button = data.player.surface.create_entity {
         name = 'tapeline-settings-button',
-        position = stdlib.position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
+        position = position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
         player = data.player
     }
 end
 
 -- update visuals of all tilegrids
-function update_tilegrid_visual_settings()
+function lib.update_visual_settings()
     local settings = global.map_settings
     local table_each = stdlib.table.each
     local set_color = rendering.set_color
@@ -137,3 +143,5 @@ function update_tilegrid_visual_settings()
         end
     end)
 end
+
+return lib
