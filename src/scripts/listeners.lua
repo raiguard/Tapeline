@@ -11,6 +11,20 @@ local util = require('util')
 
 -- ----------------------------------------------------------------------------------------------------
 
+local function setup_player(player_index)
+    local data = {}
+    data.cur_drawing = 0
+    data.cur_editing = 0
+    local settings = {}
+    settings.grid_type = 1
+    settings.increment_divisor = 5
+    settings.split_divisor = 4
+    settings.grid_autoclear = true
+    settings.restrict_to_cardinals = false
+    data.settings = settings
+    global.players[player_index] = data
+end
+
 -- setup global
 event.on_init(function()
     global.end_wait = 3
@@ -29,6 +43,19 @@ event.on_load(function()
     end
 end)
 
+-- handle configuration changes
+event.on_configuration_changed(function(e)
+    if e.mod_changes['Tapeline'] then
+        -- if the mod has just been added to an existing save game
+        if not e.mod_changes['Tapeline'].old_version then
+            -- setup player data for all existing players
+            for i,_ in pairs(game.players) do
+                setup_player(i)
+            end
+        end
+    end
+end)
+
 -- check if the game is multiplayer and take appropriate action
 on_event(defines.events.on_player_joined_game, function(e)
     if game.is_multiplayer() then
@@ -41,17 +68,7 @@ end)
 
 -- when a player is created
 on_event(defines.events.on_player_created, function(e)
-    local data = {}
-    data.cur_drawing = 0
-    data.cur_editing = 0
-    local settings = {}
-    settings.grid_type = 1
-    settings.increment_divisor = 5
-    settings.split_divisor = 4
-    settings.grid_autoclear = false
-    settings.restrict_to_cardinals = false
-    data.settings = settings
-    global.players[e.player_index] = data
+    setup_player(e.player_index)
 end)
 
 -- when a capsule is thrown
