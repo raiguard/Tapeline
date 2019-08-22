@@ -108,8 +108,8 @@ on_event(defines.events.on_gui_closed, function(e)
 end)
 
 gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
-    util.player_table(e.player_index).cur_editing = false
     event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
+    util.player_table(e.player_index).cur_editing = 0
 end)
 
 gui.on_click('tapeline_settings_def_header_button_delete', function(e)
@@ -135,7 +135,7 @@ gui.on_checked_state_changed('tapeline_settings_autoclear_checkbox', function(e)
 end)
 
 gui.on_checked_state_changed('tapeline_settings_cardinals_checkbox', function(e)
-    local player_table, settings, cur_editing = get_table_and_settings(e.player_index)
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     settings.restrict_to_cardinals = e.element.state
 end)
 
