@@ -1,3 +1,4 @@
+local area = require('__stdlib__/stdlib/area/area')
 local position = require('__stdlib__/stdlib/area/position')
 local draw_line = rendering.draw_line
 local draw_rectangle = rendering.draw_rectangle
@@ -101,11 +102,24 @@ function lib.destroy_objects(table)
 end
 
 -- create settings button entity
-function lib.create_settings_button(data)
-    global.tilegrids[global.players[data.player.index].cur_drawing].button = data.player.surface.create_entity {
+function lib.create_settings_button(tilegrid_index)
+    local data = global.tilegrids[tilegrid_index]
+    data.button = data.player.surface.create_entity{
         name = 'tapeline-settings-button',
-        position = position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
+        position = position.add(data.area.left_top, {x=0.25, y=0.225}),
         player = data.player
+    }
+end
+
+-- create highlight box entity
+function lib.create_highlight_box(tilegrid_index)
+    local data = global.tilegrids[tilegrid_index]
+    data.highlight_box = data.player.surface.create_entity{
+        name = 'highlight-box',
+        position = data.area.left_top,
+        bounding_box = area.expand(data.area, 0.25),
+        render_player_index = data.player.index,
+        blink_interval = 30
     }
 end
 

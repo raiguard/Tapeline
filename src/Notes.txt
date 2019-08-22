@@ -6,8 +6,6 @@ global
     tilegrids
         tilegrid_index
             area
-            time_of_creation
-            time_to_live
             render_objects
                 background
                 border
@@ -25,6 +23,7 @@ global
                 horizontal
                 vertical
             button
+            highlight box
     drawing
         tilegrid_index
             player_index
@@ -36,9 +35,8 @@ global
         player_index
             cur_drawing (int)
             cur_editing (int)
-            mod_gui (userdata)
-            settings
-                (settings)
+            last_valid_textfield_value (text or nil)
+            settings (table)
     map_settings
         (map settings)
 

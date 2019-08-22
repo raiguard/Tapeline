@@ -107,6 +107,7 @@ on_event('tapeline-open-gui', function(e)
                     break
                 end
             end
+            tilegrid.rendering.create_highlight_box(player_data.cur_editing)
             gui.open(player, player_data.cur_editing)
         end
 	end

@@ -97,9 +97,13 @@ local function get_table_and_settings(player_index)
 end
 
 on_event(defines.events.on_gui_closed, function(e)
-    -- local player = util.get_player(e)
     if e.element and e.element.name == 'tapeline_settings_window' then
         e.element.destroy()
+        local player_table = util.player_table(e.player_index)
+        if player_table.cur_editing > 0 then
+            local highlight_box = global.tilegrids[player_table.cur_editing].highlight_box
+            if highlight_box and highlight_box.valid then highlight_box.destroy() end
+        end
     end
 end)
 
