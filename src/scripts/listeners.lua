@@ -50,14 +50,14 @@ on_event(defines.events.on_player_created, function(e)
     settings.restrict_to_cardinals = false
     data.settings = settings
     global.players[e.player_index] = data
-    log(global)
+    log(serpent.block(global))
 end)
 
 -- when a capsule is thrown
 on_event(defines.events.on_player_used_capsule, tilegrid.on_capsule)
 
 -- when the settings button is clicked
-on_event('mouse-leftclick', function(e)
+on_event('tapeline-open-gui', function(e)
     local player = util.get_player(e)
     local selected = player.selected
     local player_data = util.player_table(player)
