@@ -141,7 +141,7 @@ function tilegrid.construct(e)
 			table.insert(data.tilegrid_divisors, { x = data.settings.increment_divisor ^ (i - 1), y = data.settings.increment_divisor ^ (i - 1) })
 		end
     end
-    LOG(data)
+    log(data)
     -- render objects
     data.render_objects = rendering.build_objects(data)
 

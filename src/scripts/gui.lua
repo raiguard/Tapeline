@@ -1,3 +1,7 @@
+local event = require('__stdlib__/stdlib/event/event')
+local on_event = event.register
+local gui = require('__stdlib__/stdlib/event/gui')
+
 -- ------------------------------------------------------------
 -- SETTINGS MENU
 
@@ -262,17 +266,15 @@ function on_leftclick(e)
 end
 
 -- settings
-stdlib.gui.on_selection_state_changed('gridtype_dropdown', on_gridtype_dropdown)
-stdlib.gui.on_checked_state_changed('autoclear_checkbox', on_setting_changed)
-stdlib.gui.on_checked_state_changed('restrict_to_cardinals_checkbox', on_setting_changed)
-stdlib.gui.on_value_changed('increment_divisor_slider', on_slider)
-stdlib.gui.on_value_changed('split_divisor_slider', on_slider)
-stdlib.gui.on_text_changed('increment_divisor_textfield', on_textfield)
-stdlib.gui.on_text_changed('split_divisor_textfield', on_textfield)
+gui.on_selection_state_changed('gridtype_dropdown', on_gridtype_dropdown)
+gui.on_checked_state_changed('autoclear_checkbox', on_setting_changed)
+gui.on_checked_state_changed('restrict_to_cardinals_checkbox', on_setting_changed)
+gui.on_value_changed('increment_divisor_slider', on_slider)
+gui.on_value_changed('split_divisor_slider', on_slider)
+gui.on_text_changed('increment_divisor_textfield', on_textfield)
+gui.on_text_changed('split_divisor_textfield', on_textfield)
 -- gui buttons
-stdlib.gui.on_click('delete_button', on_delete_button)
-stdlib.gui.on_click('confirm_button', on_confirm_button)
-stdlib.gui.on_click('dialog_back_button', on_dialog_back_button)
-stdlib.gui.on_click('dialog_confirm_button', on_dialog_confirm_button)
--- tilegrid settings button
-stdlib.event.register('mouse-leftclick', on_leftclick)
+gui.on_click('delete_button', on_delete_button)
+gui.on_click('confirm_button', on_confirm_button)
+gui.on_click('dialog_back_button', on_dialog_back_button)
+gui.on_click('dialog_confirm_button', on_dialog_confirm_button)

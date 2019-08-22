@@ -5,8 +5,7 @@
 local event = require('__stdlib__/stdlib/event/event')
 local on_event = event.register
 
--- local gui = require('gui')
--- local rendering = require('rendering')
+local gui = require('gui')
 local tilegrid = require('tilegrid')
 local util = require('util')
 
@@ -51,8 +50,36 @@ on_event(defines.events.on_player_created, function(e)
     settings.restrict_to_cardinals = false
     data.settings = settings
     global.players[e.player_index] = data
-    LOG(global)
+    log(global)
 end)
 
 -- when a capsule is thrown
 on_event(defines.events.on_player_used_capsule, tilegrid.on_capsule)
+
+-- when the settings button is clicked
+on_event('mouse-leftclick', function(e)
+    local player = util.get_player(e)
+    local selected = player.selected
+    local player_data = util.player_table(player)
+
+    if selected and selected.name == 'tapeline-settings-button' then
+        if player.cursor_stack and player.cursor_stack.valid_for_read and player.cursor_stack.name == 'tapeline-capsule' then
+            player.surface.create_entity {
+                name = 'flying-text',
+                position = selected.position,
+                text = {'flying-text.capsule-warning'}
+            }
+        else
+            for k,v in pairs(global) do
+                if type(v) == 'table' and v.button and v.button == selected then
+                    player_data.cur_tilegrid_index = k
+                    break
+                end
+            end
+
+            -- open_settings_menu(player)
+
+            -- set_settings_frame_mode(true, player)
+        end
+	end
+end)
