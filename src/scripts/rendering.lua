@@ -126,36 +126,33 @@ end
 -- update visuals of all tilegrids
 function lib.update_visual_settings()
     local settings = global.map_settings
-    local table_each = stdlib.table.each
     local set_color = rendering.set_color
     local set_width = rendering.set_width
     local set_draw_on_ground = rendering.set_draw_on_ground
 
-    table_each(global, function(v,k)
-        if type(k) == 'number' then 
-            local objects = global.tilegrids[k].render_objects
-            -- labels
-            table_each(objects.labels, function(v)
-                set_color(v, settings.tilegrid_label_color)
-            end)
-            -- grids
-            table_each(objects.lines, function(v,k)
-                table_each(v, function(d)
-                    table_each(d, function(o)
-                        set_color(o, settings['tilegrid_div_color_' .. k])
-                        set_width(o, settings.tilegrid_line_width)
-                        set_draw_on_ground(o, settings.draw_tilegrid_on_ground)
-                    end)
-                end)
-            end)
-            -- border
-            set_color(objects.border, settings.tilegrid_border_color)
-            set_draw_on_ground(objects.border, settings.draw_tilegrid_on_ground)
-            -- background
-            set_color(objects.background, settings.tilegrid_background_color)
-            set_draw_on_ground(objects.background, settings.draw_tilegrid_on_ground)
+    for i,t in pairs(global.tilegrids) do
+        local objects = t.render_objects
+        -- labels
+        for _,o in pairs(objects.labels) do
+            set_color(o, settings.tilegrid_label_color)
         end
-    end)
+        -- grids
+        for k,t in pairs(objects.lines) do
+            for _,d in pairs(t) do
+                for _,o in pairs(d) do
+                    set_color(o, settings['tilegrid_div_color_' .. k])
+                    set_width(o, settings.tilegrid_line_width)
+                    set_draw_on_ground(o, settings.draw_tilegrid_on_ground)
+                end
+            end
+        end
+        -- border
+        set_color(objects.border, settings.tilegrid_border_color)
+        set_draw_on_ground(objects.border, settings.draw_tilegrid_on_ground)
+        -- background
+        set_color(objects.background, settings.tilegrid_background_color)
+        set_draw_on_ground(objects.background, settings.draw_tilegrid_on_ground)
+    end
 end
 
 return lib

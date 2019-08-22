@@ -48,7 +48,7 @@ function tilegrid.on_tick()
             if not pos_equals(from_pos(t.last_capsule_pos), from_pos(data.origin)) then
                 if data.settings.grid_autoclear then global.perish[i] = game.ticks_played + (settings.global['tilegrid-clear-delay'].value * 60)
                 else rendering.create_settings_button(i) end
-                if data.settings.log_selection_area then data.player.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height) end
+                if data.player.mod_settings['log-selection-area'].value then data.player.print('Dimensions: ' .. data.area.width .. 'x' .. data.area.height) end
             else
                 tilegrid.destroy(i)
             end
@@ -194,13 +194,6 @@ function tilegrid.destroy(tilegrid_index)
     rendering.destroy_objects(global.tilegrids[tilegrid_index].render_objects)
     if global.tilegrids[tilegrid_index].button then global.tilegrids[tilegrid_index].button.destroy() end
     global.tilegrids[tilegrid_index] = nil
-end
-
-function on_setting_changed(e)
-    if e.setting_type == 'runtime-global' then
-        global.map_settings = get_global_settings()
-        update_tilegrid_visual_settings()
-    end
 end
 
 tilegrid.rendering = rendering

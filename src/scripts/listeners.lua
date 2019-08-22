@@ -56,6 +56,14 @@ event.on_configuration_changed(function(e)
     end
 end)
 
+-- handle global settings changes
+on_event(defines.events.on_runtime_mod_setting_changed, function(e)
+    if e.setting_type == 'runtime-global' then
+        global.map_settings = tilegrid.get_global_settings()
+        tilegrid.rendering.update_visual_settings()
+    end
+end)
+
 -- check if the game is multiplayer and take appropriate action
 on_event(defines.events.on_player_joined_game, function(e)
     if game.is_multiplayer() then
