@@ -37,14 +37,15 @@ local function create_settings_window(parent, player, tilegrid)
     end
     -- checkboxes
     local toggles_flow = window.add{type='flow', name='tapeline_settings_toggles_flow', style='vertically_centered_flow', direction='horizontal'}
-    toggles_flow.add{type='checkbox', name='tapeline_settings_autoclear_checkbox', style='caption_checkbox', caption={'gui-settings.autoclear-checkbox-caption'}, tooltip={'gui-settings.autoclear-checkbox-tooltip'}, state=settings.grid_autoclear}
+    toggles_flow.add{type='checkbox', name='tapeline_settings_autoclear_checkbox', caption={'gui-settings.autoclear-checkbox-caption'}, tooltip={'gui-settings.autoclear-checkbox-tooltip'}, state=settings.grid_autoclear}
     toggles_flow.add{type='empty-widget', name='tapeline_settings_toggles_filler', style='invisible_horizontal_filler'}
-    toggles_flow.add{type='checkbox', name='tapeline_settings_cardinals_checkbox', style='caption_checkbox', caption={'gui-settings.cardinals-checkbox-caption'}, tooltip={'gui-settings.cardinals-checkbox-tooltip'}, state=settings.restrict_to_cardinals}
+    toggles_flow.add{type='checkbox', name='tapeline_settings_cardinals_checkbox', caption={'gui-settings.cardinals-checkbox-caption'}, tooltip={'gui-settings.cardinals-checkbox-tooltip'}, state=settings.restrict_to_cardinals}
     -- grid type
     local gridtype_flow = window.add{type='flow', name='tapeline_settings_gridtype_flow', style='vertically_centered_flow', direction='horizontal'}
-    gridtype_flow.add{type='label', name='tapeline_settings_gridtype_label', style='caption_label', caption={'gui-settings.gridtype-label-caption'}}
+    gridtype_flow.add{type='label', name='tapeline_settings_gridtype_label', caption={'gui-settings.gridtype-label-caption'}}
     gridtype_flow.add{type='empty-widget', name='tapeline_settings_gridtype_filler', style='invisible_horizontal_filler'}
-    gridtype_flow.add{type='drop-down', name='tapeline_settings_gridtype_dropdown', items={{'gui-settings.gridtype-dropdown-item-increment'}, {'gui-settings.gridtype-dropdown-item-split'}}, selected_index=settings.grid_type}
+    -- gridtype_flow.add{type='drop-down', name='tapeline_settings_gridtype_dropdown', items={{'gui-settings.gridtype-dropdown-item-increment'}, {'gui-settings.gridtype-dropdown-item-split'}}, selected_index=settings.grid_type}
+    gridtype_flow.add{type='switch', name='tapeline_settings_gridtype_switch', left_label_caption={'gui-settings.gridtype-dropdown-item-increment'}, right_label_caption={'gui-settings.gridtype-dropdown-item-split'}, switch_state=(settings.grid_type == 1 and 'left' or 'right')}
     -- grid divisor setting
     local grid_type = grid_types[settings.grid_type]
     local divisor_label_flow = window.add{type='flow', name='tapeline_settings_divisor_label_flow', direction='horizontal'}
