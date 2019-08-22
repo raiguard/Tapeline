@@ -171,8 +171,8 @@ function tilegrid.update(e)
 end
 
 -- update tilegrid based on new settings
-function update_tilegrid_settings(player_index)
-    data = global.tilegrids[global.player_data[player_index].cur_tilegrid_index]
+function tilegrid.update_settings(tilegrid_index)
+    data = global.tilegrids[tilegrid_index]
     data.tilegrid_divisors = {}
     -- update tilegrid divisors
     if data.settings.grid_type == 2 then
@@ -185,8 +185,8 @@ function update_tilegrid_settings(player_index)
 		end
     end
     -- destroy and rebuild render objects
-    destroy_render_objects(data.render_objects)
-    data.render_objects = build_render_objects(data)
+    rendering.destroy_objects(data.render_objects)
+    data.render_objects = rendering.build_objects(data)
 end
 
 -- destroy a tilegrid's data

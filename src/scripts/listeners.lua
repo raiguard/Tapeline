@@ -87,12 +87,11 @@ on_event('tapeline-open-gui', function(e)
         else
             for k,v in pairs(global.tilegrids) do
                 if type(v) == 'table' and v.button and v.button == selected then
-                    player_data.cur_tilegrid_index = k
+                    player_data.cur_editing = k
                     break
                 end
             end
-            player_data.cur_editing = true
-            gui.open(player, player_data.cur_tilegrid_index)
+            gui.open(player, player_data.cur_editing)
         end
 	end
 end)

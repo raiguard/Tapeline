@@ -10,7 +10,9 @@ local mod_gui = require('__core__/lualib/mod-gui')
 local tilegrid = require('tilegrid')
 local util = require('util')
 
-local grid_types = {'increment', 'split'}
+local grid_types_by_index = {'increment', 'split'}
+local switch_state_to_type = {left=1, right=2}
+local min_value_by_type = {increment=1, split=2}
 
 local lib = {}
 
@@ -35,12 +37,13 @@ local function create_settings_window(parent, player, tilegrid)
         confirm_header_flow.add{type='empty-widget', name='tapeline_settings_confirm_header_filler', style='invisible_horizontal_filler'}
         confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_back', style='tool_button', sprite='utility/reset'}
         confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_delete', style='red_icon_button', sprite='utility/trash'}
+    else
+        -- checkboxes
+        local toggles_flow = window.add{type='flow', name='tapeline_settings_toggles_flow', style='vertically_centered_flow', direction='horizontal'}
+        toggles_flow.add{type='checkbox', name='tapeline_settings_autoclear_checkbox', caption={'gui-settings.autoclear-checkbox-caption'}, tooltip={'gui-settings.autoclear-checkbox-tooltip'}, state=settings.grid_autoclear}
+        toggles_flow.add{type='empty-widget', name='tapeline_settings_toggles_filler', style='invisible_horizontal_filler'}
+        toggles_flow.add{type='checkbox', name='tapeline_settings_cardinals_checkbox', caption={'gui-settings.cardinals-checkbox-caption'}, tooltip={'gui-settings.cardinals-checkbox-tooltip'}, state=settings.restrict_to_cardinals}
     end
-    -- checkboxes
-    local toggles_flow = window.add{type='flow', name='tapeline_settings_toggles_flow', style='vertically_centered_flow', direction='horizontal'}
-    toggles_flow.add{type='checkbox', name='tapeline_settings_autoclear_checkbox', caption={'gui-settings.autoclear-checkbox-caption'}, tooltip={'gui-settings.autoclear-checkbox-tooltip'}, state=settings.grid_autoclear}
-    toggles_flow.add{type='empty-widget', name='tapeline_settings_toggles_filler', style='invisible_horizontal_filler'}
-    toggles_flow.add{type='checkbox', name='tapeline_settings_cardinals_checkbox', caption={'gui-settings.cardinals-checkbox-caption'}, tooltip={'gui-settings.cardinals-checkbox-tooltip'}, state=settings.restrict_to_cardinals}
     -- grid type
     local gridtype_flow = window.add{type='flow', name='tapeline_settings_gridtype_flow', style='vertically_centered_flow', direction='horizontal'}
     gridtype_flow.add{type='label', name='tapeline_settings_gridtype_label', caption={'gui-settings.gridtype-label-caption'}}
@@ -48,7 +51,7 @@ local function create_settings_window(parent, player, tilegrid)
     -- gridtype_flow.add{type='drop-down', name='tapeline_settings_gridtype_dropdown', items={{'gui-settings.gridtype-dropdown-item-increment'}, {'gui-settings.gridtype-dropdown-item-split'}}, selected_index=settings.grid_type}
     gridtype_flow.add{type='switch', name='tapeline_settings_gridtype_switch', left_label_caption={'gui-settings.gridtype-dropdown-item-increment'}, right_label_caption={'gui-settings.gridtype-dropdown-item-split'}, switch_state=(settings.grid_type == 1 and 'left' or 'right')}
     -- grid divisor setting
-    local grid_type = grid_types[settings.grid_type]
+    local grid_type = grid_types_by_index[settings.grid_type]
     local divisor_label_flow = window.add{type='flow', name='tapeline_settings_divisor_label_flow', direction='horizontal'}
     divisor_label_flow.style.horizontally_stretchable = true
     divisor_label_flow.style.horizontal_align = 'center'
@@ -79,8 +82,20 @@ function lib.close(player)
     end
 end
 
+function lib.refresh(player, tilegrid)
+    lib.close(player)
+    lib.open(player, tilegrid)
+end
+
 -- ----------------------------------------------------------------------------------------------------
 -- GUI LISTENERS
+
+local function get_table_and_settings(player_index)
+    local player_table = util.player_table(player_index)
+    print(serpent.block(player_table))
+    local settings = player_table.cur_editing > 0 and global.tilegrids[player_table.cur_editing].settings or player_table.settings
+    return player_table, settings, grid_types_by_index[settings.grid_type], player_table.cur_editing
+end
 
 on_event(defines.events.on_gui_closed, function(e)
     -- local player = util.get_player(e)
@@ -106,9 +121,81 @@ end)
 
 gui.on_click('tapeline_settings_confirm_header_button_delete', function(e)
     local player_table = util.player_table(e.player_index)
-    player_table.cur_editing = false
     event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
-    tilegrid.destroy(player_table.cur_tilegrid_index)
+    tilegrid.destroy(player_table.cur_editing)
+    player_table.cur_editing = 0
+end)
+
+gui.on_checked_state_changed('tapeline_settings_autoclear_checkbox', function(e)
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
+    settings.grid_autoclear = e.element.state
+end)
+
+gui.on_checked_state_changed('tapeline_settings_cardinals_checkbox', function(e)
+    local player_table, settings, cur_editing = get_table_and_settings(e.player_index)
+    settings.restrict_to_cardinals = e.element.state
+end)
+
+-- STDLIB does not yet have a switch state changed event, so we must use the vanilla one
+on_event(defines.events.on_gui_switch_state_changed, function(e)
+    if e.element.name ~= 'tapeline_settings_gridtype_switch' then return end
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
+    settings.grid_type = switch_state_to_type[e.element.switch_state]
+    if cur_editing > 0 then
+        tilegrid.update_settings(cur_editing)
+    end
+    lib.refresh(util.get_player(e), cur_editing > 0 and cur_editing or nil)
+end)
+
+gui.on_value_changed('tapeline_settings_divisor_slider', function(e)
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
+    local textfield = e.element.parent[string.gsub(e.element.name, 'slider', 'textfield')]
+    if textfield then
+        textfield.text = tostring(e.element.slider_value)
+    end
+    if player_table.last_valid_textfield_value ~= e.element.slider_value then
+        settings[grid_type_name..'_divisor'] = e.element.slider_value
+    end
+    if cur_editing > 0 then
+        tilegrid.update_settings(cur_editing)
+    end
+    player_table.last_valid_textfield_value = e.element.slider_value
+end)
+
+gui.on_text_changed('tapeline_settings_divisor_textfield', function(e)
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
+    local text = e.element.text
+    if text == '' or tonumber(text) < min_value_by_type[grid_type_name] then
+        e.element.style = 'invalid_short_number_textfield'
+        if player_table.last_valid_textfield_value == nil then
+            player_table.last_valid_textfield_value = settings[grid_type_name..'_divisor']
+        end
+        return nil
+    else
+        e.element.style = 'textbox'
+    end
+    settings[grid_type_name..'_divisor'] = tonumber(text)
+    player_table.last_valid_textfield_value = text
+    local slider = e.element.parent[string.gsub(e.element.name, 'textfield', 'slider')]
+    if slider then slider.slider_value = text end
+end)
+
+gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
+    local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
+    local text = e.element.text
+    if text ~= player_table.last_valid_textfield_value then
+        e.element.text = player_table.last_valid_textfield_value
+        e.element.style = 'textbox'
+    end
+    if cur_editing > 0 then
+        tilegrid.update_settings(cur_editing)
+    end
+    settings[grid_type_name..'_divisor'] = tonumber(text)
+    if cur_editing > 0 then
+        tilegrid.update_settings(cur_editing)
+    end
+    player_table.last_valid_textfield_value = nil
+
 end)
 
 -- ----------------------------------------------------------------------------------------------------
