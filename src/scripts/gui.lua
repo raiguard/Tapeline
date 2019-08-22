@@ -28,15 +28,15 @@ local function create_settings_window(parent, player, tilegrid)
         local def_header_flow = header_flow.add{type='flow', name='tapeline_settings_def_header_flow', style='titlebar_flow', direction='horizontal'}
         def_header_flow.add{type='label', name='tapeline_settings_def_header_label', style='heading_1_label', caption={'gui-settings.header-label-caption', tilegrid}}
         def_header_flow.add{type='empty-widget', name='tapeline_settings_def_header_filler', style='invisible_horizontal_filler'}
-        def_header_flow.add{type='sprite-button', name='tapeline_settings_def_header_button_confirm', style='green_icon_button', sprite='check_mark'}
-        def_header_flow.add{type='sprite-button', name='tapeline_settings_def_header_button_delete', style='red_icon_button', sprite='utility/trash'}
+        def_header_flow.add{type='sprite-button', name='tapeline_settings_def_header_button_confirm', style='green_icon_button', sprite='check_mark', tooltip={'gui-settings.header-confirm-button-tooltip'}}
+        def_header_flow.add{type='sprite-button', name='tapeline_settings_def_header_button_delete', style='red_icon_button', sprite='utility/trash', tooltip={'gui-settings.header-delete-button-tooltip'}}
         -- confirmation header
         local confirm_header_flow = header_flow.add{type='flow', name='tapeline_settings_confirm_header_flow', style='titlebar_flow', direction='horizontal'}
         confirm_header_flow.visible = false
         confirm_header_flow.add{type='label', name='tapeline_settings_confirm_header_label', style='bold_red_label', caption={'gui-settings.confirm-delete-label-caption'}}
         confirm_header_flow.add{type='empty-widget', name='tapeline_settings_confirm_header_filler', style='invisible_horizontal_filler'}
-        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_back', style='tool_button', sprite='utility/reset'}
-        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_delete', style='red_icon_button', sprite='utility/trash'}
+        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_back', style='tool_button', sprite='utility/reset', tooltip={'gui-settings.confirm-button-no-tooltip'}}
+        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_delete', style='red_icon_button', sprite='utility/trash', tooltip={'gui-settings.confirm-button-yes-tooltip'}}
     else
         -- checkboxes
         local toggles_flow = window.add{type='flow', name='tapeline_settings_toggles_flow', style='vertically_centered_flow', direction='horizontal'}

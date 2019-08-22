@@ -138,7 +138,7 @@ function tilegrid.construct(e)
 		data.tilegrid_divisors[3] = {x=(data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y=(data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height)}
 	else
 		for i=1,4 do
-			table.insert(data.tilegrid_divisors, { x = data.settings.increment_divisor ^ (i - 1), y = data.settings.increment_divisor ^ (i - 1) })
+			table.insert(data.tilegrid_divisors, {x=data.settings.increment_divisor^(i-1), y=data.settings.increment_divisor^(i-1)})
 		end
     end
     -- render objects
@@ -162,8 +162,8 @@ function tilegrid.update(e)
     data.anchors.horizontal = e.position.y >= data.origin.y and 'top' or 'bottom'
     -- update tilegrid divisors
     if data.settings.grid_type == 2 then
-        data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height) }
-        data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
+        data.tilegrid_divisors[2] = {x =(data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y=(data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height)}
+        data.tilegrid_divisors[3] = {x=(data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y=(data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height)}
     end
     -- destroy and rebuild render objects
     rendering.destroy_objects(data.render_objects)
@@ -176,12 +176,12 @@ function tilegrid.update_settings(tilegrid_index)
     data.tilegrid_divisors = {}
     -- update tilegrid divisors
     if data.settings.grid_type == 2 then
-        data.tilegrid_divisors[1] = { x = 1, y = 1 }
-        data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height) }
-        data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
+        data.tilegrid_divisors[1] = {x=1, y=1 }
+        data.tilegrid_divisors[2] = {x=(data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y=(data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height)}
+        data.tilegrid_divisors[3] = {x=(data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y=(data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height)}
     else
         for i=1,4 do
-			data.tilegrid_divisors[i] = { x = data.settings.increment_divisor ^ (i - 1), y = data.settings.increment_divisor ^ (i - 1) }
+			data.tilegrid_divisors[i] = {x=data.settings.increment_divisor^(i-1), y=data.settings.increment_divisor^(i-1) }
 		end
     end
     -- destroy and rebuild render objects
