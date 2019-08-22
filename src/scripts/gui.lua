@@ -72,6 +72,14 @@ function lib.open(player, tilegrid)
         if tilegrid then
             player.opened = window
         end
+    else
+        local player_table = util.player_table(player)
+        local highlight_box = global.tilegrids[player_table.cur_editing] and global.tilegrids[player_table.cur_editing].highlight_box
+        if highlight_box then
+            highlight_box.destroy()
+        end
+        player_table.cur_editing = 0
+        lib.refresh(player, tilegrid)
     end
 end
 
@@ -100,23 +108,22 @@ on_event(defines.events.on_gui_closed, function(e)
     if e.element and e.element.name == 'tapeline_settings_window' then
         e.element.destroy()
         local player_table = util.player_table(e.player_index)
-        if player_table.cur_editing > 0 then
+        if player_table.cur_editing > 0 and global.tilegrids[player_table.cur_editing] then
             local highlight_box = global.tilegrids[player_table.cur_editing].highlight_box
             if highlight_box and highlight_box.valid then highlight_box.destroy() end
         end
+        player_table.cur_editing = 0
     end
 end)
 
 gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
     event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
-    util.player_table(e.player_index).cur_editing = 0
 end)
 
 local function destroy_tilegrid(e)
     local player_table = util.player_table(e.player_index)
-    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
     tilegrid.destroy(player_table.cur_editing)
-    player_table.cur_editing = 0
+    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
 end
 
 gui.on_click('tapeline_settings_def_header_button_delete', function(e)

@@ -108,6 +108,9 @@ on_event('tapeline-open-gui', function(e)
                 position = selected.position,
                 text = {'flying-text.capsule-warning'}
             }
+        elseif player_data.cur_editing > 0 then
+            -- already editing a tilegrid
+            player.surface.create_entity{name='flying-text', position=selected.position, text={'flying-text.already-editing-warning'}}
         else
             for k,v in pairs(global.tilegrids) do
                 if type(v) == 'table' and v.button and v.button == selected then

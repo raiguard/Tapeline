@@ -193,6 +193,7 @@ end
 function tilegrid.destroy(tilegrid_index)
     rendering.destroy_objects(global.tilegrids[tilegrid_index].render_objects)
     if global.tilegrids[tilegrid_index].button then global.tilegrids[tilegrid_index].button.destroy() end
+    if global.tilegrids[tilegrid_index].highlight_box then global.tilegrids[tilegrid_index].highlight_box.destroy() end
     global.tilegrids[tilegrid_index] = nil
 end
 
