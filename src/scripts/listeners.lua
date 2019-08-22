@@ -52,7 +52,6 @@ on_event(defines.events.on_player_created, function(e)
     settings.restrict_to_cardinals = false
     data.settings = settings
     global.players[e.player_index] = data
-    log(serpent.block(global))
 end)
 
 -- when a capsule is thrown

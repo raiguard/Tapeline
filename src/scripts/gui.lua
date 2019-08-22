@@ -92,7 +92,6 @@ end
 
 local function get_table_and_settings(player_index)
     local player_table = util.player_table(player_index)
-    print(serpent.block(player_table))
     local settings = player_table.cur_editing > 0 and global.tilegrids[player_table.cur_editing].settings or player_table.settings
     return player_table, settings, grid_types_by_index[settings.grid_type], player_table.cur_editing
 end
@@ -195,7 +194,6 @@ gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
         tilegrid.update_settings(cur_editing)
     end
     player_table.last_valid_textfield_value = nil
-
 end)
 
 -- ----------------------------------------------------------------------------------------------------
