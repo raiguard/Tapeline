@@ -33,7 +33,7 @@ local function create_settings_window(parent, player, tilegrid)
         -- confirmation header
         local confirm_header_flow = header_flow.add{type='flow', name='tapeline_settings_confirm_header_flow', style='titlebar_flow', direction='horizontal'}
         confirm_header_flow.visible = false
-        confirm_header_flow.add{type='label', name='tapeline_settings_confirm_header_label', style='bold_red_label', caption={'gui-settings.confirm-delete-label-caption'}}
+        confirm_header_flow.add{type='label', name='tapeline_settings_confirm_header_label', style='invalid_bold_label', caption={'gui-settings.confirm-delete-label-caption'}}
         confirm_header_flow.add{type='empty-widget', name='tapeline_settings_confirm_header_filler', style='invisible_horizontal_filler'}
         confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_back', style='tool_button', sprite='utility/reset', tooltip={'gui-settings.confirm-button-no-tooltip'}}
         confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_delete', style='red_icon_button', sprite='utility/trash', tooltip={'gui-settings.confirm-button-yes-tooltip'}}
@@ -112,7 +112,18 @@ gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
     util.player_table(e.player_index).cur_editing = 0
 end)
 
+local function destroy_tilegrid(e)
+    local player_table = util.player_table(e.player_index)
+    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
+    tilegrid.destroy(player_table.cur_editing)
+    player_table.cur_editing = 0
+end
+
 gui.on_click('tapeline_settings_def_header_button_delete', function(e)
+    if e.shift then
+        destroy_tilegrid(e)
+        return
+    end
     e.element.parent.visible = false
     e.element.parent.parent.children[2].visible = true
 end)
@@ -123,10 +134,7 @@ gui.on_click('tapeline_settings_confirm_header_button_back', function(e)
 end)
 
 gui.on_click('tapeline_settings_confirm_header_button_delete', function(e)
-    local player_table = util.player_table(e.player_index)
-    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
-    tilegrid.destroy(player_table.cur_editing)
-    player_table.cur_editing = 0
+    destroy_tilegrid(e)
 end)
 
 gui.on_checked_state_changed('tapeline_settings_autoclear_checkbox', function(e)

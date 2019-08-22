@@ -169,3 +169,9 @@ styles['invalid_short_number_textfield'] = {
         shadow = textbox_dirt
     }
 }
+
+styles['invalid_bold_label'] = {
+    type = "label_style",
+    parent = "bold_label",
+    font_color = warning_red_color
+}
