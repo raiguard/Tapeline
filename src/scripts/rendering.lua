@@ -148,6 +148,7 @@ function lib.update_visual_settings()
         end
         -- border
         set_color(objects.border, settings.tilegrid_border_color)
+        set_width(objects.border, settings.tilegrid_line_width)
         set_draw_on_ground(objects.border, settings.draw_tilegrid_on_ground)
         -- background
         set_color(objects.background, settings.tilegrid_background_color)
