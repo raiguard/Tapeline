@@ -7,7 +7,7 @@ Date: 31.12.2019
     - The mod no longer uses update time when no tilegrids are being actively drawn or perished
     - Removed delete confirmation window in favor of simply clicking the delete button again to confirm
     - Changed grid type dropdown to a switch
-    - Tilegrid you are currently editing now blinks
+    - The tilegrid you are currently editing now blinks
   Optimisations:
     - Required everything locally
     - Basic optimizations to on_tick and tilegrid rendering logic
