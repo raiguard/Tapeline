@@ -6,13 +6,8 @@ global
     tilegrids
         tilegrid_index
             area
-                left_bottom
-                left_top
-                right_bottom
-                right_top
             time_of_creation
             time_to_live
-            grid_type
             render_objects
                 background
                 border

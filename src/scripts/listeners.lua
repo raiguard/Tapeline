@@ -45,6 +45,7 @@ on_event(defines.events.on_player_created, function(e)
     data.cur_drawing = 0
     data.cur_editing = 0
     local settings = {}
+    settings.grid_type = 1
     settings.increment_divisor = 5
     settings.split_divisor = 4
     settings.grid_autoclear = false
@@ -56,6 +57,19 @@ end)
 
 -- when a capsule is thrown
 on_event(defines.events.on_player_used_capsule, tilegrid.on_capsule)
+
+-- when a player's cursor stack changes
+on_event(defines.events.on_player_cursor_stack_changed, function(e)
+    local player = game.players[e.player_index]
+    local stack = player.cursor_stack
+    if stack and stack.valid_for_read and stack.name == 'tapeline-capsule' then
+        -- if holding the tapeline
+		gui.open(player)
+    else
+        -- hide settings GUI
+        gui.close(player)
+    end
+end)
 
 -- when the settings button is clicked
 on_event('tapeline-open-gui', function(e)
@@ -77,7 +91,7 @@ on_event('tapeline-open-gui', function(e)
                     break
                 end
             end
-            game.print('open gui!')
+            gui.open(player, player_data.cur_tilegrid_index)
         end
 	end
 end)

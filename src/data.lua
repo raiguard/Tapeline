@@ -142,3 +142,30 @@ styles['titlebar_flow'] = {
     horizontally_stretchable = 'on',
     vertical_align = 'center'
 }
+
+styles['invisible_horizontal_filler'] = {
+    type = 'empty_widget_style',
+    horizontally_stretchable = 'on'
+}
+
+styles['invisible_vertical_filler'] = {
+    type = 'empty_widget_style',
+    vertically_stretchable = 'on'
+}
+
+styles['invalid_short_number_textfield'] = {
+    type = 'textbox_style',
+    parent = 'short_number_textfield',
+    default_background = {
+        base = {position = {248,0}, corner_size=8, tint=warning_red_color},
+        shadow = textbox_dirt
+    },
+    active_background = {
+        base = {position={265,0}, corner_size=8, tint=warning_red_color},
+        shadow = textbox_dirt
+    },
+    disabled_background = {
+        base = {position = {282,0}, corner_size=8, tint=warning_red_color},
+        shadow = textbox_dirt
+    }
+}
