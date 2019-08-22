@@ -5,9 +5,10 @@
 local event = require('__stdlib__/stdlib/event/event')
 local on_event = event.register
 local gui = require('__stdlib__/stdlib/event/gui')
-local util = require('util')
-
 local mod_gui = require('__core__/lualib/mod-gui')
+
+local tilegrid = require('tilegrid')
+local util = require('util')
 
 local grid_types = {'increment', 'split'}
 
@@ -32,7 +33,7 @@ local function create_settings_window(parent, player, tilegrid)
         confirm_header_flow.visible = false
         confirm_header_flow.add{type='label', name='tapeline_settings_confirm_header_label', style='bold_red_label', caption={'gui-settings.confirm-delete-label-caption'}}
         confirm_header_flow.add{type='empty-widget', name='tapeline_settings_confirm_header_filler', style='invisible_horizontal_filler'}
-        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_confirm', style='tool_button', sprite='utility/reset'}
+        confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_back', style='tool_button', sprite='utility/reset'}
         confirm_header_flow.add{type='sprite-button', name='tapeline_settings_confirm_header_button_delete', style='red_icon_button', sprite='utility/trash'}
     end
     -- checkboxes
@@ -86,6 +87,28 @@ on_event(defines.events.on_gui_closed, function(e)
     if e.element and e.element.name == 'tapeline_settings_window' then
         e.element.destroy()
     end
+end)
+
+gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
+    util.player_table(e.player_index).cur_editing = false
+    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
+end)
+
+gui.on_click('tapeline_settings_def_header_button_delete', function(e)
+    e.element.parent.visible = false
+    e.element.parent.parent.children[2].visible = true
+end)
+
+gui.on_click('tapeline_settings_confirm_header_button_back', function(e)
+    e.element.parent.visible = false
+    e.element.parent.parent.children[1].visible = true
+end)
+
+gui.on_click('tapeline_settings_confirm_header_button_delete', function(e)
+    local player_table = util.player_table(e.player_index)
+    player_table.cur_editing = false
+    event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
+    tilegrid.destroy(player_table.cur_tilegrid_index)
 end)
 
 -- ----------------------------------------------------------------------------------------------------

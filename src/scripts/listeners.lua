@@ -91,6 +91,7 @@ on_event('tapeline-open-gui', function(e)
                     break
                 end
             end
+            player_data.cur_editing = true
             gui.open(player, player_data.cur_tilegrid_index)
         end
 	end
