@@ -17,6 +17,7 @@ event.on_init(function()
     global.next_tilegrid_index = 1
     global.map_settings = tilegrid.get_global_settings()
     global.drawing = {}
+    global.tilegrids = {}
     global.perish = {}
     global.players = {}
 end)
@@ -70,16 +71,13 @@ on_event('tapeline-open-gui', function(e)
                 text = {'flying-text.capsule-warning'}
             }
         else
-            for k,v in pairs(global) do
+            for k,v in pairs(global.tilegrids) do
                 if type(v) == 'table' and v.button and v.button == selected then
                     player_data.cur_tilegrid_index = k
                     break
                 end
             end
-
-            -- open_settings_menu(player)
-
-            -- set_settings_frame_mode(true, player)
+            game.print('open gui!')
         end
 	end
 end)

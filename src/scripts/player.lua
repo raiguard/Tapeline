@@ -86,7 +86,7 @@ function change_setting(e)
 	end
 
 	if global.player_data[e.player_index].cur_editing then
-		global[global.player_data[e.player_index].cur_tilegrid_index].settings[setting_associations[e.match]] = value
+		global.tilegrids[global.player_data[e.player_index].cur_tilegrid_index].settings[setting_associations[e.match]] = value
 		update_tilegrid_settings(e.player_index)
 	else
 		global.player_data[e.player_index].settings[setting_associations[e.match]] = value
@@ -114,7 +114,7 @@ function check_slider_change(e)
 	local settings
 
 	if player_data.cur_editing then
-		settings = global[player_data.cur_tilegrid_index].settings
+		settings = global.tilegrids[player_data.cur_tilegrid_index].settings
 	else
 		settings = player_data.settings
 	end

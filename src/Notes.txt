@@ -2,33 +2,34 @@
 GLOBAL TABLE STRUCTURE
 
 global
-    tilegrid_index
-        area
-            left_bottom
-            left_top
-            right_bottom
-            right_top
-        time_of_creation
-        time_to_live
-        grid_type
-        render_objects
-            background
-            border
-            labels
-                left
-                top
-                right
-                bottom
-            lines
+    next_tilegrid_index
+    tilegrids
+        tilegrid_index
+            area
+                left_bottom
+                left_top
+                right_bottom
+                right_top
+            time_of_creation
+            time_to_live
+            grid_type
+            render_objects
+                background
+                border
+                labels
+                    left
+                    top
+                    right
+                    bottom
+                lines
+                    horizontal
+                    vertical
+            player
+            settings
+            anchors
                 horizontal
                 vertical
-        player
-        settings
-        anchors
-            horizontal
-            vertical
-        button
-    next_tilegrid_index
+            button
     drawing
         tilegrid_index
             player_index

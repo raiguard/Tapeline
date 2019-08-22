@@ -102,7 +102,7 @@ end
 
 -- create settings button entity
 function lib.create_settings_button(data)
-    global[global.players[data.player.index].cur_drawing].button = data.player.surface.create_entity {
+    global.tilegrids[global.players[data.player.index].cur_drawing].button = data.player.surface.create_entity {
         name = 'tapeline-settings-button',
         position = position.add(data.area.left_top, { x = 0.25, y = 0.225 }),
         player = data.player
@@ -119,7 +119,7 @@ function lib.update_visual_settings()
 
     table_each(global, function(v,k)
         if type(k) == 'number' then 
-            local objects = global[k].render_objects
+            local objects = global.tilegrids[k].render_objects
             -- labels
             table_each(objects.labels, function(v)
                 set_color(v, settings.tilegrid_label_color)

@@ -44,7 +44,7 @@ function tilegrid.on_tick()
     -- for each player in player_data, if they're doing a drag, check to see if it's finished
     for i,t in pairs(global.drawing) do
         if cur_tick - t.last_capsule_tick > end_wait then
-            local data = global[i]
+            local data = global.tilegrids[i]
             if not pos_equals(from_pos(t.last_capsule_pos), from_pos(data.origin)) then
                 if data.settings.grid_autoclear then global.perish[i] = game.ticks_played + (settings.global['tilegrid-clear-delay'].value * 60)
                 else rendering.create_settings_button(data) end
@@ -85,7 +85,7 @@ function tilegrid.on_capsule(e)
         drawing_data = {player=e.player_index, last_capsule_tick=0, last_capsule_pos=0}
         global.drawing[global.next_tilegrid_index] = drawing_data
         player_data.cur_drawing = global.next_tilegrid_index
-        global[global.next_tilegrid_index] = tilegrid.construct(e)
+        global.tilegrids[global.next_tilegrid_index] = tilegrid.construct(e)
         global.next_tilegrid_index = global.next_tilegrid_index + 1
         -- register on_tick if needed
         if table_size(global.drawing) == 1 then
@@ -97,7 +97,7 @@ function tilegrid.on_capsule(e)
         if not pos_equals(from_pos(drawing_data.last_capsule_pos), from_pos(cur_pos)) then
             -- if ignore cardinals, adjust thrown position
             if player_data.settings.restrict_to_cardinals then
-                local tilegrid = global[player_data.cur_drawing]
+                local tilegrid = global.tilegrids[player_data.cur_drawing]
                 local cur_tile = from_pos(cur_pos)
                 if abs(cur_tile.x - tilegrid.origin.x) >= abs(cur_tile.y - tilegrid.origin.y) then
                     cur_pos.y = tilegrid.origin.y
@@ -125,7 +125,7 @@ function tilegrid.construct(e)
     data.area.size,data.area.width,data.area.height = data.area:size()
     data.area.midpoints = area.center(data.area)
     -- metadata
-    data.origin = position.add(data.area.left_top, { x = 0.5, y = 0.5 })
+    data.origin = position.add(data.area.left_top, {x=0.5, y=0.5})
     -- anchors
     data.anchors = {}
     data.anchors.horizontal = 'top'
@@ -133,15 +133,14 @@ function tilegrid.construct(e)
     -- tilegrid divisors
 	data.tilegrid_divisors = {}
 	if data.settings.grid_type == 2 then
-		data.tilegrid_divisors[1] = { x = 1, y = 1 }
-		data.tilegrid_divisors[2] = { x = (data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y = (data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height) }
-		data.tilegrid_divisors[3] = { x = (data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y = (data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height) }
+		data.tilegrid_divisors[1] = {x=1, y=1}
+		data.tilegrid_divisors[2] = {x=(data.area.width > 1 and (data.area.width / data.settings.split_divisor) or data.area.width), y=(data.area.height > 1 and (data.area.height / data.settings.split_divisor) or data.area.height)}
+		data.tilegrid_divisors[3] = {x=(data.area.width > 1 and (data.area.midpoints.x - data.area.left_top.x) or data.area.width), y=(data.area.height > 1 and (data.area.midpoints.y - data.area.left_top.y) or data.area.height)}
 	else
 		for i=1,4 do
 			table.insert(data.tilegrid_divisors, { x = data.settings.increment_divisor ^ (i - 1), y = data.settings.increment_divisor ^ (i - 1) })
 		end
     end
-    log(data)
     -- render objects
     data.render_objects = rendering.build_objects(data)
 
@@ -150,7 +149,7 @@ end
 
 -- update a tilegrid
 function tilegrid.update(e)
-    local data = global[util.player_table(e.player_index).cur_drawing]
+    local data = global.tilegrids[util.player_table(e.player_index).cur_drawing]
     -- find new corners
     local left_top = { x = (e.position.x < data.origin.x and e.position.x or data.origin.x), y = (e.position.y < data.origin.y and e.position.y or data.origin.y) }
     local right_bottom = { x = (e.position.x > data.origin.x and e.position.x or data.origin.x), y = (e.position.y > data.origin.y and e.position.y or data.origin.y) }
@@ -173,7 +172,7 @@ end
 
 -- update tilegrid based on new settings
 function update_tilegrid_settings(player_index)
-    data = global[global.player_data[player_index].cur_tilegrid_index]
+    data = global.tilegrids[global.player_data[player_index].cur_tilegrid_index]
     data.tilegrid_divisors = {}
     -- update tilegrid divisors
     if data.settings.grid_type == 2 then
@@ -192,9 +191,9 @@ end
 
 -- destroy a tilegrid's data
 function tilegrid.destroy(tilegrid_index)
-    rendering.destroy_objects(global[tilegrid_index].render_objects)
-    if global[tilegrid_index].button then global[tilegrid_index].button.destroy() end
-    global[tilegrid_index] = nil
+    rendering.destroy_objects(global.tilegrids[tilegrid_index].render_objects)
+    if global.tilegrids[tilegrid_index].button then global.tilegrids[tilegrid_index].button.destroy() end
+    global.tilegrids[tilegrid_index] = nil
 end
 
 function on_setting_changed(e)

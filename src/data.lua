@@ -136,19 +136,9 @@ styles['green_icon_button'] = {
     size = 28
 }
 
-styles['dialog_info'] = {
-    type = 'label_style',
-    font = 'default-bold',
-    single_line = false,
-    maximal_width = 400
-}
-
-styles['draggable_space_filler'] = {
-    type = 'frame_style',
-    height = 32,
-    graphical_set = styles['draggable_space'].graphical_set,
-    use_header_filler = false,
+styles['titlebar_flow'] = {
+    type = 'horizontal_flow_style',
+    direction = 'horizontal',
     horizontally_stretchable = 'on',
-    left_margin = styles['draggable_space'].left_margin,
-    right_margin = styles['draggable_space'].right_margin,
+    vertical_align = 'center'
 }
