@@ -62,6 +62,7 @@ local function create_settings_window(parent, player, tilegrid)
     local divisor_textfield = divisor_flow.add{type='textfield', name='tapeline_settings_divisor_textfield', numeric=true, lose_focus_on_confirm=true, clear_and_focus_on_right_click=true, text=tostring(settings[grid_type..'_divisor'])}
     divisor_textfield.style.width = 50
     divisor_textfield.style.horizontal_align = 'center'
+    util.player_table(player).last_valid_textfield_value = divisor_textfield.text
     return window
 end
 
@@ -196,6 +197,7 @@ gui.on_text_changed('tapeline_settings_divisor_textfield', function(e)
     player_table.last_valid_textfield_value = text
     local slider = e.element.parent[string.gsub(e.element.name, 'textfield', 'slider')]
     if slider then slider.slider_value = text end
+    log(text)
 end)
 
 gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
@@ -208,11 +210,10 @@ gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
     if cur_editing > 0 then
         tilegrid.update_settings(cur_editing)
     end
-    settings[grid_type_name..'_divisor'] = tonumber(text)
+    settings[grid_type_name..'_divisor'] = tonumber(e.element.text)
     if cur_editing > 0 then
         tilegrid.update_settings(cur_editing)
     end
-    player_table.last_valid_textfield_value = nil
 end)
 
 -- ----------------------------------------------------------------------------------------------------

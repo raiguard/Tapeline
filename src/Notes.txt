@@ -35,7 +35,7 @@ global
         player_index
             cur_drawing (int)
             cur_editing (int)
-            last_valid_textfield_value (text or nil)
+            last_valid_textfield_value (text)
             settings (table)
     map_settings
         (map settings)
