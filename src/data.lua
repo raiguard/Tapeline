@@ -33,8 +33,8 @@ data:extend{
         type = 'capsule',
         name = 'tapeline-capsule',
         icons = {
-            {icon='__Tapeline__/graphics/item/black.png', icon_size=64},
-            {icon='__Tapeline__/graphics/shortcut-bar/tapeline-x32-white.png', icon_size=32, scale=0.5}
+            {icon='__Tapeline__/graphics/item/black.png', icon_size=1, scale=64},
+            {icon='__Tapeline__/graphics/shortcut-bar/tapeline-x32-white.png', icon_size=32}
         },
         subgroup = 'capsule',
         order = 'zz',
