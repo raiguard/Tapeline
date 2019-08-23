@@ -175,3 +175,8 @@ styles['invalid_bold_label'] = {
     parent = "bold_label",
     font_color = warning_red_color
 }
+
+styles['vertically_centered_flow'] = {
+    type='horizontal_flow_style',
+    vertical_align = 'center'
+}
