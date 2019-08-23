@@ -13,7 +13,7 @@ Date: 31.12.2019
   Optimisations:
     - Required everything locally
     - Basic optimizations to on_tick and tilegrid rendering logic
-    - Restructured the mod to be slimmer and remove a bunch of unnecessary code
+    - Restructured the mod to be slimmer and removed a bunch of unnecessary code
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
