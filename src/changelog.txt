@@ -8,6 +8,8 @@ Date: 31.12.2019
     - Removed delete confirmation window in favor of simply clicking the delete button again to confirm
     - Changed grid type dropdown to a switch
     - The tilegrid you are currently editing now blinks
+    - Switched to new built-in slider snapping functionality
+    - Divisor textfield now behaves better, and supports enter-to-confirm
   Optimisations:
     - Required everything locally
     - Basic optimizations to on_tick and tilegrid rendering logic
