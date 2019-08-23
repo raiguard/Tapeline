@@ -26,7 +26,7 @@ global
             highlight box
     drawing
         tilegrid_index
-            player_index
+            player
             last_capsule_tick
             last_capsule_pos
     perish
