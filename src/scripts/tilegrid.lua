@@ -81,7 +81,7 @@ function tilegrid.on_capsule(e)
     local drawing_data = global.drawing[player_data.cur_drawing]
 
     if player_data.cur_drawing == 0 then
-        -- create tilegrid
+        -- CREATE TILEGRID
         drawing_data = {player=e.player_index, last_capsule_tick=0, last_capsule_pos=0}
         global.drawing[global.next_tilegrid_index] = drawing_data
         player_data.cur_drawing = global.next_tilegrid_index
@@ -92,19 +92,19 @@ function tilegrid.on_capsule(e)
             event.register(defines.events.on_tick, tilegrid.on_tick)
         end
     else
-        -- update tilegrid
+        -- UPDATE TILEGRID
         local cur_pos = e.position
-        if not pos_equals(from_pos(drawing_data.last_capsule_pos), from_pos(cur_pos)) then
-            -- if ignore cardinals, adjust thrown position
-            if player_data.settings.restrict_to_cardinals then
-                local tilegrid = global.tilegrids[player_data.cur_drawing]
-                local cur_tile = from_pos(cur_pos)
-                if abs(cur_tile.x - tilegrid.origin.x) >= abs(cur_tile.y - tilegrid.origin.y) then
-                    cur_pos.y = tilegrid.origin.y
-                else
-                    cur_pos.x = tilegrid.origin.x
-                end
+        -- if ignore cardinals, adjust thrown position
+        if player_data.settings.restrict_to_cardinals then
+            local tilegrid = global.tilegrids[player_data.cur_drawing]
+            local cur_tile = from_pos(cur_pos)
+            if abs(cur_tile.x - tilegrid.origin.x) >= abs(cur_tile.y - tilegrid.origin.y) then
+                cur_pos.y = tilegrid.origin.y
+            else
+                cur_pos.x = tilegrid.origin.x
             end
+        end
+        if not pos_equals(from_pos(drawing_data.last_capsule_pos), from_pos(cur_pos)) then
             -- update tilegrid data
             tilegrid.update(e)
         end
