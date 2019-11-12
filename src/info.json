@@ -1,9 +1,9 @@
 {
     "name": "Tapeline",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "title": "Tapeline",
     "author": "raiguard",
-    "contact": "https://reddit.com/u/Raiguard",
+    "contact": "https://reddit.com/r/Raiguard",
     "homepage": "https://github.com/raiguard/Tapeline",
     "factorio_version": "0.17",
     "dependencies": ["base >= 0.17.66", "stdlib >= 1.2.0"],

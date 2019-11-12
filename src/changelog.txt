@@ -1,6 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 2019.11.12
+  Bugfixes:
+    - Fixed crash when entering a mini-tutorial
+
+---------------------------------------------------------------------------------------------------
 Version: 0.6.0
-Date: 31.12.2019
+Date: 2019.8.23
   Optimisations:
     - Required everything locally
     - Basic optimizations to on_tick and tilegrid rendering logic
@@ -17,7 +23,7 @@ Date: 31.12.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
-Date: 27.06.2019
+Date: 2019.6.27
   Features:
     - Added tilegrid settings GUI
     - Added the ability to restrict a tilegrid to cardinal directions when drawing
@@ -29,7 +35,7 @@ Date: 27.06.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.0
-Date: 14.06.2019
+Date: 2019.6.14
   Changes:
     - Organized mod settings
     - Removed limitations on line width setting
@@ -39,7 +45,7 @@ Date: 14.06.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.1
-Date: 12.03.2019
+Date: 2019.3.12
   Changes:
     - Minor optimizations to tilegrid area logic (thanks Nexela!)
   Bugfixes:
@@ -48,7 +54,7 @@ Date: 12.03.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
-Date: 11.03.2019
+Date: 2019.3.11
   Features:
     - Added color customization settings
   Changes:
@@ -60,7 +66,7 @@ Date: 11.03.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
-Date: 10.03.2019
+Date: 2019.3.10
   Features:
     - Added alternate selection mode (shift+select) that splits the tapeline into a configurable amount of groups, and displays the midpoint of both axes
     - Added option to change the number of sections an alternate selection is split into
@@ -74,7 +80,7 @@ Date: 10.03.2019
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.0
-Date: 08.03.2019
+Date: 2019.3.8
   Features:
     - Added tapeline tool
     - Added tapeline tool shortcut to toolbar
