@@ -2,10 +2,8 @@
 -- GUI CONTROL SCRIPTING
 -- Creation and management of the GUI. Also includes GUI listeners.
 
-local event = require('__stdlib__/stdlib/event/event')
-local on_event = event.register
-local gui = require('__stdlib__/stdlib/event/gui')
-local mod_gui = require('__core__/lualib/mod-gui')
+local event = require('event-handler')
+local mod_gui = require('mod-gui')
 
 local tilegrid = require('tilegrid')
 local util = require('util')
@@ -14,7 +12,7 @@ local grid_types_by_index = {'increment', 'split'}
 local switch_state_to_type = {left=1, right=2}
 local min_value_by_type = {increment=1, split=2}
 
-local lib = {}
+local gui = {}
 
 -- ----------------------------------------------------------------------------------------------------
 -- GUI ELEMENT MANAGEMENT
@@ -66,7 +64,7 @@ local function create_settings_window(parent, player, tilegrid)
     return window
 end
 
-function lib.open(player, tilegrid)
+function gui.open(player, tilegrid)
     local frame_flow = mod_gui.get_frame_flow(player)
     if not frame_flow.tapeline_settings_window then
         local window = create_settings_window(frame_flow, player, tilegrid)
@@ -80,20 +78,20 @@ function lib.open(player, tilegrid)
             highlight_box.destroy()
         end
         player_table.cur_editing = 0
-        lib.refresh(player, tilegrid)
+        gui.refresh(player, tilegrid)
     end
 end
 
-function lib.close(player)
+function gui.close(player)
     local frame_flow = mod_gui.get_frame_flow(player)
     if frame_flow.tapeline_settings_window then
         frame_flow.tapeline_settings_window.destroy()
     end
 end
 
-function lib.refresh(player, tilegrid)
-    lib.close(player)
-    lib.open(player, tilegrid)
+function gui.refresh(player, tilegrid)
+    gui.close(player)
+    gui.open(player, tilegrid)
 end
 
 -- ----------------------------------------------------------------------------------------------------
@@ -105,7 +103,7 @@ local function get_table_and_settings(player_index)
     return player_table, settings, grid_types_by_index[settings.grid_type], player_table.cur_editing
 end
 
-on_event(defines.events.on_gui_closed, function(e)
+event.register(defines.events.on_gui_closed, function(e)
     if e.element and e.element.name == 'tapeline_settings_window' then
         e.element.destroy()
         local player_table = util.player_table(e.player_index)
@@ -117,7 +115,7 @@ on_event(defines.events.on_gui_closed, function(e)
     end
 end)
 
-gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
+event.gui.on_click('tapeline_settings_def_header_button_confirm', function(e)
     event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
 end)
 
@@ -127,7 +125,7 @@ local function destroy_tilegrid(e)
     event.dispatch{name=defines.events.on_gui_closed, player_index=e.player_index, gui_type=defines.gui_type.custom, element=e.element.parent.parent.parent}
 end
 
-gui.on_click('tapeline_settings_def_header_button_delete', function(e)
+event.gui.on_click('tapeline_settings_def_header_button_delete', function(e)
     if e.shift then
         destroy_tilegrid(e)
         return
@@ -136,37 +134,35 @@ gui.on_click('tapeline_settings_def_header_button_delete', function(e)
     e.element.parent.parent.children[2].visible = true
 end)
 
-gui.on_click('tapeline_settings_confirm_header_button_back', function(e)
+event.gui.on_click('tapeline_settings_confirm_header_button_back', function(e)
     e.element.parent.visible = false
     e.element.parent.parent.children[1].visible = true
 end)
 
-gui.on_click('tapeline_settings_confirm_header_button_delete', function(e)
+event.gui.on_click('tapeline_settings_confirm_header_button_delete', function(e)
     destroy_tilegrid(e)
 end)
 
-gui.on_checked_state_changed('tapeline_settings_autoclear_checkbox', function(e)
+event.gui.on_checked_state_changed('tapeline_settings_autoclear_checkbox', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     settings.grid_autoclear = e.element.state
 end)
 
-gui.on_checked_state_changed('tapeline_settings_cardinals_checkbox', function(e)
+event.gui.on_checked_state_changed('tapeline_settings_cardinals_checkbox', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     settings.restrict_to_cardinals = e.element.state
 end)
 
--- STDLIB does not yet have a switch state changed event, so we must use the vanilla one
-on_event(defines.events.on_gui_switch_state_changed, function(e)
-    if e.element.name ~= 'tapeline_settings_gridtype_switch' then return end
+event.gui.on_switch_state_changed('tapeline_settings_gridtype_switch', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     settings.grid_type = switch_state_to_type[e.element.switch_state]
     if cur_editing > 0 then
         tilegrid.update_settings(cur_editing)
     end
-    lib.refresh(util.get_player(e), cur_editing > 0 and cur_editing or nil)
+    gui.refresh(util.get_player(e), cur_editing > 0 and cur_editing or nil)
 end)
 
-gui.on_value_changed('tapeline_settings_divisor_slider', function(e)
+event.gui.on_value_changed('tapeline_settings_divisor_slider', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     local textfield = e.element.parent[string.gsub(e.element.name, 'slider', 'textfield')]
     if textfield then
@@ -181,7 +177,7 @@ gui.on_value_changed('tapeline_settings_divisor_slider', function(e)
     player_table.last_valid_textfield_value = e.element.slider_value
 end)
 
-gui.on_text_changed('tapeline_settings_divisor_textfield', function(e)
+event.gui.on_text_changed('tapeline_settings_divisor_textfield', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     local text = e.element.text
     if text == '' or tonumber(text) < min_value_by_type[grid_type_name] then
@@ -197,10 +193,9 @@ gui.on_text_changed('tapeline_settings_divisor_textfield', function(e)
     player_table.last_valid_textfield_value = text
     local slider = e.element.parent[string.gsub(e.element.name, 'textfield', 'slider')]
     if slider then slider.slider_value = text end
-    log(text)
 end)
 
-gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
+event.gui.on_confirmed('tapeline_settings_divisor_textfield', function(e)
     local player_table, settings, grid_type_name, cur_editing = get_table_and_settings(e.player_index)
     local text = e.element.text
     if text ~= player_table.last_valid_textfield_value then
@@ -218,4 +213,4 @@ end)
 
 -- ----------------------------------------------------------------------------------------------------
 
-return lib
+return gui

@@ -1,6 +1,6 @@
 local area = require('__stdlib__/stdlib/area/area')
 local color = require('__stdlib__/stdlib/utils/color')
-local event = require('__stdlib__/stdlib/event/event')
+local event = require('event-handler')
 local position = require('__stdlib__/stdlib/area/position')
 local table = require('__stdlib__/stdlib/utils/table')
 local tile = require('__stdlib__/stdlib/area/tile')
@@ -56,7 +56,7 @@ function tilegrid.on_tick()
             util.player_table(t.player).cur_drawing = 0
             -- deregister on_tick if able
             if table_size(global.drawing) == 0 and table_size(global.perish) == 0 then
-                event.remove(defines.events.on_tick, tilegrid.on_tick)
+                event.deregister(defines.events.on_tick, tilegrid.on_tick, 'tilegrid_on_tick')
             end
         end
     end
@@ -66,7 +66,7 @@ function tilegrid.on_tick()
             global.perish[i] = nil
             -- deregister on_tick if able
             if table_size(global.drawing) == 0 and table_size(global.perish) == 0 then
-                event.remove(defines.events.on_tick, tilegrid.on_tick)
+                event.deregister(defines.events.on_tick, tilegrid.on_tick, 'tilegrid_on_tick')
             end
         end
     end
@@ -89,7 +89,7 @@ function tilegrid.on_capsule(e)
         global.next_tilegrid_index = global.next_tilegrid_index + 1
         -- register on_tick if needed
         if table_size(global.drawing) == 1 then
-            event.register(defines.events.on_tick, tilegrid.on_tick)
+            event.register(defines.events.on_tick, tilegrid.on_tick, 'tilegrid_on_tick')
         end
     else
         -- UPDATE TILEGRID
@@ -198,5 +198,11 @@ function tilegrid.destroy(tilegrid_index)
 end
 
 tilegrid.rendering = rendering
+
+event.on_load(function()
+    event.load_conditional_events{
+        tilegrid_on_tick = tilegrid.on_tick    
+    }
+end)
 
 return tilegrid

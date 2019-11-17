@@ -2,7 +2,7 @@
 -- LISTENERS
 -- The entry point for the mod, contains all non-gui event listeners
 
-local event = require('__stdlib__/stdlib/event/event')
+local event = require('event-handler')
 local on_event = event.register
 
 local gui = require('gui')
@@ -34,13 +34,6 @@ event.on_init(function()
     global.tilegrids = {}
     global.perish = {}
     global.players = {}
-end)
-
--- re-register on_tick event if necessary
-event.on_load(function()
-    if table_size(global.drawing) > 0 or table_size(global.perish) > 0 then
-        event.register(defines.events.on_tick, tilegrid.on_tick)
-    end
 end)
 
 -- handle configuration changes
