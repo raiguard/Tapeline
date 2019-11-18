@@ -20,36 +20,37 @@ local possible_colors = {
     'brown'
 }
 
-data:extend({
-    -- per player
-    {
-        type = 'bool-setting',
-        name = 'log-selection-area',
-        setting_type = 'runtime-per-user',
-        default_value = false,
-        order = 'a'
-    },
+data:extend{
+    -- -- startup settings
+    -- {
+    --     type = 'int-setting',
+    --     name = 'tapeline-capsule-cooldown',
+    --     setting_type = 'startup',
+    --     default_value = 3,
+    --     minimum_value = 1,
+    --     order = 'a'
+    -- },
     -- map settings
     {
         type = 'bool-setting',
         name = 'draw-tilegrid-on-ground',
         setting_type = 'runtime-global',
         default_value = true,
-        order = 'b'
+        order = 'a'
     },
     {
         type = 'double-setting',
         name = 'tilegrid-line-width',
         setting_type = 'runtime-global',
         default_value = 2.0,
-        order = 'c'
+        order = 'b'
     },
     {
         type = 'double-setting',
         name = 'tilegrid-clear-delay',
         setting_type = 'runtime-global',
         default_value = 1,
-        order = 'd'
+        order = 'c'
     },
     {
         type = 'string-setting',
@@ -57,7 +58,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'black',
         allowed_values = possible_colors,
-        order = 'e'
+        order = 'd'
     },
     {
         type = 'string-setting',
@@ -65,7 +66,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'grey',
         allowed_values = possible_colors,
-        order = 'f'
+        order = 'e'
     },
     {
         type = 'string-setting',
@@ -73,7 +74,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'lightgrey',
         allowed_values = possible_colors,
-        order = 'g'
+        order = 'f'
     },
     {
         type = 'string-setting',
@@ -81,7 +82,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'grey',
         allowed_values = possible_colors,
-        order = 'h'
+        order = 'g'
     },
     {
         type = 'string-setting',
@@ -89,7 +90,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'lightgreen',
         allowed_values = possible_colors,
-        order = 'i'
+        order = 'h'
     },
     {
         type = 'string-setting',
@@ -97,7 +98,7 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'lightred',
         allowed_values = possible_colors,
-        order = 'j'
+        order = 'i'
     },
     {
         type = 'string-setting',
@@ -105,6 +106,14 @@ data:extend({
         setting_type = 'runtime-global',
         default_value = 'yellow',
         allowed_values = possible_colors,
-        order = 'k'
+        order = 'j'
+    },
+    -- player settings
+    {
+        type = 'bool-setting',
+        name = 'log-selection-area',
+        setting_type = 'runtime-per-user',
+        default_value = false,
+        order = 'a'
     }
-})
+}
