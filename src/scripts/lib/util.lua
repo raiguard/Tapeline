@@ -37,8 +37,8 @@ function util.update_area(area, tile_pos, hot_corner)
         midpoints = {x=left_top.x+(width/2), y=left_top.y+(height/2)},
         width = width,
         height = height,
-        width_changed = area.width == width and false or true,
-        height_changed = area.height == height and false or true
+        width_changed = area.width ~= width and true or false,
+        height_changed = area.height ~= height and true or false
     }
 end
 

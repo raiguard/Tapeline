@@ -108,33 +108,59 @@ local function update_render_objects(data)
     --
     local hor_inc = data.hot_corner:find('top') and -1 or 1
     local ver_inc = data.hot_corner:find('left') and -1 or 1
+    local hor_anchor = data.hot_corner:find('top') and 'bottom' or 'top'
+    local ver_anchor = data.hot_corner:find('left') and 'right' or 'left'
     if area.width_changed then
-        -- draw new lines / destroy extra lines
-        local horizontal = objects.base_grid.horizontal
-        if #horizontal+2 < area.height then
-            for i=#horizontal+1,area.height-1 do
-                horizontal[i] = draw_line{
+        -- draw new vertical lines / destroy extra lines
+        local vertical = objects.base_grid.vertical
+        if #vertical+1 < area.width then
+            for i=#vertical+1,area.width-1 do
+                vertical[i] = draw_line{
                     color = {r=0.5,g=0.5,b=0.5},
                     width = 1.5,
-                    from = {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)},
-                    to = {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)},
+                    from = {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.left_top.y},
+                    to = {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.right_bottom.y},
                     surface = data.surface,
                     draw_on_ground = true
                 }
             end
         else
-            -- for i=area.height-1,#horizontal+1,-1 do
-            --     destroy(horizontal[i])
-            -- end
+            for i=#vertical,area.width,-1 do
+                destroy(vertical[i])
+                vertical[i] = nil
+            end
         end
-        -- update existing lines
+        -- update existing horizontal lines
         for i,o in ipairs(objects.base_grid.horizontal) do
-            set_from(o, {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)})
-            set_to(o, {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)})
+            set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_inc)})
+            set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_inc)})
         end
     end
     if area.height_changed then
-
+        -- draw new horizontal lines / destroy extra lines
+        local horizontal = objects.base_grid.horizontal
+        if #horizontal+1 < area.height then
+            for i=#horizontal+1,area.height-1 do
+                horizontal[i] = draw_line{
+                    color = {r=0.5,g=0.5,b=0.5},
+                    width = 1.5,
+                    from = {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_inc)},
+                    to = {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_inc)},
+                    surface = data.surface,
+                    draw_on_ground = true
+                }
+            end
+        else
+            for i=#horizontal,area.height,-1 do
+                destroy(horizontal[i])
+                horizontal[i] = nil
+            end
+        end
+        -- update existing vertical lines
+        for i,o in ipairs(objects.base_grid.vertical) do
+            set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.left_top.y})
+            set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.right_bottom.y})
+        end
     end
 end
 

@@ -72,7 +72,7 @@ end)
 event.register(defines.events.on_player_created, function(e) setup_player(e.player_index) end)
 event.register(defines.events.on_player_joined_game, function(e)
     -- check if game is multiplayer
-    if game.is_multiplayer then
+    if game.is_multiplayer() then
         -- check if end_wait has already been adjusted
         if global.end_wait == 3 then
             global.end_wait = 60
