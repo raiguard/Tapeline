@@ -6,6 +6,7 @@ local event = require('scripts/lib/event-handler')
 local tilegrid = require('tilegrid')
 local util = require('scripts/lib/util')
 
+local abs = math.abs
 local floor = math.floor
 
 local function setup_player(index)
@@ -53,13 +54,23 @@ event.register(defines.events.on_player_used_capsule, function(e)
     -- check if currently drawing
     if player_data.cur_drawing then
         local drawing = global.tilegrids.drawing[player_data.cur_drawing]
+        local registry = global.tilegrids.registry[player_data.cur_drawing]
         local prev_tile = drawing.last_capsule_pos
+        -- if cardinals only, adjust thrown position
+        if registry.settings.cardinals_only then
+            local origin = registry.area.origin
+            if abs(cur_tile.x - origin.x) >= abs(cur_tile.y - origin.y) then
+                cur_tile.y = floor(origin.y)
+            else
+                cur_tile.x = floor(origin.x)
+            end
+        end
         -- if the current tile position differs from the last known tile position
         if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
             -- update existing tilegrid
             drawing.last_capsule_pos = cur_tile
             drawing.last_capsule_tick = game.ticks_played
-            tilegrid.update(player_data.cur_drawing, cur_tile)
+            tilegrid.update(player_data.cur_drawing, cur_tile, drawing, registry)
         end
     else
         -- create new tilegrid

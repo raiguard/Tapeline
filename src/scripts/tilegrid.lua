@@ -17,32 +17,139 @@ local set_visible = rendering.set_visible
 local set_target = rendering.set_target
 local destroy = rendering.destroy
 
-local label_offsets = {
-    left_top = {
-        horizontal = {x=0.5, y=0},
-        vertical = {x=-0.6, y=0.5, o=0.75}
-    },
-    left_bottom = {
-        horizontal = {x=0.5, y=0},
-        vertical = {x=-0.6, y=-0.5, o=0.75}
-    },
-    right_top = {
-        horizontal = {x=0.5, y=0},
-        vertical = {x=-0.6, y=0.5, o=0.25}
-    },
-    right_bottom = {
-        horizontal = {x=-0.5, y=0},
-        vertical = {x=0.6, y=-0.5, o=0.25}
+local line_width = 1.5
+
+local function create_line(from, to, surface, color)
+    return draw_line{
+        color = color,
+        width = line_width,
+        from = from,
+        to = to,
+        surface = surface,
+        draw_on_ground = true
     }
-}
+end
+
+local function update_grid(area, surface, pos_data, lines, div, color)
+    local hor_sign = pos_data.hor_sign
+    local ver_sign = pos_data.ver_sign
+    local hor_anchor = pos_data.hor_anchor
+    local ver_anchor = pos_data.ver_anchor
+    if area.width_changed then
+        -- draw new vertical lines / destroy extra lines
+        local vertical = lines.vertical
+        if #vertical+1 < area.width/div then
+            for i=#vertical+1,(area.width-1)/div do
+                vertical[i] = create_line(
+                    {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y},
+                    {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y},
+                    surface, color
+                )
+            end
+        else
+            for i=#vertical,area.width/div,-1 do
+                destroy(vertical[i])
+                vertical[i] = nil
+            end
+        end
+        -- update existing horizontal lines
+        for i,o in ipairs(lines.horizontal) do
+            set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
+            set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
+        end
+    end
+    if area.height_changed then
+        -- draw new horizontal lines / destroy extra lines
+        local horizontal = lines.horizontal
+        if #horizontal+1 < (area.height/div) then
+            for i=#horizontal+1,(area.height-1)/div do
+                horizontal[i] = create_line(
+                    {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
+                    {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
+                    surface, color
+                )
+            end
+        else
+            for i=#horizontal,area.height/div,-1 do
+                destroy(horizontal[i])
+                horizontal[i] = nil
+            end
+        end
+        -- update existing vertical lines
+        for i,o in ipairs(lines.vertical) do
+            set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y})
+            set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y})
+        end
+    end
+end
+
+local function update_splits(area, surface, lines, div, color)
+    local ver_inc = area.width / div
+    local hor_inc = area.height / div
+    local horizontal = lines.horizontal
+    local vertical = lines.vertical
+    if area.width_changed then
+        -- create or destroy vertical lines if needed
+        if #vertical < div-1 then
+            for i=#vertical+1,div-1 do
+                vertical[i] = create_line(
+                    {x=area.left_top.x+(i*ver_inc), y=area.left_top.y},
+                    {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y},
+                    surface, color
+                )
+            end
+        elseif #vertical > div-1 then
+            for i=#horizontal,div-1,-1 do
+                destroy(horizontal[i])
+                horizontal[i] = nil
+            end
+        end
+        -- update vertical line positions and visibility
+        for i=1,#vertical do
+            set_visible(vertical[i], area.width > div and true or false)
+            set_from(vertical[i], {x=area.left_top.x+(i*ver_inc), y=area.left_top.y})
+            set_to(vertical[i], {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y})
+        end
+        -- update horizontal line widths
+        for i,o in ipairs(horizontal) do
+            set_from(o, {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)})
+            set_to(o, {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)})
+        end
+    end
+    if area.height_changed then
+        -- create or destroy horizontal lines if needed
+        if #horizontal < div-1 then
+            for i=#horizontal+1,div-1 do
+                horizontal[i] = create_line(
+                    {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)},
+                    {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)},
+                    surface, color
+                )
+            end
+        elseif #horizontal > div-1 then
+            for i=#horizontal,div-1,-1 do
+                destroy(horizontal[i])
+                horizontal[i] = nil
+            end
+        end
+        -- update horizontal line positions and visibility
+        for i=1,#horizontal do
+            set_visible(horizontal[i], area.height > div and true or false)
+            set_from(horizontal[i], {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)})
+            set_to(horizontal[i], {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)})
+        end
+        -- update vertical line heights
+        for i,o in ipairs(vertical) do
+            set_from(o, {x=area.left_top.x+(i*ver_inc), y=area.left_top.y})
+            set_to(o, {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y})
+        end
+    end
+end
 
 local function construct_render_objects(data)
     local area = data.area
     local surface = data.surface
-    local hot_corner = area[data.hot_corner]
-    local horizontal_label_offsets = label_offsets[data.hot_corner].horizontal
-    local vertical_label_offsets = label_offsets[data.hot_corner].vertical
-    return {
+    local objects = {
         background = draw_rectangle{
             color = {a=0.6},
             filled = true,
@@ -53,7 +160,7 @@ local function construct_render_objects(data)
         },
         border = draw_rectangle{
             color = {r=0.8,g=0.8,b=0.8},
-            width = 1.5,
+            width = line_width,
             left_top = area.left_top,
             right_bottom = area.right_bottom,
             surface = surface,
@@ -85,11 +192,13 @@ local function construct_render_objects(data)
         subgrid_2 = {horizontal={}, vertical={}},
         subgrid_3 = {horizontal={}, vertical={}}
     }
+    return objects
 end
 
 local function update_render_objects(data)
     local area = data.area
     local objects = data.objects
+    local surface = data.surface
     -- background
     set_left_top(objects.background, area.left_top)
     set_right_bottom(objects.background, area.right_bottom)
@@ -104,63 +213,26 @@ local function update_render_objects(data)
     set_visible(objects.labels.horizontal, (area.width > 1 and true or false))
     set_visible(objects.labels.vertical, (area.height > 1 and true or false))
     --
-    -- BASE GRID
+    -- GRIDS
     --
-    local hor_inc = data.hot_corner:find('top') and -1 or 1
-    local ver_inc = data.hot_corner:find('left') and -1 or 1
-    local hor_anchor = data.hot_corner:find('top') and 'bottom' or 'top'
-    local ver_anchor = data.hot_corner:find('left') and 'right' or 'left'
-    if area.width_changed then
-        -- draw new vertical lines / destroy extra lines
-        local vertical = objects.base_grid.vertical
-        if #vertical+1 < area.width then
-            for i=#vertical+1,area.width-1 do
-                vertical[i] = draw_line{
-                    color = {r=0.5,g=0.5,b=0.5},
-                    width = 1.5,
-                    from = {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.left_top.y},
-                    to = {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.right_bottom.y},
-                    surface = data.surface,
-                    draw_on_ground = true
-                }
-            end
-        else
-            for i=#vertical,area.width,-1 do
-                destroy(vertical[i])
-                vertical[i] = nil
-            end
-        end
-        -- update existing horizontal lines
-        for i,o in ipairs(objects.base_grid.horizontal) do
-            set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_inc)})
-            set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_inc)})
-        end
-    end
-    if area.height_changed then
-        -- draw new horizontal lines / destroy extra lines
-        local horizontal = objects.base_grid.horizontal
-        if #horizontal+1 < area.height then
-            for i=#horizontal+1,area.height-1 do
-                horizontal[i] = draw_line{
-                    color = {r=0.5,g=0.5,b=0.5},
-                    width = 1.5,
-                    from = {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_inc)},
-                    to = {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_inc)},
-                    surface = data.surface,
-                    draw_on_ground = true
-                }
-            end
-        else
-            for i=#horizontal,area.height,-1 do
-                destroy(horizontal[i])
-                horizontal[i] = nil
-            end
-        end
-        -- update existing vertical lines
-        for i,o in ipairs(objects.base_grid.vertical) do
-            set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.left_top.y})
-            set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_inc), y=area.right_bottom.y})
-        end
+    local pos_data = {
+        hor_sign = data.hot_corner:find('top') and -1 or 1,
+        ver_sign = data.hot_corner:find('left') and -1 or 1,
+        hor_anchor = data.hot_corner:find('top') and 'bottom' or 'top',
+        ver_anchor = data.hot_corner:find('left') and 'right' or 'left'
+    }
+    -- update base grid
+    update_grid(area, surface, pos_data, objects.base_grid, 1, {r=0.5, g=0.5, b=0.5})
+    -- update subgrids if in increment mode
+    if data.settings.grid_type == 1 then
+        local div = data.settings.increment_divisor
+        update_grid(area, surface, pos_data, objects.subgrid_1, div, {r=0.4, g=0.8, b=0.4})
+        update_grid(area, surface, pos_data, objects.subgrid_2, div^2, {r=0.8, g=0.3, b=0.3})
+        update_grid(area, surface, pos_data, objects.subgrid_3, div^3, {r=0.8, g=0.8, b=0.3})
+    -- update splits if in split mode
+    elseif data.settings.grid_type == 2 then
+        update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, {r=0.4, g=0.8, b=0.4})
+        update_splits(area, surface, objects.subgrid_2, 2, {r=0.8, g=0.4, b=0.4})
     end
 end
 
@@ -182,10 +254,8 @@ function tilegrid.construct(tilegrid_index, tile_pos, player_index)
     global.tilegrids.registry[tilegrid_index] = registry
 end
 
-function tilegrid.update(tilegrid_index, tile_pos)
+function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
     -- local profiler = game.create_profiler()
-    local drawing = global.tilegrids.drawing[tilegrid_index]
-    local registry = global.tilegrids.registry[tilegrid_index]
     local area = registry.area
     -- update hot corner
     registry.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
@@ -193,15 +263,7 @@ function tilegrid.update(tilegrid_index, tile_pos)
     registry.area = util.update_area(area, tile_pos, registry.hot_corner)
     -- update render objects
     update_render_objects(registry)
-    -- game.print(profiler)
+    -- log(profiler)
 end
 
 return tilegrid
-
---[[
-    local prev_tile = player_data.last_capsule_pos
-    local pos = e.position
-    -- get current tile position
-    local cur_tile = {x=floor(pos.x), y=floor(pos.y)}
-    if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
-]]--
