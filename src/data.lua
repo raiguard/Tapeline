@@ -53,6 +53,20 @@ local function capsule(name, icon, cooldown)
     }
 end
 
+-- local function capsule(name, icon)
+--     return {
+--         type = 'item-with-label',
+--         name = name,
+--         icons = {
+--             {icon='__Tapeline__/graphics/item/black.png', icon_size=1, scale=64},
+--             {icon=icon, icon_size=32, mipmap_count=2}
+--         },
+--         draw_label_for_cursor_render = true,
+--         stack_size = 1,
+--         stackable = false
+--     }
+-- end
+
 data:extend{
     -- on-ground settings button entity
     {

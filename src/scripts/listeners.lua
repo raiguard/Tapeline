@@ -3,6 +3,7 @@
 -- The entry point for the mod. Contains all non-GUI event listeners
 
 local event = require('scripts/lib/event-handler')
+local gui = require('gui')
 local tilegrid = require('tilegrid')
 local math2d = require('math2d')
 local util = require('scripts/lib/util')
@@ -47,7 +48,7 @@ local function on_tick(e)
                 perishing[i] = cur_tick + TEMP_TILEGRID_CLEAR_DELAY
             else
                 -- add to editable table
-                global.tilegrids.editable[i] = {area=registry.area, surface_index=drawing.surface_index}
+                global.tilegrids.editable[i] = {area=registry.area, surface_index=t.surface_index}
             end
             drawing[i] = nil
         end
@@ -90,12 +91,12 @@ end)
 -- tapeline draw draws a new tilegrid
 event.register(defines.events.on_player_used_capsule, function(e)
     if e.item.name ~= 'tapeline-draw' then return end
-    local player_data = util.player_table(e.player_index)
+    local player_table = util.player_table(e.player_index)
     local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
     -- check if currently drawing
-    if player_data.cur_drawing then
-        local drawing = global.tilegrids.drawing[player_data.cur_drawing]
-        local registry = global.tilegrids.registry[player_data.cur_drawing]
+    if player_table.cur_drawing then
+        local drawing = global.tilegrids.drawing[player_table.cur_drawing]
+        local registry = global.tilegrids.registry[player_table.cur_drawing]
         local prev_tile = drawing.last_capsule_pos
         drawing.last_capsule_tick = game.ticks_played
         -- if cardinals only, adjust thrown position
@@ -111,13 +112,13 @@ event.register(defines.events.on_player_used_capsule, function(e)
         if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
             -- update existing tilegrid
             drawing.last_capsule_pos = cur_tile
-            tilegrid.update(player_data.cur_drawing, cur_tile, drawing, registry)
+            tilegrid.update(player_table.cur_drawing, cur_tile, drawing, registry)
         end
     else
         -- create new tilegrid
-        player_data.cur_drawing = global.next_tilegrid_index
+        player_table.cur_drawing = global.next_tilegrid_index
         global.next_tilegrid_index = global.next_tilegrid_index + 1
-        tilegrid.construct(player_data.cur_drawing, cur_tile, e.player_index, util.get_player(e).surface.index)
+        tilegrid.construct(player_table.cur_drawing, cur_tile, e.player_index, util.get_player(e).surface.index)
         -- register on_tick
         if not event.is_registered('tapeline_on_tick') then
             event.register(defines.events.on_tick, on_tick, 'tapeline_on_tick')
@@ -128,12 +129,12 @@ end)
 -- tapeline edit lets you edit the tilegrid that was clicked on
 event.register(defines.events.on_player_used_capsule, function(e)
     if e.item.name ~= 'tapeline-edit' then return end
-    local player_data = util.player_table(e.player_index)
+    local player_table = util.player_table(e.player_index)
     local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
     -- to avoid spamming messages, check against last tile position
-    local prev_tile = player_data.last_capsule_tile
+    local prev_tile = player_table.last_capsule_tile
     if prev_tile.x == cur_tile.x and prev_tile.y == cur_tile.y then return end
-    player_data.last_capsule_tile = cur_tile
+    player_table.last_capsule_tile = cur_tile
     -- loop through the editable table to see if we clicked on a tilegrid
     local player = util.get_player(e)
     local surface_index = player.surface.index
@@ -143,13 +144,25 @@ event.register(defines.events.on_player_used_capsule, function(e)
             table.insert(clicked_on, i)
         end
     end
-    if #clicked_on == 0 then
+    local size = table_size(clicked_on)
+    if size == 0 then
         game.print('Please click on a tilegrid')        
-    elseif #clicked_on == 1 then
-        game.print('clicked on a single tilegrid, skip dialog')
-        game.print(serpent.line(clicked_on))
+    elseif size == 1 then
+        -- skip selection dialog
+        player.print('clicked on '..serpent.line(clicked_on))
     else
-        game.print('Please click on a tilegrid')
+        -- show selection dialog... eventually
+    end
+end)
+
+event.register(defines.events.on_player_cursor_stack_changed, function(e)
+    local player_table = util.player_table(e.player_index)
+    local player = util.get_player(e)
+    local stack = player.cursor_stack
+    if stack and stack.valid_for_read and stack.name == 'tapeline-draw' then
+		-- gui.open(player)
+    else
+        -- gui.close(player)
     end
 end)
 
@@ -161,6 +174,20 @@ event.register(defines.events.on_player_joined_game, function(e)
         if global.end_wait == 3 then
             global.end_wait = 60
             game.print{'chat-message.mp-latency-message'}
+        end
+    end
+end)
+
+-- scroll between the items when the player shift+scrolls
+event.register({'tapeline-cycle-forwards', 'tapeline-cycle-backwards'}, function(e)
+    local player = util.get_player(e)
+    local stack = player.cursor_stack
+    if stack and stack.valid_for_read then
+        if stack.name == 'tapeline-draw' then
+            player.cursor_stack.set_stack{name='tapeline-edit', count=1}
+        elseif stack.name == 'tapeline-edit' then
+            player.cursor_stack.set_stack{name='tapeline-draw', count=1}
+            player.cursor_stack.label = '35,6'
         end
     end
 end)
