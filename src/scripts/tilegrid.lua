@@ -222,6 +222,18 @@ local function update_render_objects(data)
         ver_anchor = data.hot_corner:find('left') and 'right' or 'left'
     }
     -- update base grid
+    if data.prev_hot_corner ~= data.hot_corner then
+        area.height_changed = true
+        area.width_changed = true
+        for i,o in ipairs(objects.base_grid.horizontal) do
+            destroy(o)
+        end
+        objects.base_grid.horizontal = {}
+        for i,o in ipairs(objects.base_grid.vertical) do
+            destroy(o)
+        end
+        objects.base_grid.vertical = {}
+    end
     update_grid(area, surface, pos_data, objects.base_grid, 1, {r=0.5, g=0.5, b=0.5})
     -- update subgrids if in increment mode
     if data.settings.grid_type == 1 then
@@ -236,15 +248,27 @@ local function update_render_objects(data)
     end
 end
 
-function tilegrid.construct(tilegrid_index, tile_pos, player_index)
+local function destroy_render_objects(objects)
+    for i,o in pairs(objects) do
+        if type(o) == 'table' then
+            destroy_render_objects(o)
+        else
+            destroy(o)
+        end
+    end
+end
+
+function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_index)
     local drawing = {
-        player = player_index,
         last_capsule_pos = tile_pos,
-        last_capsule_tick = game.ticks_played
+        last_capsule_tick = game.ticks_played,
+        player_index = player_index,
+        surface_index = surface_index
     }
     local registry = {
         area = util.new_area_from_tile_position(tile_pos),
         entities = {},
+        prev_hot_corner = 'right_bottom',
         hot_corner = 'right_bottom',
         surface = util.get_player(player_index).surface.index,
         settings = util.player_table(player_index).settings
@@ -255,15 +279,20 @@ function tilegrid.construct(tilegrid_index, tile_pos, player_index)
 end
 
 function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
-    -- local profiler = game.create_profiler()
     local area = registry.area
     -- update hot corner
+    registry.prev_hot_corner = registry.hot_corner
     registry.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
     -- update area
     registry.area = util.update_area(area, tile_pos, registry.hot_corner)
     -- update render objects
     update_render_objects(registry)
-    -- log(profiler)
+end
+
+function tilegrid.destroy(tilegrid_index)
+    local registry = global.tilegrids.registry[tilegrid_index]
+    destroy_render_objects(registry.objects)
+    global.tilegrids.registry[tilegrid_index] = nil
 end
 
 return tilegrid

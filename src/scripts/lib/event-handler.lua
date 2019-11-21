@@ -1,6 +1,7 @@
 -- ----------------------------------------------------------------------------------------------------
 -- RAI'S EVENT HANDLER
 -- Allows one to easily register multiple handlers for an event
+-- Includes special filtering for GUI events
 -- Makes handling of conditional events far easier
 -- Does not support event filters
 
@@ -291,6 +292,11 @@ function event.load_conditional_events(data)
             end
         end
     end
+end
+
+-- check the event registry to see if a conditional event is registered
+function event.is_registered(conditional_name)
+    return global.conditional_event_registry[conditional_name] and true or false
 end
 
 return event
