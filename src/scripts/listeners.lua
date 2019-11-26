@@ -146,7 +146,7 @@ event.register(defines.events.on_player_used_capsule, function(e)
     end
     local size = table_size(clicked_on)
     if size == 0 then
-        game.print('Please click on a tilegrid')        
+        game.print('Please click on a tilegrid')
     elseif size == 1 then
         -- skip selection dialog
         player.print('clicked on '..serpent.line(clicked_on))
