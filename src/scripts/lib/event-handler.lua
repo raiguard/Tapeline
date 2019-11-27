@@ -208,6 +208,8 @@ function event.gui.register(filters, id, handler, conditional_name, player_index
         filters = {name={filters}}
     elseif type(filters) == 'number' then
         filters = {index={filters}}
+    elseif filters.valid and filters.gui then
+        filters = {element={filters}}
     end
     -- create data table and register master handler if it doesn't exist
     if not gui_event_data[id] then
@@ -329,7 +331,7 @@ event.on_init(function()
 end)
 
 -- for use in on_load: registers a conditional event handler if it is included in the conditional events registry
-function event.load_conditional_events(data)
+function event.load_conditional_handlers(data)
     for name, handler in pairs(data) do
         local registry = global.conditional_event_registry[name]
         if registry then
