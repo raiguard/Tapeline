@@ -16,6 +16,8 @@ local set_text = rendering.set_text
 local set_visible = rendering.set_visible
 local set_target = rendering.set_target
 local destroy = rendering.destroy
+-- 0.18: bring to front to preserve correct draw order
+-- local bring_to_front = rendering.bring_to_front
 
 local line_width = 1.5
 
@@ -56,6 +58,8 @@ local function update_grid(area, surface, pos_data, lines, div, color)
         for i,o in ipairs(lines.horizontal) do
             set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
             set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
+            -- 0.18: bring to front to preserve correct draw order
+            -- bring_to_front(o)
         end
     end
     if area.height_changed then
@@ -79,6 +83,8 @@ local function update_grid(area, surface, pos_data, lines, div, color)
         for i,o in ipairs(lines.vertical) do
             set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y})
             set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y})
+            -- 0.18: bring to front to preserve correct draw order
+            -- bring_to_front(o)
         end
     end
 end
@@ -114,6 +120,8 @@ local function update_splits(area, surface, lines, div, color)
         for i,o in ipairs(horizontal) do
             set_from(o, {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)})
             set_to(o, {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)})
+            -- 0.18: bring to front to preserve correct draw order
+            -- bring_to_front(o)
         end
     end
     if area.height_changed then
@@ -142,6 +150,8 @@ local function update_splits(area, surface, lines, div, color)
         for i,o in ipairs(vertical) do
             set_from(o, {x=area.left_top.x+(i*ver_inc), y=area.left_top.y})
             set_to(o, {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y})
+            -- 0.18: bring to front to preserve correct draw order
+            -- bring_to_front(o)
         end
     end
 end
@@ -246,6 +256,8 @@ local function update_render_objects(data)
         update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, {r=0.4, g=0.8, b=0.4})
         update_splits(area, surface, objects.subgrid_2, 2, {r=0.8, g=0.4, b=0.4})
     end
+    -- 0.18: bring border to front
+    -- bring_to_front(objects.border)
 end
 
 local function destroy_render_objects(objects)

@@ -15,6 +15,14 @@ function util.player_table(obj)
     else return global.players[obj.index] end
 end
 
+function util.debug_print(e)
+    print(serpent.block(e))
+end
+
+function util.position_equals(pos1, pos2)
+    return pos1.x == pos2.x and pos1.y == pos2.y and true or false
+end
+
 function util.update_area(area, tile_pos, hot_corner)
     local origin = area.origin
     -- find new corners
@@ -53,6 +61,29 @@ function util.new_area_from_tile_position(tile_pos)
         width = 1,
         height = 1
     }
+end
+
+util.textfield = {}
+
+function util.textfield.clamp_number_input(element, clamps, last_value)
+    local text = element.text
+    if text == ''
+    or (clamps[1] and tonumber(text) < clamps[1])
+    or (clamps[2] and tonumber(text) > clamps[2]) then
+        element.style = 'tl_invalid_slider_textfield'
+    else
+        element.style = 'tl_slider_textfield'
+        last_value = text
+    end
+    return last_value
+end
+
+function util.textfield.set_last_valid_value(element, last_value)
+    if element.text ~= last_value then
+        element.text = last_value
+        element.style = 'tl_slider_textfield'
+    end
+    return element.text
 end
 
 return util

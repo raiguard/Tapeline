@@ -180,19 +180,27 @@ styles['titlebar_flow'] = {
     vertical_align = 'center'
 }
 
-styles['invisible_horizontal_filler'] = {
+styles['invisible_horizontal_pusher'] = {
     type = 'empty_widget_style',
     horizontally_stretchable = 'on'
 }
 
-styles['invisible_vertical_filler'] = {
+styles['invisible_vertical_pusher'] = {
     type = 'empty_widget_style',
     vertically_stretchable = 'on'
 }
 
-styles['invalid_short_number_textfield'] = {
+styles['tl_slider_textfield'] = {
     type = 'textbox_style',
     parent = 'short_number_textfield',
+    width = 50,
+    horizontal_align = 'center',
+    left_margin = 8
+}
+
+styles['tl_invalid_slider_textfield'] = {
+    type = 'textbox_style',
+    parent = 'tl_slider_textfield',
     default_background = {
         base = {position = {248,0}, corner_size=8, tint=warning_red_color},
         shadow = textbox_dirt
@@ -215,5 +223,12 @@ styles['invalid_bold_label'] = {
 
 styles['vertically_centered_flow'] = {
     type='horizontal_flow_style',
-    vertical_align = 'center'
+    vertical_align = 'center',
+    vertically_stretchable = 'on'
+}
+
+styles['horizontally_centered_flow'] = {
+    type = 'vertical_flow_style',
+    horizontal_align = 'center',
+    horizontally_stretchable = 'on'
 }

@@ -3,33 +3,42 @@
 -- The entry point for the mod. Contains all non-GUI event listeners
 
 local event = require('scripts/lib/event-handler')
-local gui = require('gui')
+local draw_gui = require('scripts/gui/windows/draw')
+local edit_gui = require('scripts/gui/windows/edit')
+local mod_gui = require('mod-gui')
 local tilegrid = require('tilegrid')
 local math2d = require('math2d')
 local util = require('scripts/lib/util')
 
+-- --------------------------------------------------
+-- LOCAL UTILITIES
+
 local abs = math.abs
 local floor = math.floor
-
 local TEMP_TILEGRID_CLEAR_DELAY = 60
-
 local area_contains_point = math2d.bounding_box.contains_point
 
 local function setup_player(index)
     local data = {}
     data.settings = {
-        auto_clear = false,
-        cardinals_only = false,
+        auto_clear = true,
+        cardinals_only = true,
         grid_type = 1,
         increment_divisor = 5,
         split_divisor = 4,
         log_to_chat = util.get_player(index).mod_settings['log-selection-area'].value
     }
+    data.gui = {}
     data.cur_drawing = false
     data.cur_editing = false
+    data.tutorial_shown = false
+    data.holding_edit_capsule = false
     data.last_capsule_tile = {x=0,y=0}
     global.players[index] = data
 end
+
+-- --------------------------------------------------
+-- CONDITIONAL HANDLERS
 
 -- finish drawing tilegrids, perish tilegrids
 local function on_tick(e)
@@ -43,12 +52,17 @@ local function on_tick(e)
             local player_table = util.player_table(t.player_index)
             local registry = global.tilegrids.registry[i]
             player_table.cur_drawing = false
-            if registry.settings.auto_clear then
-                -- add to perishing table
-                perishing[i] = cur_tick + TEMP_TILEGRID_CLEAR_DELAY
+            -- if the grid is 1x1, just delete it
+            if util.position_equals(registry.area.left_top, t.last_capsule_pos) then
+                tilegrid.destroy(i)
             else
-                -- add to editable table
-                global.tilegrids.editable[i] = {area=registry.area, surface_index=t.surface_index}
+                if registry.settings.auto_clear then
+                    -- add to perishing table
+                    perishing[i] = cur_tick + TEMP_TILEGRID_CLEAR_DELAY
+                else
+                    -- add to editable table
+                    global.tilegrids.editable[i] = {area=registry.area, surface_index=t.surface_index}
+                end
             end
             drawing[i] = nil
         end
@@ -60,36 +74,12 @@ local function on_tick(e)
         end
     end
     if table_size(drawing) == 0 and table_size(perishing) == 0 then
-        event.deregister(defines.events.on_tick, on_tick, 'tapeline_on_tick')
+        event.deregister(defines.events.on_tick, on_tick, 'tilegrid_on_tick')
     end
 end
 
-event.on_init(function()
-    -- setup global
-    global.tilegrids = {}
-    global.tilegrids.drawing = {}
-    global.tilegrids.editable = {}
-    global.tilegrids.perishing = {}
-    global.tilegrids.registry = {}
-    global.players = {}
-    global.next_tilegrid_index = 1
-    -- set end_wait for a singleplayer game
-    global.end_wait = 3
-    -- create player data for any existing players
-    for i,player in pairs(game.players) do
-        setup_player(i)
-    end
-end)
-
-event.on_load(function()
-    -- re-register conditional handlers if needed
-    event.load_conditional_events{
-        tapeline_on_tick = on_tick
-    }
-end)
-
 -- tapeline draw draws a new tilegrid
-event.register(defines.events.on_player_used_capsule, function(e)
+local function on_draw_capsule(e)
     if e.item.name ~= 'tapeline-draw' then return end
     local player_table = util.player_table(e.player_index)
     local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
@@ -120,14 +110,14 @@ event.register(defines.events.on_player_used_capsule, function(e)
         global.next_tilegrid_index = global.next_tilegrid_index + 1
         tilegrid.construct(player_table.cur_drawing, cur_tile, e.player_index, util.get_player(e).surface.index)
         -- register on_tick
-        if not event.is_registered('tapeline_on_tick') then
-            event.register(defines.events.on_tick, on_tick, 'tapeline_on_tick')
+        if not event.is_registered('tilegrid_on_tick') then
+            event.register(defines.events.on_tick, on_tick, 'tilegrid_on_tick')
         end
     end
-end)
+end
 
 -- tapeline edit lets you edit the tilegrid that was clicked on
-event.register(defines.events.on_player_used_capsule, function(e)
+local function on_edit_capsule(e)
     if e.item.name ~= 'tapeline-edit' then return end
     local player_table = util.player_table(e.player_index)
     local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
@@ -152,21 +142,73 @@ event.register(defines.events.on_player_used_capsule, function(e)
         player.print('clicked on '..serpent.line(clicked_on))
     else
         -- show selection dialog... eventually
+        player.print('clicked on '..serpent.line(clicked_on))
+    end
+end
+
+-- --------------------------------------------------
+-- STATIC HANDLERS
+
+event.on_init(function()
+    -- setup global
+    global.tilegrids = {}
+    global.tilegrids.drawing = {}
+    global.tilegrids.editable = {}
+    global.tilegrids.perishing = {}
+    global.tilegrids.registry = {}
+    global.players = {}
+    global.next_tilegrid_index = 1
+    -- set end_wait for a singleplayer game
+    global.end_wait = 3
+    -- create player data for any existing players
+    for i,player in pairs(game.players) do
+        setup_player(i)
     end
 end)
 
+event.on_load(function()
+    -- re-register conditional handlers if needed
+    event.load_conditional_handlers{
+        tilegrid_on_tick = on_tick,
+        on_draw_capsule = on_draw_capsule,
+        on_edit_capsule = on_edit_capsule
+    }
+end)
+
+-- when a player's cursor stack changes
 event.register(defines.events.on_player_cursor_stack_changed, function(e)
     local player_table = util.player_table(e.player_index)
     local player = util.get_player(e)
     local stack = player.cursor_stack
+    local player_gui = player_table.gui
+    -- draw capsule
     if stack and stack.valid_for_read and stack.name == 'tapeline-draw' then
-		-- gui.open(player)
-    else
-        -- gui.close(player)
+        if player_table.tutorial_shown == false then
+            -- show tutorial window
+            player_table.tutorial_shown = true
+            player.print{'chat-message.tutorial-hint'}
+        end
+        local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
+        player_table.gui.draw = {elems=elems, last_divisor_value=last_value}
+        event.register(defines.events.on_player_used_capsule, on_draw_capsule, 'on_draw_capsule', e.player_index)
+    elseif player_gui.draw then
+        draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
+        player_gui.draw = nil
+        event.deregister(defines.events.on_player_used_capsule, on_draw_capsule, 'on_draw_capsule', e.player_index)
+    end
+    -- edit capsule
+    if stack and stack.valid_for_read and stack.name == 'tapeline-edit' then
+        player_table.holding_edit_capsule = true
+        event.register(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
+    elseif player_table.holding_edit_capsule == true then
+        player_table.holding_edit_capsule = false
+        event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
     end
 end)
 
-event.register(defines.events.on_player_created, function(e) setup_player(e.player_index) end)
+event.register(defines.events.on_player_created, function(e)
+    setup_player(e.player_index)
+end)
 event.register(defines.events.on_player_joined_game, function(e)
     -- check if game is multiplayer
     if game.is_multiplayer() then
