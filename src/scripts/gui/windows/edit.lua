@@ -1,5 +1,5 @@
 -- ----------------------------------------------------------------------------------------------------
--- DRAW GUI
+-- EDIT GUI
 -- Edit settings on a current tilegrid
 
 local event = require('scripts/lib/event-handler')

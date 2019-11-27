@@ -24,6 +24,8 @@ local function capsule(name, icon, cooldown)
         subgroup = 'capsule',
         order = 'zz',
         flags = {'hidden', 'only-in-cursor'},
+        -- 0.18: remove range visualization
+        -- range_color = {a=0},
         stack_size = 1,
         stackable = false,
         capsule_action = {
@@ -231,4 +233,16 @@ styles['horizontally_centered_flow'] = {
     type = 'vertical_flow_style',
     horizontal_align = 'center',
     horizontally_stretchable = 'on'
+}
+
+styles['tl_confirm_button_small'] = {
+    type = 'button_style',
+    parent = 'confirm_button',
+    height = 26
+}
+
+styles['tl_back_button_small'] = {
+    type = 'button_style',
+    parent = 'back_button',
+    height = 26
 }

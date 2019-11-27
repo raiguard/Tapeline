@@ -6,6 +6,7 @@ local event = require('scripts/lib/event-handler')
 local draw_gui = require('scripts/gui/windows/draw')
 local edit_gui = require('scripts/gui/windows/edit')
 local mod_gui = require('mod-gui')
+local select_gui = require('scripts/gui/windows/select')
 local tilegrid = require('tilegrid')
 local math2d = require('math2d')
 local util = require('scripts/lib/util')
@@ -31,8 +32,8 @@ local function setup_player(index)
     data.gui = {}
     data.cur_drawing = false
     data.cur_editing = false
+    data.cur_selecting = false
     data.tutorial_shown = false
-    data.holding_edit_capsule = false
     data.last_capsule_tile = {x=0,y=0}
     global.players[index] = data
 end
@@ -137,13 +138,16 @@ local function on_edit_capsule(e)
     local size = table_size(clicked_on)
     if size == 0 then
         game.print('Please click on a tilegrid')
+        return
     elseif size == 1 then
         -- skip selection dialog
         player.print('clicked on '..serpent.line(clicked_on))
     else
-        -- show selection dialog... eventually
-        player.print('clicked on '..serpent.line(clicked_on))
+        -- show selection dialog
+        select_gui.populate_listbox(e.player_index, clicked_on)
+        player_table.cur_selecting = true
     end
+    player.clean_cursor()
 end
 
 -- --------------------------------------------------
@@ -183,13 +187,15 @@ event.register(defines.events.on_player_cursor_stack_changed, function(e)
     local player_gui = player_table.gui
     -- draw capsule
     if stack and stack.valid_for_read and stack.name == 'tapeline-draw' then
+        -- because sometimes it doesn't work properly?
+        if player_gui.draw then return end
         if player_table.tutorial_shown == false then
             -- show tutorial window
             player_table.tutorial_shown = true
             player.print{'chat-message.tutorial-hint'}
         end
         local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
-        player_table.gui.draw = {elems=elems, last_divisor_value=last_value}
+        player_gui.draw = {elems=elems, last_divisor_value=last_value}
         event.register(defines.events.on_player_used_capsule, on_draw_capsule, 'on_draw_capsule', e.player_index)
     elseif player_gui.draw then
         draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
@@ -198,10 +204,14 @@ event.register(defines.events.on_player_cursor_stack_changed, function(e)
     end
     -- edit capsule
     if stack and stack.valid_for_read and stack.name == 'tapeline-edit' then
-        player_table.holding_edit_capsule = true
+        -- because sometimes it doesn't work properly?
+        if player_gui.select then return end
+        local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
+        player_gui.select = elems
         event.register(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
-    elseif player_table.holding_edit_capsule == true then
-        player_table.holding_edit_capsule = false
+    elseif player_gui.select and not player_table.cur_selecting then
+        select_gui.destroy(player_gui.select.window, player.index)
+        player_gui.select = nil
         event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
     end
 end)
@@ -229,7 +239,6 @@ event.register({'tapeline-cycle-forwards', 'tapeline-cycle-backwards'}, function
             player.cursor_stack.set_stack{name='tapeline-edit', count=1}
         elseif stack.name == 'tapeline-edit' then
             player.cursor_stack.set_stack{name='tapeline-draw', count=1}
-            player.cursor_stack.label = '35,6'
         end
     end
 end)
