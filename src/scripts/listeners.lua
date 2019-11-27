@@ -54,7 +54,7 @@ local function on_tick(e)
             local registry = global.tilegrids.registry[i]
             player_table.cur_drawing = false
             -- if the grid is 1x1, just delete it
-            if util.position_equals(registry.area.left_top, t.last_capsule_pos) then
+            if registry.area.width == 1 and registry.area.height == 1 then
                 tilegrid.destroy(i)
             else
                 if registry.settings.auto_clear then
@@ -141,7 +141,9 @@ local function on_edit_capsule(e)
         return
     elseif size == 1 then
         -- skip selection dialog
-        player.print('clicked on '..serpent.line(clicked_on))
+        local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, global.tilegrids.registry[clicked_on[1]].settings)
+        player_table.cur_editing = true
+
     else
         -- show selection dialog
         select_gui.populate_listbox(e.player_index, clicked_on)
@@ -155,11 +157,12 @@ end
 
 event.on_init(function()
     -- setup global
-    global.tilegrids = {}
-    global.tilegrids.drawing = {}
-    global.tilegrids.editable = {}
-    global.tilegrids.perishing = {}
-    global.tilegrids.registry = {}
+    global.tilegrids = {
+        drawing = {},
+        editable = {},
+        perishing = {},
+        registry = {}
+    }
     global.players = {}
     global.next_tilegrid_index = 1
     -- set end_wait for a singleplayer game
@@ -189,6 +192,12 @@ event.register(defines.events.on_player_cursor_stack_changed, function(e)
     if stack and stack.valid_for_read and stack.name == 'tapeline-draw' then
         -- because sometimes it doesn't work properly?
         if player_gui.draw then return end
+        -- if the player is currently selecting, don't let them hold a capsule
+        if player_table.cur_selecting then
+            player.clean_cursor()
+            player.print{'chat-message.finish-selection-first'}
+            return
+        end
         if player_table.tutorial_shown == false then
             -- show tutorial window
             player_table.tutorial_shown = true
@@ -207,10 +216,10 @@ event.register(defines.events.on_player_cursor_stack_changed, function(e)
         -- because sometimes it doesn't work properly?
         if player_gui.select then return end
         local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
-        player_gui.select = elems
+        player_gui.select = {elems=elems}
         event.register(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
     elseif player_gui.select and not player_table.cur_selecting then
-        select_gui.destroy(player_gui.select.window, player.index)
+        select_gui.destroy(player_gui.select.elems.window, player.index)
         player_gui.select = nil
         event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
     end

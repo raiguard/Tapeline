@@ -23,6 +23,10 @@ function util.position_equals(pos1, pos2)
     return pos1.x == pos2.x and pos1.y == pos2.y and true or false
 end
 
+function util.expand_area(area, amount)
+    return {left_top={x=area.left_top.x-amount, y=area.left_top.y-amount}, right_bottom={x=area.right_bottom.x+amount, y=area.right_bottom.y+amount}}
+end
+
 function util.update_area(area, tile_pos, hot_corner)
     local origin = area.origin
     -- find new corners
