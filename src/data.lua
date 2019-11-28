@@ -55,40 +55,7 @@ local function capsule(name, icon, cooldown)
     }
 end
 
--- local function capsule(name, icon)
---     return {
---         type = 'item-with-label',
---         name = name,
---         icons = {
---             {icon='__Tapeline__/graphics/item/black.png', icon_size=1, scale=64},
---             {icon=icon, icon_size=32, mipmap_count=2}
---         },
---         draw_label_for_cursor_render = true,
---         stack_size = 1,
---         stackable = false
---     }
--- end
-
 data:extend{
-    -- on-ground settings button entity
-    {
-        type = 'simple-entity',
-        name = 'tapeline-settings-button',
-        render_layer = 'collision-selection-box',
-        selection_box = {
-            {-0.3,-0.3},
-            {0.3,0.3}
-        },
-        collision_mask = {},
-        picture = {
-            filename = '__Tapeline__/graphics/entity/settings_button.png',
-            width = 28,
-            height = 26,
-            scale = 0.5
-        },
-        flags = {'placeable-off-grid', 'not-on-map', 'not-blueprintable', 'not-deconstructable', 'not-upgradable', 'no-copy-paste'},
-        selection_priority = 100
-    },
     -- shortcut
     {
         type = 'shortcut',
@@ -113,20 +80,6 @@ data:extend{
         key_sequence = 'ALT + M',
         action = 'create-blueprint-item',
         item_to_create = 'tapeline-draw'
-    },
-    {
-        type = 'custom-input',
-        name = 'tapeline-open-gui',
-        key_sequence = '',
-        linked_game_control = 'open-gui'
-    },
-    -- sprites
-    {
-        type = 'sprite',
-        name = 'check_mark',
-        filename = '__Tapeline__/graphics/gui/check-mark.png',
-        size = 32,
-        flags = {'icon'}
     },
     {
         type = 'custom-input',
@@ -168,18 +121,11 @@ styles['green_button'] = {
     }
 }
 
-styles['green_icon_button'] = {
+styles['tl_green_icon_button'] = {
     type = 'button_style',
     parent = 'green_button',
-    padding = 3,
+    padding = 0,
     size = 28
-}
-
-styles['titlebar_flow'] = {
-    type = 'horizontal_flow_style',
-    direction = 'horizontal',
-    horizontally_stretchable = 'on',
-    vertical_align = 'center'
 }
 
 styles['invisible_horizontal_pusher'] = {
@@ -233,18 +179,6 @@ styles['horizontally_centered_flow'] = {
     type = 'vertical_flow_style',
     horizontal_align = 'center',
     horizontally_stretchable = 'on'
-}
-
-styles['tl_confirm_button_small'] = {
-    type = 'button_style',
-    parent = 'confirm_button',
-    height = 26
-}
-
-styles['tl_back_button_small'] = {
-    type = 'button_style',
-    parent = 'back_button',
-    height = 26
 }
 
 styles['tl_edit_positioning_button'] = {
