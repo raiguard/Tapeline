@@ -77,7 +77,7 @@ end)
 
 function draw_gui.create(parent, player_index, default_settings)
 	local window = parent.add{type='frame', name='tl_draw_window', style=mod_gui.frame_style, direction='vertical'}
-	window.style.width = 252
+	window.style.width = gui_window_width
     local checkboxes_flow = window.add{type='flow', name='tl_draw_checkboxes_flow', direction='horizontal'}
 	local autoclear_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_autoclear_checkbox', tooltip={'gui-draw.autoclear-checkbox-tooltip'},
 												   caption={'', {'gui-draw.autoclear-checkbox-caption'}, ' [img=info]'}, state=default_settings.auto_clear}
@@ -111,7 +111,7 @@ function draw_gui.create(parent, player_index, default_settings)
 	event.gui.on_confirmed(divisor_textfield, divisor_textfield_confirmed, 'draw_divisor_textfield_confirmed', player_index)
 	return {window=window, autoclear_checkbox=autoclear_checkbox, cardinals_checkbox=cardinals_checkbox, type_switch=type_switch, divisor_label=divisor_label,
 			divisor_slider=divisor_slider, divisor_textfield=divisor_textfield},
-		   default_settings[type_index_to_name[grid_type]..'_divisor']
+		    default_settings[type_index_to_name[grid_type]..'_divisor']
 end
 
 function draw_gui.update(player_index)

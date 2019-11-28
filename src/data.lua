@@ -104,7 +104,7 @@ data:extend{
     },
     -- capsules
     capsule('tapeline-draw', '__Tapeline__/graphics/shortcut-bar/tapeline-x32-white.png', 3),
-    capsule('tapeline-adjust', '__Tapeline__/graphics/item/adjust.png', 3),
+    capsule('tapeline-adjust', '__Tapeline__/graphics/item/adjust.png', 1),
     capsule('tapeline-edit', '__Tapeline__/graphics/item/edit.png', 10),
     -- custom inputs
     {
@@ -245,4 +245,9 @@ styles['tl_back_button_small'] = {
     type = 'button_style',
     parent = 'back_button',
     height = 26
+}
+
+styles['tl_edit_positioning_button'] = {
+    type = 'button_style',
+    width = 112
 }

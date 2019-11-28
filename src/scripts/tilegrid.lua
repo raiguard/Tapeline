@@ -278,7 +278,7 @@ function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_inde
         surface_index = surface_index
     }
     local registry = {
-        area = util.new_area_from_tile_position(tile_pos),
+        area = util.area.construct_from_tile_pos(tile_pos),
         entities = {},
         prev_hot_corner = 'right_bottom',
         hot_corner = 'right_bottom',
@@ -296,7 +296,7 @@ function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
     registry.prev_hot_corner = registry.hot_corner
     registry.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
     -- update area
-    registry.area = util.update_area(area, tile_pos, registry.hot_corner)
+    registry.area = util.area.draw_update(area, tile_pos, registry.hot_corner)
     -- update render objects
     update_render_objects(registry)
 end
@@ -305,6 +305,17 @@ function tilegrid.destroy(tilegrid_index)
     local registry = global.tilegrids.registry[tilegrid_index]
     destroy_render_objects(registry.objects)
     global.tilegrids.registry[tilegrid_index] = nil
+    global.tilegrids.editable[tilegrid_index] = nil
+end
+
+-- destroys and recreates render objects
+function tilegrid.refresh(tilegrid_index)
+    local registry = global.tilegrids.registry[tilegrid_index]
+    registry.area.width_changed = true
+    registry.area.height_changed = true
+    destroy_render_objects(registry.objects)
+    registry.objects = construct_render_objects(registry)
+    update_render_objects(registry)
 end
 
 return tilegrid

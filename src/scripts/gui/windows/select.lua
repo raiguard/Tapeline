@@ -20,7 +20,7 @@ local function attach_highlight_box(gui_data, grid_index, player_index)
     gui_data.highlight_box = util.get_player(player_index).surface.create_entity{
         name = 'highlight-box',
         position = area.left_top,
-        bounding_box = util.expand_area(area, 0.25),
+        bounding_box = util.area.expand(area, 0.25),
         render_player_index = player_index,
         player = player_index,
         blink_interval = 30
@@ -35,7 +35,12 @@ local function selection_listbox_state_changed(e)
 end
 
 local function back_button_clicked(e)
-    util.debug_print(e)
+    local player_table = util.player_table(e.player_index)
+    local gui_data = player_table.gui.select
+    player_table.cur_selecting = false
+    select_gui.destroy(gui_data.elems.window, e.player_index)
+    gui_data.highlight_box.destroy()
+    player_table.gui.select = nil
 end
 
 local function confirm_button_clicked(e)
@@ -44,8 +49,11 @@ local function confirm_button_clicked(e)
     local select_gui_data = player_table.gui.select
     local tilegrid_index = select_gui_data.tilegrids[select_gui_data.elems.selection_listbox.selected_index]
     player_table.cur_editing = tilegrid_index
-    edit_gui.create(select_gui_data.elems.window.parent, e.player_index, global.tilegrids.registry[tilegrid_index].settings)
+    local tilegrid_registry = global.tilegrids.registry[tilegrid_index]
+    local edit_gui_elems, last_value = edit_gui.create(select_gui_data.elems.window.parent, e.player_index, tilegrid_registry.settings,
+                                                       tilegrid_registry.hot_corner)
     select_gui.destroy(select_gui_data.elems.window, e.player_index)
+    player_table.gui.edit = {elems=edit_gui_elems, highlight_box=select_gui_data.highlight_box, last_divisor_value=last_value}
     player_table.gui.select = nil
 end
 
@@ -64,7 +72,7 @@ end)
 
 function select_gui.create(parent, player_index)
     local window = parent.add{type='frame', name='tl_select_window', style=mod_gui.frame_style, direction='vertical'}
-    window.style.width = 252
+    window.style.width = gui_window_width
     local hint_flow = window.add{type='flow', name='tl_select_hint_flow', style='horizontally_centered_flow', direction='vertical'}
     local hint_label = hint_flow.add{type='label', name='tl_select_hint', style='caption_label', caption={'gui-select.hint-label-caption'}}
     local selection_listbox = window.add{type='list-box', name='tl_select_listbox', items={}}
