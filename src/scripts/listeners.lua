@@ -3,12 +3,11 @@
 -- The entry point for the mod. Contains all non-GUI event listeners
 
 local event = require('scripts/lib/event-handler')
-local draw_gui = require('scripts/gui/windows/draw')
-local edit_gui = require('scripts/gui/windows/edit')
+local draw_gui = require('scripts/gui/draw')
+local edit_gui = require('scripts/gui/edit')
 local mod_gui = require('mod-gui')
-local select_gui = require('scripts/gui/windows/select')
+local select_gui = require('scripts/gui/select')
 local tilegrid = require('tilegrid')
-local math2d = require('math2d')
 local util = require('scripts/lib/util')
 
 -- GLOBAL WIDTH VARIABLE: sets the width for all GUI windows so they're all the same
@@ -20,7 +19,6 @@ gui_window_width = 252
 local abs = math.abs
 local floor = math.floor
 local TEMP_TILEGRID_CLEAR_DELAY = 60
-local area_contains_point = math2d.bounding_box.contains_point
 
 local function setup_player(index)
     local data = {}
@@ -136,7 +134,7 @@ local function on_edit_capsule(e)
     local surface_index = player.surface.index
     local clicked_on = {}
     for i,t in pairs(global.tilegrids.editable) do
-        if t.surface_index == surface_index and area_contains_point(t.area, e.position) then
+        if t.surface_index == surface_index and util.area.contains_point(t.area, e.position) then
             table.insert(clicked_on, i)
         end
     end
@@ -207,6 +205,8 @@ local function on_adjust_capsule(e)
             gui_data.highlight_box = highlight_box
             -- update capsule tile
             player_table.last_capsule_tile = cur_tile
+            -- update area in editable registry
+            global.tilegrids.editable[player_table.cur_editing].area = area
         end
     end
     player_table.last_capsule_tick = game.tick

@@ -6,8 +6,7 @@ local event = require('scripts/lib/event-handler')
 local mod_gui = require('mod-gui')
 local util = require('scripts/lib/util')
 
-local edit_gui = require('scripts/gui/windows/edit')
-local titlebar = require('scripts/gui/elements/titlebar')
+local edit_gui = require('scripts/gui/edit')
 
 local select_gui = {}
 
