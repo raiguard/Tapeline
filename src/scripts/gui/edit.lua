@@ -151,7 +151,7 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
 	window.style.width = gui_window_width
 	local titlebar_flow = window.add{type='flow', name='tl_edit_titlebar_flow', style='vertically_centered_flow', direction='horizontal'}
 	-- default titlebar
-	local def_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_def_titlebar_flow', style='titlebar_flow', direction='horizontal'}
+	local def_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_def_titlebar_flow', style='vertically_centered_flow', direction='horizontal'}
 	def_titlebar_flow.add{type='label', name='tl_edit_def_titlebar_label', style='heading_1_label', caption={'gui-edit.titlebar-label-caption'}}
 	def_titlebar_flow.add{type='empty-widget', name='tl_edit_def_titlebar_pusher', style='invisible_horizontal_pusher'}
 	event.gui.on_click(
@@ -165,7 +165,7 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
 		delete_button_clicked, 'edit_delete_button_clicked', player_index
 	)
 	-- confirmation titlebar
-	local confirm_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_confirm_titlebar_flow', style='titlebar_flow', direction='horizontal'}
+	local confirm_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_confirm_titlebar_flow', style='vertically_centered_flow', direction='horizontal'}
 	confirm_titlebar_flow.visible = false
 	confirm_titlebar_flow.add{type='label', name='tl_edit_confirm_titlebar_label', style='invalid_bold_label',
 							  caption={'gui-edit.confirm-delete-label-caption'}}
