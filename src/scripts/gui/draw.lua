@@ -78,40 +78,37 @@ end)
 function draw_gui.create(parent, player_index, default_settings)
 	local window = parent.add{type='frame', name='tl_draw_window', style=mod_gui.frame_style, direction='vertical'}
 	window.style.width = gui_window_width
-    local checkboxes_flow = window.add{type='flow', name='tl_draw_checkboxes_flow', direction='horizontal'}
+  local checkboxes_flow = window.add{type='flow', name='tl_draw_checkboxes_flow', direction='horizontal'}
 	local autoclear_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_autoclear_checkbox', tooltip={'gui-draw.autoclear-checkbox-tooltip'},
-												   caption={'', {'gui-draw.autoclear-checkbox-caption'}, ' [img=info]'}, state=default_settings.auto_clear}
+		caption={'', {'gui-draw.autoclear-checkbox-caption'}, ' [img=info]'}, state=default_settings.auto_clear}
 	event.on_gui_click(autoclear_checkbox_clicked, {name='draw_autoclear_checkbox_clicked', player_index=player_index, gui_filters=autoclear_checkbox})
-    checkboxes_flow.add{type='empty-widget', name='tl_draw_checkboxes_pusher', style='invisible_horizontal_pusher'}
-    local cardinals_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_cardinals_checkbox', tooltip={'gui-draw.cardinals-checkbox-tooltip'},
-												   caption={'', {'gui-draw.cardinals-checkbox-caption'}, ' [img=info]'}, state=default_settings.cardinals_only}
+  checkboxes_flow.add{type='empty-widget', name='tl_draw_checkboxes_pusher', style='invisible_horizontal_pusher'}
+  local cardinals_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_cardinals_checkbox', tooltip={'gui-draw.cardinals-checkbox-tooltip'},
+		caption={'', {'gui-draw.cardinals-checkbox-caption'}, ' [img=info]'}, state=default_settings.cardinals_only}
 	event.on_gui_click(cardinals_checkbox_clicked, {name='draw_cardinals_checkbox_clicked', player_index=player_index, gui_filters=cardinals_checkbox})
-    local switch_flow = window.add{type='flow', name='tl_draw_switch_flow', direction='horizontal'}
-    switch_flow.add{type='label', name='tl_draw_switch_label', caption={'gui-draw.type-switch-label'}}
+  local switch_flow = window.add{type='flow', name='tl_draw_switch_flow', direction='horizontal'}
+  switch_flow.add{type='label', name='tl_draw_switch_label', caption={'gui-draw.type-switch-label'}}
 	switch_flow.add{type='empty-widget', name='tl_draw_switch_pusher', style='invisible_horizontal_pusher'}
 	local grid_type = default_settings.grid_type
-    local type_switch = switch_flow.add{type='switch', name='tl_draw_switch', left_label_caption={'gui-draw.type-switch-increment-caption'},
-                                        right_label_caption={'gui-draw.type-switch-split-caption'},
-										switch_state=type_to_switch_state[grid_type]}
+  local type_switch = switch_flow.add{type='switch', name='tl_draw_switch', left_label_caption={'gui-draw.type-switch-increment-caption'},
+    right_label_caption={'gui-draw.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type]}
 	event.on_gui_switch_state_changed(type_switch_state_changed, {name='draw_type_switch_state_changed', player_index=player_index, gui_filters=type_switch})
 	local divisor_label_flow = window.add{type='flow', name='tl_draw_divisor_label_flow', style='horizontally_centered_flow', direction='vertical'}
-    local divisor_label = divisor_label_flow.add{type='label', name='tl_draw_divisor_label', style='caption_label',
-									 caption={'gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
+  local divisor_label = divisor_label_flow.add{type='label', name='tl_draw_divisor_label', style='caption_label',
+		caption={'gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
 	local divisor_slider_flow = window.add{type='flow', name='tl_draw_divisor_slider_flow', style='vertically_centered_flow', direction='horizontal'}
 	local divisor_slider = divisor_slider_flow.add{type='slider', name='tl_draw_divisor_slider', style='notched_slider',
-												   minimum_value=type_to_clamps[grid_type][1], maximum_value=type_to_clamps[grid_type][2], value_step=1,
-												   discrete_slider=true, discrete_values=true,
-												   value=default_settings[type_index_to_name[grid_type]..'_divisor']}
+		minimum_value=type_to_clamps[grid_type][1], maximum_value=type_to_clamps[grid_type][2], value_step=1, discrete_slider=true, discrete_values=true,
+		value=default_settings[type_index_to_name[grid_type]..'_divisor']}
 	divisor_slider.style.horizontally_stretchable = true
 	event.on_gui_value_changed(divisor_slider_value_changed, {name='draw_divisor_slider_value_changed', player_index=player_index, gui_filters=divisor_slider})
 	local divisor_textfield = divisor_slider_flow.add{type='textfield', name='tl_draw_divisor_textfield', style='tl_slider_textfield', numeric=true,
-													  lose_focus_on_confirm=true, clear_and_focus_on_right_click=true,
-													  text=default_settings[type_index_to_name[grid_type]..'_divisor']}
-	event.on_gui_text_changed(divisor_textfield_text_changed, {name='draw_divisor_textfield_text_changed', player_index=player_index, gui_filters=divisor_textfield})
+		lose_focus_on_confirm=true, clear_and_focus_on_right_click=true, text=default_settings[type_index_to_name[grid_type]..'_divisor']}
+	event.on_gui_text_changed(divisor_textfield_text_changed, {name='draw_divisor_textfield_text_changed', player_index=player_index,
+		gui_filters=divisor_textfield})
 	event.on_gui_confirmed(divisor_textfield_confirmed, {name='draw_divisor_textfield_confirmed', player_index=player_index, gui_filters=divisor_textfield})
 	return {window=window, autoclear_checkbox=autoclear_checkbox, cardinals_checkbox=cardinals_checkbox, type_switch=type_switch, divisor_label=divisor_label,
-			divisor_slider=divisor_slider, divisor_textfield=divisor_textfield},
-		    default_settings[type_index_to_name[grid_type]..'_divisor']
+					divisor_slider=divisor_slider, divisor_textfield=divisor_textfield}, default_settings[type_index_to_name[grid_type]..'_divisor']
 end
 
 function draw_gui.update(player_index)
@@ -127,10 +124,10 @@ function draw_gui.update(player_index)
 end
 
 function draw_gui.destroy(window, player_index)
-    -- deregister all GUI events if needed
-    for cn,h in pairs(handlers) do
-        event.deregister_conditional(h, {name=cn, player_index=player_index})
-    end
+	-- deregister all GUI events if needed
+	for cn,h in pairs(handlers) do
+		event.deregister_conditional(h, {name=cn, player_index=player_index})
+	end
 	window.destroy()
 end
 
