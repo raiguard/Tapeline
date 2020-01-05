@@ -2,7 +2,7 @@
 -- TILEGRID
 -- Contains logic for creating, destroying, and updating tilegrids
 
-local util = require('scripts/lib/util')
+local util = require('lualib/util')
 local tilegrid = {}
 
 local draw_rectangle = rendering.draw_rectangle
