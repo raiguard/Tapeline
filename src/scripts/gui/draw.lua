@@ -79,23 +79,23 @@ function draw_gui.create(parent, player_index, default_settings)
 	local window = parent.add{type='frame', name='tl_draw_window', style=mod_gui.frame_style, direction='vertical'}
 	window.style.width = gui_window_width
   local checkboxes_flow = window.add{type='flow', name='tl_draw_checkboxes_flow', direction='horizontal'}
-	local autoclear_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_autoclear_checkbox', tooltip={'gui-draw.autoclear-checkbox-tooltip'},
-		caption={'', {'gui-draw.autoclear-checkbox-caption'}, ' [img=info]'}, state=default_settings.auto_clear}
+	local autoclear_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_autoclear_checkbox', tooltip={'tl-gui-draw.autoclear-checkbox-tooltip'},
+		caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'}, state=default_settings.auto_clear}
 	event.on_gui_click(autoclear_checkbox_clicked, {name='draw_autoclear_checkbox_clicked', player_index=player_index, gui_filters=autoclear_checkbox})
   checkboxes_flow.add{type='empty-widget', name='tl_draw_checkboxes_pusher', style='tl_horizontal_pusher'}
-  local cardinals_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_cardinals_checkbox', tooltip={'gui-draw.cardinals-checkbox-tooltip'},
-		caption={'', {'gui-draw.cardinals-checkbox-caption'}, ' [img=info]'}, state=default_settings.cardinals_only}
+  local cardinals_checkbox = checkboxes_flow.add{type='checkbox', name='tl_draw_cardinals_checkbox', tooltip={'tl-gui-draw.cardinals-checkbox-tooltip'},
+		caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'}, state=default_settings.cardinals_only}
 	event.on_gui_click(cardinals_checkbox_clicked, {name='draw_cardinals_checkbox_clicked', player_index=player_index, gui_filters=cardinals_checkbox})
   local switch_flow = window.add{type='flow', name='tl_draw_switch_flow', direction='horizontal'}
-  switch_flow.add{type='label', name='tl_draw_switch_label', caption={'gui-draw.type-switch-label'}}
+  switch_flow.add{type='label', name='tl_draw_switch_label', caption={'tl-gui-draw.type-switch-label'}}
 	switch_flow.add{type='empty-widget', name='tl_draw_switch_pusher', style='tl_horizontal_pusher'}
 	local grid_type = default_settings.grid_type
-  local type_switch = switch_flow.add{type='switch', name='tl_draw_switch', left_label_caption={'gui-draw.type-switch-increment-caption'},
-    right_label_caption={'gui-draw.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type]}
+  local type_switch = switch_flow.add{type='switch', name='tl_draw_switch', left_label_caption={'tl-gui-draw.type-switch-increment-caption'},
+    right_label_caption={'tl-gui-draw.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type]}
 	event.on_gui_switch_state_changed(type_switch_state_changed, {name='draw_type_switch_state_changed', player_index=player_index, gui_filters=type_switch})
 	local divisor_label_flow = window.add{type='flow', name='tl_draw_divisor_label_flow', style='tl_horizontally_centered_flow', direction='vertical'}
   local divisor_label = divisor_label_flow.add{type='label', name='tl_draw_divisor_label', style='caption_label',
-		caption={'gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
+		caption={'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
 	local divisor_slider_flow = window.add{type='flow', name='tl_draw_divisor_slider_flow', style='tl_vertically_centered_flow', direction='horizontal'}
 	local divisor_slider = divisor_slider_flow.add{type='slider', name='tl_draw_divisor_slider', style='notched_slider',
 		minimum_value=type_to_clamps[grid_type][1], maximum_value=type_to_clamps[grid_type][2], value_step=1, discrete_slider=true, discrete_values=true,
@@ -117,7 +117,7 @@ function draw_gui.update(player_index)
 	local elems = player_table.gui.draw.elems
 	-- update values and names of divisor elements
 	local grid_type = settings.grid_type
-	elems.divisor_label.caption = {'gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}
+	elems.divisor_label.caption = {'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}
 	elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
 	elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type]..'_divisor']
 	elems.divisor_textfield.text = settings[type_index_to_name[grid_type]..'_divisor']

@@ -72,7 +72,7 @@ function select_gui.create(parent, player_index)
   local window = parent.add{type='frame', name='tl_select_window', style=mod_gui.frame_style, direction='vertical'}
   window.style.width = gui_window_width
   local hint_flow = window.add{type='flow', name='tl_select_hint_flow', style='tl_horizontally_centered_flow', direction='vertical'}
-  local hint_label = hint_flow.add{type='label', name='tl_select_hint', style='caption_label', caption={'gui-select.hint-label-caption'}}
+  local hint_label = hint_flow.add{type='label', name='tl_select_hint', style='caption_label', caption={'tl-gui-select.hint-label-caption'}}
   local selection_listbox = window.add{type='list-box', name='tl_select_listbox', items={}}
   selection_listbox.visible = false
   event.on_gui_selection_state_changed(selection_listbox_state_changed, {name='select_selection_listbox_state_changed', player_index=player_index,

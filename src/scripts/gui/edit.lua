@@ -19,10 +19,10 @@ type_index_to_name = {'increment', 'split'}
 type_to_clamps = {{4,13}, {2,11}}
 
 origin_localized_items = {
-	{'gui-edit.origin-left_top'},
-	{'gui-edit.origin-right_top'},
-	{'gui-edit.origin-left_bottom'},
-	{'gui-edit.origin-right_bottom'}
+	{'tl-gui-edit.origin-left_top'},
+	{'tl-gui-edit.origin-right_top'},
+	{'tl-gui-edit.origin-left_bottom'},
+	{'tl-gui-edit.origin-right_bottom'}
 }
 corner_to_index = {
 	left_top = 1,
@@ -154,48 +154,48 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
 	local titlebar_flow = window.add{type='flow', name='tl_edit_titlebar_flow', style='tl_vertically_centered_flow', direction='horizontal'}
 	-- default titlebar
 	local def_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_def_titlebar_flow', style='tl_vertically_centered_flow', direction='horizontal'}
-	def_titlebar_flow.add{type='label', name='tl_edit_def_titlebar_label', style='heading_1_label', caption={'gui-edit.titlebar-label-caption'}}
+	def_titlebar_flow.add{type='label', name='tl_edit_def_titlebar_label', style='heading_1_label', caption={'tl-gui-edit.titlebar-label-caption'}}
 	def_titlebar_flow.add{type='empty-widget', name='tl_edit_def_titlebar_pusher', style='tl_horizontal_pusher'}
 	event.on_gui_click(save_changes_button_clicked, {name='edit_save_changes_button_clicked', player_index=player_index, gui_filters=
 		def_titlebar_flow.add{type='sprite-button', name='tl_edit_def_titlebar_button_confirm', style='tl_green_icon_button', sprite='utility/confirm_slot',
-			tooltip={'gui-edit.titlebar-confirm-button-tooltip'}}
+			tooltip={'tl-gui-edit.titlebar-confirm-button-tooltip'}}
 	})
 	event.on_gui_click(delete_button_clicked, {name='edit_delete_button_clicked', player_index=player_index, gui_filters=
 		def_titlebar_flow.add{type='sprite-button', name='tl_edit_def_titlebar_button_delete', style='red_icon_button', sprite='utility/trash',
-			tooltip={'gui-edit.titlebar-delete-button-tooltip'}}
+			tooltip={'tl-gui-edit.titlebar-delete-button-tooltip'}}
 	})
 	-- confirmation titlebar
 	local confirm_titlebar_flow = titlebar_flow.add{type='flow', name='tl_edit_confirm_titlebar_flow', style='tl_vertically_centered_flow', direction='horizontal'}
 	confirm_titlebar_flow.visible = false
 	confirm_titlebar_flow.add{type='label', name='tl_edit_confirm_titlebar_label', style='tl_invalid_bold_label',
-		caption={'gui-edit.confirm-delete-label-caption'}}
+		caption={'tl-gui-edit.confirm-delete-label-caption'}}
 	confirm_titlebar_flow.add{type='empty-widget', name='tl_edit_confirm_titlebar_pusher', style='tl_horizontal_pusher'}
 	event.on_gui_click(confirm_no_button_clicked, {name='edit_confirm_no_button_clicked', player_index=player_index, gui_filters=
 		confirm_titlebar_flow.add{type='sprite-button', name='tl_edit_confirm_titlebar_button_back', style='tool_button', sprite='utility/reset',
-			tooltip={'gui-edit.confirm-button-no-tooltip'}}
+			tooltip={'tl-gui-edit.confirm-button-no-tooltip'}}
 	})
 	event.on_gui_click(confirm_yes_button_clicked, {name='edit_confirm_yes_button_clicked', player_index=player_index, gui_filters=
 		confirm_titlebar_flow.add{type='sprite-button', name='tl_edit_confirm_titlebar_button_delete', style='red_icon_button', sprite='utility/trash',
-			tooltip={'gui-edit.confirm-button-yes-tooltip'}}
+			tooltip={'tl-gui-edit.confirm-button-yes-tooltip'}}
 	})
 	local origin_flow = window.add{type='flow', name='tl_edit_origin_flow', style='tl_vertically_centered_flow', direction='horizontal'}
-	origin_flow.add{type='label', name='tl_edit_origin_label', caption={'', {'gui-edit.origin-label-caption'}, ' [img=info]'},
-		tooltip={'gui-edit.origin-label-tooltip'}}
+	origin_flow.add{type='label', name='tl_edit_origin_label', caption={'', {'tl-gui-edit.origin-label-caption'}, ' [img=info]'},
+		tooltip={'tl-gui-edit.origin-label-tooltip'}}
 	origin_flow.add{type='empty-widget', name='tl_edit_origin_pusher', style='tl_horizontal_pusher'}
 	event.on_gui_selection_state_changed(origin_dropdown_state_changed, {name='edit_origin_dropdown_state_changed', player_index=player_index, gui_filters=
 		origin_flow.add{type='drop-down', name='tl_edit_origin_dropdown', items=origin_localized_items,
 			selected_index=corner_to_index[util.area.opposite_corner(hot_corner)]}
 	})
 	local switch_flow = window.add{type='flow', name='tl_edit_switch_flow', direction='horizontal'}
-    switch_flow.add{type='label', name='tl_edit_switch_label', caption={'gui-edit.type-switch-label'}}
+    switch_flow.add{type='label', name='tl_edit_switch_label', caption={'tl-gui-edit.type-switch-label'}}
 	switch_flow.add{type='empty-widget', name='tl_edit_switch_pusher', style='tl_horizontal_pusher'}
 	local grid_type = settings.grid_type
-  local type_switch = switch_flow.add{type='switch', name='tl_edit_switch', left_label_caption={'gui-edit.type-switch-increment-caption'},
-    right_label_caption={'gui-edit.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type]}
+  local type_switch = switch_flow.add{type='switch', name='tl_edit_switch', left_label_caption={'tl-gui-edit.type-switch-increment-caption'},
+    right_label_caption={'tl-gui-edit.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type]}
 	event.on_gui_switch_state_changed(type_switch_state_changed, {name='edit_type_switch_state_changed', player_index=player_index, gui_filters=type_switch})
 	local divisor_label_flow = window.add{type='flow', name='tl_edit_divisor_label_flow', style='tl_horizontally_centered_flow', direction='vertical'}
   local divisor_label = divisor_label_flow.add{type='label', name='tl_edit_divisor_label', style='caption_label',
-		caption={'gui-edit.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
+		caption={'tl-gui-edit.'..type_index_to_name[grid_type]..'-divisor-label-caption'}}
 	local divisor_slider_flow = window.add{type='flow', name='tl_edit_divisor_slider_flow', style='tl_vertically_centered_flow', direction='horizontal'}
 	local divisor_slider = divisor_slider_flow.add{type='slider', name='tl_edit_divisor_slider', style='notched_slider',
 		minimum_value=type_to_clamps[grid_type][1], maximum_value=type_to_clamps[grid_type][2], value_step=1, discrete_slider=true, discrete_values=true,
@@ -211,7 +211,7 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
 	buttons_flow.style.top_margin = 4
 	buttons_flow.style.horizontally_stretchable = true
 	event.on_gui_click(move_button_clicked, {name='edit_move_button_clicked', player_index=player_index, gui_filters=
-		buttons_flow.add{type='button', name='tl_edit_move_button', style='tl_stretchable_button', caption={'gui-edit.move-button-caption'}}
+		buttons_flow.add{type='button', name='tl_edit_move_button', style='tl_stretchable_button', caption={'tl-gui-edit.move-button-caption'}}
 	})
 	return {window=window, type_switch=type_switch, divisor_label=divisor_label, divisor_slider=divisor_slider, divisor_textfield=divisor_textfield},
 		   		settings[type_index_to_name[grid_type]..'_divisor']
@@ -223,7 +223,7 @@ function edit_gui.update(player_index)
 	local elems = player_table.gui.edit.elems
 	-- update values and names of divisor elements
 	local grid_type = settings.grid_type
-	elems.divisor_label.caption = {'gui-edit.'..type_index_to_name[grid_type]..'-divisor-label-caption'}
+	elems.divisor_label.caption = {'tl-gui-edit.'..type_index_to_name[grid_type]..'-divisor-label-caption'}
 	elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
 	elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type]..'_divisor']
 	elems.divisor_textfield.text = settings[type_index_to_name[grid_type]..'_divisor']

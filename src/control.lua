@@ -285,7 +285,7 @@ event.on_player_cursor_stack_changed(function(e)
     -- if the player is currently selecting, don't let them hold a capsule
     if player_table.flags.selecting then
       player.clean_cursor()
-      player.print{'chat-message.finish-selection-first'}
+      player.print{'tl.finish-selection-first'}
       return
     end
     if player_table.flags.capsule_tutorial_shown == false then
@@ -294,7 +294,7 @@ event.on_player_cursor_stack_changed(function(e)
       player_table.bubble = player.surface.create_entity{
         name = 'compi-speech-bubble',
         position = player.position,
-        text = {'tl.tutorial-text'},
+        text = {'tl.capsule-tutorial-text'},
         source = player.character
       }
       event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
@@ -341,7 +341,7 @@ event.on_player_joined_game(function(e)
     -- check if end_wait has already been adjusted
     if global.end_wait == 3 then
       global.end_wait = 60
-      game.print{'chat-message.mp-latency-message'}
+      game.print{'tl.mp-latency'}
     end
   end
 end)
