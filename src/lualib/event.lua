@@ -100,6 +100,14 @@ function event.register(id, handler, options)
     if not con_registry then
       global.conditional_event_registry[name] = {id=id, players={player_index}, gui_filters=filters}
     elseif player_index then
+      -- check to be sure this player isn't already registered
+      local players = con_registry.players
+      for i=1,#players do
+        if players[i] == player_index then
+          log('Tried to re-register a conditional event to player '..player_index..', skipping!')
+          return event -- don't do anything else
+        end
+      end
       table.insert(con_registry.players, player_index)
       return event -- don't do anything else
     end

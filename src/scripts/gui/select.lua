@@ -57,6 +57,7 @@ local function confirm_button_clicked(e)
 end
 
 local handlers = {
+  select_selection_listbox_state_changed = selection_listbox_state_changed,
   select_back_button_clicked = back_button_clicked,
   select_confirm_button_clicked = confirm_button_clicked
 }
