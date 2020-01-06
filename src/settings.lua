@@ -1,25 +1,3 @@
-local possible_colors = {
-    'white',
-    'black',
-    'darkgrey',
-    'grey',
-    'lightgrey',
-    'darkred',
-    'red',
-    'lightred',
-    'darkgreen',
-    'green',
-    'lightgreen',
-    'darkblue',
-    'blue',
-    'lightblue',
-    'orange',
-    'yellow',
-    'pink',
-    'purple',
-    'brown'
-}
-
 data:extend{
     -- -- startup settings
     -- {
@@ -56,57 +34,50 @@ data:extend{
         type = 'string-setting',
         name = 'tilegrid-background-color',
         setting_type = 'runtime-global',
-        default_value = 'black',
-        allowed_values = possible_colors,
-        order = 'd'
+        default_value = '{a=0.6}',
+        order = 'da'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-border-color',
         setting_type = 'runtime-global',
-        default_value = 'grey',
-        allowed_values = possible_colors,
-        order = 'e'
+        default_value = '{r=0.8, g=0.8, b=0.8}',
+        order = 'db'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-label-color',
         setting_type = 'runtime-global',
-        default_value = 'lightgrey',
-        allowed_values = possible_colors,
-        order = 'f'
+        default_value = '{r=0.8, g=0.8, b=0.8}',
+        order = 'dc'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-1',
         setting_type = 'runtime-global',
-        default_value = 'grey',
-        allowed_values = possible_colors,
-        order = 'g'
+        default_value = '{r=0.5, g=0.5, b=0.5}',
+        order = 'dd'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-2',
         setting_type = 'runtime-global',
-        default_value = 'lightgreen',
-        allowed_values = possible_colors,
-        order = 'h'
+        default_value = '{r=0.4, g=0.8, b=0.4}',
+        order = 'de'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-3',
         setting_type = 'runtime-global',
-        default_value = 'lightred',
-        allowed_values = possible_colors,
-        order = 'i'
+        default_value = '{r=0.8, g=0.3, b=0.3}',
+        order = 'df'
     },
     {
         type = 'string-setting',
         name = 'tilegrid-color-4',
         setting_type = 'runtime-global',
-        default_value = 'yellow',
-        allowed_values = possible_colors,
-        order = 'j'
+        default_value = '{r=0.8, g=0.8, b=0.3}',
+        order = 'dg'
     },
     -- player settings
     {
