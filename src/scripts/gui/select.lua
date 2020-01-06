@@ -16,7 +16,7 @@ local select_gui = {}
 local function attach_highlight_box(gui_data, grid_index, player_index)
   local area = global.tilegrids.registry[gui_data.tilegrids[grid_index]].area
   if gui_data.highlight_box then gui_data.highlight_box.destroy() end
-  gui_data.highlight_box = util.get_player(player_index).surface.create_entity{
+  gui_data.highlight_box = game.get_player(player_index).surface.create_entity{
     name = 'highlight-box',
     position = area.left_top,
     bounding_box = util.area.expand(area, 0.25),
@@ -30,11 +30,11 @@ end
 -- EVENT HANDLERS
 
 local function selection_listbox_state_changed(e)
-  attach_highlight_box(util.player_table(e.player_index).gui.select, e.element.selected_index, e.player_index)
+  attach_highlight_box(global.players[e.player_index].gui.select, e.element.selected_index, e.player_index)
 end
 
 local function back_button_clicked(e)
-  local player_table = util.player_table(e.player_index)
+  local player_table = global.players[e.player_index]
   local gui_data = player_table.gui.select
   player_table.cur_selecting = false
   select_gui.destroy(gui_data.elems.window, e.player_index)
@@ -43,7 +43,7 @@ local function back_button_clicked(e)
 end
 
 local function confirm_button_clicked(e)
-  local player_table = util.player_table(e.player_index)
+  local player_table = global.players[e.player_index]
   player_table.cur_selecting = false
   local select_gui_data = player_table.gui.select
   local tilegrid_index = select_gui_data.tilegrids[select_gui_data.elems.selection_listbox.selected_index]
@@ -57,7 +57,6 @@ local function confirm_button_clicked(e)
 end
 
 local handlers = {
-  select_close_button_clicked = close_button_clicked,
   select_back_button_clicked = back_button_clicked,
   select_confirm_button_clicked = confirm_button_clicked
 }
@@ -72,7 +71,7 @@ end)
 function select_gui.create(parent, player_index)
   local window = parent.add{type='frame', name='tl_select_window', style=mod_gui.frame_style, direction='vertical'}
   window.style.width = gui_window_width
-  local hint_flow = window.add{type='flow', name='tl_select_hint_flow', style='horizontally_centered_flow', direction='vertical'}
+  local hint_flow = window.add{type='flow', name='tl_select_hint_flow', style='tl_horizontally_centered_flow', direction='vertical'}
   local hint_label = hint_flow.add{type='label', name='tl_select_hint', style='caption_label', caption={'gui-select.hint-label-caption'}}
   local selection_listbox = window.add{type='list-box', name='tl_select_listbox', items={}}
   selection_listbox.visible = false
@@ -89,7 +88,7 @@ function select_gui.create(parent, player_index)
 end
 
 function select_gui.populate_listbox(player_index, tilegrids)
-  local player_table = util.player_table(player_index)
+  local player_table = global.players[player_index]
   local gui_data = player_table.gui.select
   local elems = gui_data.elems
   local listbox = elems.selection_listbox

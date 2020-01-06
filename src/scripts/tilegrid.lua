@@ -271,6 +271,9 @@ local function destroy_render_objects(objects)
 end
 
 function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_index)
+    local center = util.position.add(tile_pos, {x=0.5, y=0.5})
+    local area = util.area.additional_data(util.position.to_tile_area(center))
+    area.origin = center
     local drawing = {
         last_capsule_pos = tile_pos,
         last_capsule_tick = game.ticks_played,
@@ -278,12 +281,12 @@ function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_inde
         surface_index = surface_index
     }
     local registry = {
-        area = util.area.construct_from_tile_pos(tile_pos),
+        area = area,
         entities = {},
         prev_hot_corner = 'right_bottom',
         hot_corner = 'right_bottom',
-        surface = util.get_player(player_index).surface.index,
-        settings = util.player_table(player_index).settings
+        surface = game.get_player(player_index).surface.index,
+        settings = global.players[player_index].settings
     }
     registry.objects = construct_render_objects(registry)
     global.tilegrids.drawing[tilegrid_index] = drawing

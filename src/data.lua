@@ -110,7 +110,7 @@ end
 
 local styles = data.raw['gui-style'].default
 
-styles['green_button'] = {
+styles.tl_green_button = {
   type = 'button_style',
   parent = 'button',
   default_graphical_set = {
@@ -132,24 +132,24 @@ styles['green_button'] = {
   }
 }
 
-styles['tl_green_icon_button'] = {
+styles.tl_green_icon_button = {
   type = 'button_style',
-  parent = 'green_button',
-  padding = 0,
+  parent = 'tl_green_button',
+  padding = 2,
   size = 28
 }
 
-styles['invisible_horizontal_pusher'] = {
+styles.tl_horizontal_pusher = {
   type = 'empty_widget_style',
   horizontally_stretchable = 'on'
 }
 
-styles['invisible_vertical_pusher'] = {
+styles.tl_vertical_pusher = {
   type = 'empty_widget_style',
   vertically_stretchable = 'on'
 }
 
-styles['tl_slider_textfield'] = {
+styles.tl_slider_textfield = {
   type = 'textbox_style',
   parent = 'short_number_textfield',
   width = 50,
@@ -157,7 +157,7 @@ styles['tl_slider_textfield'] = {
   left_margin = 8
 }
 
-styles['tl_invalid_slider_textfield'] = {
+styles.tl_invalid_slider_textfield = {
   type = 'textbox_style',
   parent = 'tl_slider_textfield',
   default_background = {
@@ -174,25 +174,25 @@ styles['tl_invalid_slider_textfield'] = {
   }
 }
 
-styles['invalid_bold_label'] = {
+styles.tl_invalid_bold_label = {
   type = "label_style",
   parent = "bold_label",
   font_color = warning_red_color
 }
 
-styles['vertically_centered_flow'] = {
+styles.tl_vertically_centered_flow = {
   type='horizontal_flow_style',
   vertical_align = 'center',
   vertically_stretchable = 'on'
 }
 
-styles['horizontally_centered_flow'] = {
+styles.tl_horizontally_centered_flow = {
   type = 'vertical_flow_style',
   horizontal_align = 'center',
   horizontally_stretchable = 'on'
 }
 
-styles['tl_edit_positioning_button'] = {
+styles.tl_stretchable_button = {
   type = 'button_style',
-  width = 112
+  horizontally_stretchable = 'on'
 }
