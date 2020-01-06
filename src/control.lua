@@ -174,7 +174,7 @@ local function on_adjust_capsule(e)
       -- calculate vector
       local vector = util.position.subtract(cur_tile, prev_tile)
       -- apply to area and recreate constants
-      local area = util.area.additional_data{
+      local area = util.area.add_data{
         left_top = util.position.add(registry.area.left_top, vector),
         right_bottom = util.position.add(registry.area.right_bottom, vector),
         origin = util.position.add(registry.area.origin, vector)

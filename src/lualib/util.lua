@@ -24,34 +24,11 @@ function util.area.opposite_corner(corner)
   return corner
 end
 
-function util.area.draw_update(area, tile_pos, hot_corner)
-  local origin = area.origin
-  -- find new corners
-  local left_top = {x=math.floor(tile_pos.x < origin.x and tile_pos.x or origin.x), y=math.floor(tile_pos.y < origin.y and tile_pos.y or origin.y)}
-  local right_bottom = {x=math.ceil(tile_pos.x > origin.x and tile_pos.x or origin.x), y=math.ceil(tile_pos.y > origin.y and tile_pos.y or origin.y)}
-  if hot_corner == 'right_top' or hot_corner == 'right_bottom' then
-    right_bottom.x = right_bottom.x + 1
-  end
-  if hot_corner == 'left_bottom' or hot_corner == 'right_bottom' then
-    right_bottom.y = right_bottom.y + 1
-  end
-  local width = right_bottom.x - left_top.x
-  local height = right_bottom.y - left_top.y
-  return {
-    left_top = left_top,
-    left_bottom = {x=left_top.x, y=right_bottom.y},
-    right_top = {x=right_bottom.x, y=left_top.y},
-    right_bottom = right_bottom,
-    origin = origin,
-    midpoints = {x=left_top.x+(width/2), y=left_top.y+(height/2)},
-    width = width,
-    height = height,
-    width_changed = area.width ~= width and true or false,
-    height_changed = area.height ~= height and true or false
-  }
+function util.area.contains_point(area, pos)
+  return math2d.bounding_box.contains_point(area, pos)
 end
 
-function util.area.additional_data(area)
+function util.area.add_data(area)
   local left_top = area.left_top
   local right_bottom = area.right_bottom
   area.left_bottom = {x=area.left_top.x, y=area.right_bottom.y}
@@ -60,10 +37,6 @@ function util.area.additional_data(area)
   area.height = right_bottom.y - left_top.y
   area.midpoints = {x=left_top.x+(area.width/2), y=left_top.y+(area.height/2)}
   return area
-end
-
-function util.area.contains_point(area, pos)
-  return math2d.bounding_box.contains_point(area, pos)
 end
 
 util.position = math2d.position
