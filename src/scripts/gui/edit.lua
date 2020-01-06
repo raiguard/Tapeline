@@ -42,7 +42,7 @@ end
 local function save_changes_button_clicked(e)
 	local player_table = global.players[e.player_index]
 	player_table.flags.editing = false
-	edit_gui.destroy(player_table.gui.edit.elems.window, e.player_index)
+	edit_gui.destroy(player_table.gui.edit.elems.window, game.get_player(e.player_index))
 	player_table.gui.edit.highlight_box.destroy()
 	player_table.gui.edit = nil
 end
@@ -57,7 +57,7 @@ local function confirm_yes_button_clicked(e)
 	tilegrid.destroy(player_table.flags.editing)
 	player_table.flags.editing = false
 	local gui_data = player_table.gui.edit
-	edit_gui.destroy(gui_data.elems.window, e.player_index)
+	edit_gui.destroy(gui_data.elems.window, game.get_player(e.player_index))
 	gui_data.highlight_box.destroy()
 	player_table.gui.edit = nil
 	-- clean player cursor
@@ -229,12 +229,17 @@ function edit_gui.update(player_index)
 	elems.divisor_textfield.text = settings[type_index_to_name[grid_type]..'_divisor']
 end
 
-function edit_gui.destroy(window, player_index)
+function edit_gui.destroy(window, player)
   -- deregister all GUI events if needed
 	for cn,h in pairs(handlers) do
-		event.deregister_conditional(h, {name=cn, player_index=player_index})
+		event.deregister_conditional(h, {name=cn, player_index=player.index})
 	end
 	window.destroy()
+	-- remove capsule from hand if it's there
+	local stack = player.cursor_stack
+	if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
+		player.clean_cursor()
+	end
 end
 
 return edit_gui
