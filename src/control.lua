@@ -300,10 +300,14 @@ event.on_player_cursor_stack_changed(function(e)
   if stack and stack.valid_for_read and stack.name == 'tapeline-draw' then
     -- because sometimes it doesn't work properly?
     if player_gui.draw then return end
-    -- if the player is currently selecting, don't let them hold a capsule
+    -- if the player is currently selecting or editing, don't let them hold the capsule
     if player_table.flags.selecting then
       player.clean_cursor()
       player.print{'tl.finish-selection-first'}
+      return
+    elseif player_table.flags.editing then
+      player.clean_cursor()
+      player.print{'tl.finish-editing-first'}
       return
     end
     if player_table.flags.capsule_tutorial_shown == false then
