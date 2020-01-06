@@ -36,7 +36,7 @@ end
 local function back_button_clicked(e)
   local player_table = global.players[e.player_index]
   local gui_data = player_table.gui.select
-  player_table.cur_selecting = false
+  player_table.flags.selecting = false
   select_gui.destroy(gui_data.elems.window, e.player_index)
   gui_data.highlight_box.destroy()
   player_table.gui.select = nil
@@ -44,10 +44,10 @@ end
 
 local function confirm_button_clicked(e)
   local player_table = global.players[e.player_index]
-  player_table.cur_selecting = false
+  player_table.flags.selecting = false
   local select_gui_data = player_table.gui.select
   local tilegrid_index = select_gui_data.tilegrids[select_gui_data.elems.selection_listbox.selected_index]
-  player_table.cur_editing = tilegrid_index
+  player_table.flags.editing = tilegrid_index
   local tilegrid_registry = global.tilegrids.registry[tilegrid_index]
   local edit_gui_elems, last_value = edit_gui.create(select_gui_data.elems.window.parent, e.player_index, tilegrid_registry.settings,
                              tilegrid_registry.hot_corner)

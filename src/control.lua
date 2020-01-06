@@ -23,24 +23,27 @@ local floor = math.floor
 local TEMP_TILEGRID_CLEAR_DELAY = 60
 
 local function setup_player(index)
-  local data = {}
-  data.settings = {
-    auto_clear = true,
-    cardinals_only = true,
-    grid_type = 1,
-    increment_divisor = 5,
-    split_divisor = 4,
-    log_to_chat = game.get_player(index).mod_settings['log-selection-area'].value
+  global.players[index] = {
+    flags = {
+      adjusting = false,
+      drawing = false,
+      editing = false,
+      selecting = false,
+      adjustment_tutorial_shown = false,
+      capsule_tutorial_shown = false
+    },
+    gui = {},
+    last_capsule_tick = 0,
+    last_capsule_tile = nil, -- doesn't have an initial value, but here for reference
+    settings = {
+      auto_clear = true,
+      cardinals_only = true,
+      grid_type = 1,
+      increment_divisor = 5,
+      split_divisor = 4,
+      log_to_chat = game.get_player(index).mod_settings['log-selection-area'].value
+    }
   }
-  data.gui = {}
-  data.cur_drawing = false
-  data.cur_editing = false
-  data.cur_selecting = false
-  data.cur_adjusting = false
-  data.tutorial_shown = false
-  data.last_capsule_tile = nil -- doesn't have an initial value, but here for reference
-  data.last_capsule_tick = 0
-  global.players[index] = data
 end
 
 -- --------------------------------------------------
@@ -57,7 +60,7 @@ local function draw_on_tick(e)
       -- finish up tilegrid
       local player_table = global.players[t.player_index]
       local registry = global.tilegrids.registry[i]
-      player_table.cur_drawing = false
+      player_table.flags.drawing = false
       -- if the grid is 1x1, just delete it
       if registry.area.width == 1 and registry.area.height == 1 then
         tilegrid.destroy(i)
@@ -90,9 +93,9 @@ local function on_draw_capsule(e)
   local player_table = global.players[e.player_index]
   local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
   -- check if currently drawing
-  if player_table.cur_drawing then
-    local drawing = global.tilegrids.drawing[player_table.cur_drawing]
-    local registry = global.tilegrids.registry[player_table.cur_drawing]
+  if player_table.flags.drawing then
+    local drawing = global.tilegrids.drawing[player_table.flags.drawing]
+    local registry = global.tilegrids.registry[player_table.flags.drawing]
     local prev_tile = drawing.last_capsule_pos
     drawing.last_capsule_tick = game.ticks_played
     -- if cardinals only, adjust thrown position
@@ -108,13 +111,13 @@ local function on_draw_capsule(e)
     if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
       -- update existing tilegrid
       drawing.last_capsule_pos = cur_tile
-      tilegrid.update(player_table.cur_drawing, cur_tile, drawing, registry)
+      tilegrid.update(player_table.flags.drawing, cur_tile, drawing, registry)
     end
   else
     -- create new tilegrid
-    player_table.cur_drawing = global.next_tilegrid_index
+    player_table.flags.drawing = global.next_tilegrid_index
     global.next_tilegrid_index = global.next_tilegrid_index + 1
-    tilegrid.construct(player_table.cur_drawing, cur_tile, e.player_index, game.get_player(e.player_index).surface.index)
+    tilegrid.construct(player_table.flags.drawing, cur_tile, e.player_index, game.get_player(e.player_index).surface.index)
     -- register on_tick
     if not event.is_registered('draw_on_tick') then
       event.on_tick(draw_on_tick, 'draw_on_tick')
@@ -153,7 +156,7 @@ local function on_edit_capsule(e)
     -- skip selection dialog
     local tilegrid_registry = global.tilegrids.registry[clicked_on[1]]
     local elems, last_value = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, tilegrid_registry.settings, tilegrid_registry.hot_corner)
-    player_table.cur_editing = clicked_on[1]
+    player_table.flags.editing = clicked_on[1]
     -- create highlight box
     local area = global.tilegrids.registry[clicked_on[1]].area
     local highlight_box = player.surface.create_entity{
@@ -168,7 +171,7 @@ local function on_edit_capsule(e)
   else
     -- show selection dialog
     select_gui.populate_listbox(e.player_index, clicked_on)
-    player_table.cur_selecting = true
+    player_table.flags.selecting = true
   end
   player.clean_cursor()
 end
@@ -177,7 +180,7 @@ end
 local function on_adjust_capsule(e)
   if e.item.name ~= 'tapeline-adjust' then return end
   local player_table = global.players[e.player_index]
-  local registry = global.tilegrids.registry[player_table.cur_editing]
+  local registry = global.tilegrids.registry[player_table.flags.editing]
   local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
   if game.tick - player_table.last_capsule_tick > global.end_wait then
     player_table.last_capsule_tile = nil
@@ -200,7 +203,7 @@ local function on_adjust_capsule(e)
         origin = util.position.add(registry.area.origin, vector)
       }
       registry.area = area
-      tilegrid.refresh(player_table.cur_editing)
+      tilegrid.refresh(player_table.flags.editing)
       -- move highlight box
       local gui_data = player_table.gui.edit
       local highlight_box = gui_data.highlight_box.surface.create_entity{
@@ -216,7 +219,7 @@ local function on_adjust_capsule(e)
       -- update capsule tile
       player_table.last_capsule_tile = cur_tile
       -- update area in editable registry
-      global.tilegrids.editable[player_table.cur_editing].area = area
+      global.tilegrids.editable[player_table.flags.editing].area = area
     end
   end
   player_table.last_capsule_tick = game.tick
@@ -280,14 +283,14 @@ event.on_player_cursor_stack_changed(function(e)
     -- because sometimes it doesn't work properly?
     if player_gui.draw then return end
     -- if the player is currently selecting, don't let them hold a capsule
-    if player_table.cur_selecting then
+    if player_table.flags.selecting then
       player.clean_cursor()
       player.print{'chat-message.finish-selection-first'}
       return
     end
-    if player_table.tutorial_shown == false then
+    if player_table.flags.capsule_tutorial_shown == false then
       -- show tutorial window
-      player_table.tutorial_shown = true
+      player_table.flags.capsule_tutorial_shown = true
       player_table.bubble = player.surface.create_entity{
         name = 'compi-speech-bubble',
         position = player.position,
@@ -311,7 +314,7 @@ event.on_player_cursor_stack_changed(function(e)
     local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
     player_gui.select = {elems=elems}
     event.on_player_used_capsule(on_edit_capsule, 'on_edit_capsule', e.player_index)
-  elseif player_gui.select and not player_table.cur_selecting then
+  elseif player_gui.select and not player_table.flags.selecting then
     select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
@@ -319,10 +322,10 @@ event.on_player_cursor_stack_changed(function(e)
   end
   -- adjust capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
-    player_table.cur_adjusting = true
+    player_table.flags.adjusting = true
     event.on_player_used_capsule(on_adjust_capsule, 'on_adjust_capsule', e.player_index)
-  elseif player_table.cur_adjusting == true then
-    player_table.cur_adjusting = false
+  elseif player_table.flags.adjusting == true then
+    player_table.flags.adjusting = false
     player_table.last_capsule_tile = nil
     event.deregister(defines.events.on_player_used_capsule, on_adjust_capsule, 'on_adjust_capsule', e.player_index)
   end

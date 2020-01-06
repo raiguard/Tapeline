@@ -33,7 +33,7 @@ corner_to_index = {
 index_to_corner = {'left_top', 'right_top', 'left_bottom', 'right_bottom'}
 
 local function get_settings_table(player_index)
-	return global.tilegrids.registry[global.players[player_index].cur_editing].settings
+	return global.tilegrids.registry[global.players[player_index].flags.editing].settings
 end
 
 -- --------------------------------------------------
@@ -41,7 +41,7 @@ end
 
 local function save_changes_button_clicked(e)
 	local player_table = global.players[e.player_index]
-	player_table.cur_editing = false
+	player_table.flags.editing = false
 	edit_gui.destroy(player_table.gui.edit.elems.window, e.player_index)
 	player_table.gui.edit.highlight_box.destroy()
 	player_table.gui.edit = nil
@@ -54,8 +54,8 @@ end
 
 local function confirm_yes_button_clicked(e)
 	local player_table = global.players[e.player_index]
-	tilegrid.destroy(player_table.cur_editing)
-	player_table.cur_editing = false
+	tilegrid.destroy(player_table.flags.editing)
+	player_table.flags.editing = false
 	local gui_data = player_table.gui.edit
 	edit_gui.destroy(gui_data.elems.window, e.player_index)
 	gui_data.highlight_box.destroy()
@@ -75,16 +75,16 @@ end
 
 local function origin_dropdown_state_changed(e)
 	local player_table = global.players[e.player_index]
-	local registry = global.tilegrids.registry[player_table.cur_editing]
+	local registry = global.tilegrids.registry[player_table.flags.editing]
 	registry.hot_corner = util.area.opposite_corner(index_to_corner[e.element.selected_index])
-	tilegrid.refresh(player_table.cur_editing)
+	tilegrid.refresh(player_table.flags.editing)
 end
 
 local function type_switch_state_changed(e)
 	local settings_table = get_settings_table(e.player_index)
 	settings_table.grid_type = switch_state_to_type_index[e.element.switch_state]
 	edit_gui.update(e.player_index)
-	tilegrid.refresh(global.players[e.player_index].cur_editing)
+	tilegrid.refresh(global.players[e.player_index].flags.editing)
 end
 
 local function divisor_slider_value_changed(e)
@@ -94,7 +94,7 @@ local function divisor_slider_value_changed(e)
 	local divisor_name = type_index_to_name[settings_table.grid_type]..'_divisor'
 	settings_table[divisor_name] = e.element.slider_value
 	textfield.text = e.element.slider_value
-	tilegrid.refresh(player_table.cur_editing)
+	tilegrid.refresh(player_table.flags.editing)
 end
 
 local function divisor_textfield_text_changed(e)
@@ -105,7 +105,7 @@ local function divisor_textfield_text_changed(e)
 	if new_value ~= gui_data.last_divisor_value then
 		gui_data.last_divisor_value = new_value
 		gui_data.elems.divisor_slider.slider_value = new_value
-		tilegrid.refresh(player_table.cur_editing)
+		tilegrid.refresh(player_table.flags.editing)
 	end
 end
 
@@ -114,7 +114,7 @@ local function divisor_textfield_confirmed(e)
 	local settings_table = get_settings_table(e.player_index)
 	local final_text = util.textfield.set_last_valid_value(e.element, player_table.gui.edit.last_divisor_value)
 	settings_table[type_index_to_name[settings_table.grid_type]..'_divisor'] = tonumber(final_text)
-	tilegrid.refresh(player_table.cur_editing)
+	tilegrid.refresh(player_table.flags.editing)
 end
 
 local function move_button_clicked(e)
