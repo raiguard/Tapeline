@@ -142,7 +142,12 @@ local function on_edit_capsule(e)
   end
   local size = table_size(clicked_on)
   if size == 0 then
-    game.print('Please click on a tilegrid')
+    player.surface.create_entity{
+      name = 'flying-text',
+      position = e.position,
+      text = {'tl.click-on-tilegrid'},
+      render_player_index = e.player_index
+    }
     return
   elseif size == 1 then
     -- skip selection dialog
@@ -217,6 +222,22 @@ local function on_adjust_capsule(e)
   player_table.last_capsule_tick = game.tick
 end
 
+-- dismiss the tutorial speech bubble when the player throws one of our capsules
+local function on_capsule_after_tutorial(e)
+  local name = e.item.name
+  if name == 'tapeline-draw' or name == 'tapeline-edit' or name == 'tapeline-adjust' then
+    local player_table = global.players[e.player_index]
+    local bubble = player_table.bubble
+    if bubble and bubble.valid then
+      if bubble.valid then
+        bubble.start_fading_out()
+      end
+      player_table.bubble = nil
+      event.deregister_conditional(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
+    end
+  end
+end
+
 -- --------------------------------------------------
 -- STATIC HANDLERS
 
@@ -267,7 +288,13 @@ event.on_player_cursor_stack_changed(function(e)
     if player_table.tutorial_shown == false then
       -- show tutorial window
       player_table.tutorial_shown = true
-      player.print{'chat-message.tutorial-hint'}
+      player_table.bubble = player.surface.create_entity{
+        name = 'compi-speech-bubble',
+        position = player.position,
+        text = {'tl.tutorial-text'},
+        source = player.character
+      }
+      event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
     end
     local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
     player_gui.draw = {elems=elems, last_divisor_value=last_value}
