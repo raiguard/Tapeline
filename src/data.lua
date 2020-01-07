@@ -23,11 +23,9 @@ local function capsule(name, icon, cooldown)
     },
     subgroup = 'capsule',
     order = 'zz',
-    flags = {'hidden', 'only-in-cursor'},
-    -- 0.18: remove range visualization
-    -- range_color = {a=0},
+    flags = {'hidden', 'only-in-cursor', 'not-stackable'},
+    radius_color = {a=0},
     stack_size = 1,
-    stackable = false,
     capsule_action = {
       type = 'throw',
       uses_stack = false,
