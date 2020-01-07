@@ -157,8 +157,8 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
 	def_titlebar_flow.add{type='label', name='tl_edit_def_titlebar_label', style='heading_1_label', caption={'tl-gui-edit.titlebar-label-caption'}}
 	def_titlebar_flow.add{type='empty-widget', name='tl_edit_def_titlebar_pusher', style='tl_horizontal_pusher'}
 	event.on_gui_click(save_changes_button_clicked, {name='edit_save_changes_button_clicked', player_index=player_index, gui_filters=
-		def_titlebar_flow.add{type='sprite-button', name='tl_edit_def_titlebar_button_confirm', style='tl_green_icon_button', sprite='utility/confirm_slot',
-			tooltip={'tl-gui-edit.titlebar-confirm-button-tooltip'}}
+		def_titlebar_flow.add{type='sprite-button', name='tl_edit_def_titlebar_button_confirm', style='tl_edit_confirm_button',
+			sprite='utility/check_mark', tooltip={'tl-gui-edit.titlebar-confirm-button-tooltip'}}
 	})
 	event.on_gui_click(delete_button_clicked, {name='edit_delete_button_clicked', player_index=player_index, gui_filters=
 		def_titlebar_flow.add{type='sprite-button', name='tl_edit_def_titlebar_button_delete', style='red_icon_button', sprite='utility/trash',
