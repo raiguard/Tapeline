@@ -57,7 +57,6 @@ local function update_grid(area, surface, pos_data, lines, div, color)
     for i,o in ipairs(lines.horizontal) do
       set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
       set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
-      bring_to_front(o)
     end
   end
   if area.height_changed then
@@ -81,8 +80,14 @@ local function update_grid(area, surface, pos_data, lines, div, color)
     for i,o in ipairs(lines.vertical) do
       set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y})
       set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y})
-      bring_to_front(o)
     end
+  end
+  -- bring lines to front to preserve draw order
+  for i,o in ipairs(lines.horizontal) do
+    bring_to_front(o)
+  end
+  for i,o in ipairs(lines.vertical) do
+    bring_to_front(o)
   end
 end
 
