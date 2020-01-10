@@ -22,6 +22,8 @@ gui_window_width = 252
 local abs = math.abs
 local floor = math.floor
 local TEMP_TILEGRID_CLEAR_DELAY = 60
+local table_insert = table.insert
+local table_remove = table.remove
 
 -- --------------------------------------------------
 -- CONDITIONAL HANDLERS
@@ -35,28 +37,29 @@ local function draw_on_tick(e)
   for i,t in pairs(drawing) do
     if t.last_capsule_tick + end_wait < cur_tick then
       -- finish up tilegrid
-      local player_table = global.players[t.player_index]
-      local registry = global.tilegrids.registry[i]
-      player_table.flags.drawing = false
+      local player_table = global.players[i]
+      local data = player_table.tilegrids.drawing
       -- if the grid is 1x1, just delete it
-      if registry.area.width == 1 and registry.area.height == 1 then
+      if data.area.width == 1 and data.area.height == 1 then
         tilegrid.destroy(i)
       else
-        if registry.settings.auto_clear then
+        if data.settings.auto_clear then
           -- add to perishing table
-          perishing[i] = cur_tick + TEMP_TILEGRID_CLEAR_DELAY
+          table_insert(perishing, {tick=cur_tick+TEMP_TILEGRID_CLEAR_DELAY, player_index=i, tilegrid_index=t.tilegrid_index})
         else
           -- add to editable table
-          global.tilegrids.editable[i] = {area=registry.area, surface_index=t.surface_index}
+          table_insert(player_table.tilegrids.registry, table.deepcopy(data))
         end
       end
+      player_table.tilegrids.drawing = false
       drawing[i] = nil
     end
   end
-  for i,tick in pairs(perishing) do
-    if cur_tick >= tick then
-      tilegrid.destroy(i)
-      perishing[i] = nil
+  for i=1,#perishing do
+    local t = perishing[i]
+    if cur_tick >= t.tick then
+      tilegrid.destroy(t.player_index, t.tilegrid_index)
+      table_remove(perishing, i)
     end
   end
   if table_size(drawing) == 0 and table_size(perishing) == 0 then
@@ -69,15 +72,15 @@ local function on_draw_capsule(e)
   if e.item.name ~= 'tapeline-draw' then return end
   local player_table = global.players[e.player_index]
   local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
+  local data = player_table.tilegrids.drawing
   -- check if currently drawing
-  if player_table.flags.drawing then
-    local drawing = global.tilegrids.drawing[player_table.flags.drawing]
-    local registry = global.tilegrids.registry[player_table.flags.drawing]
+  if data then
+    local drawing = global.tilegrids.drawing[e.player_index]
     local prev_tile = drawing.last_capsule_pos
     drawing.last_capsule_tick = game.ticks_played
     -- if cardinals only, adjust thrown position
-    if registry.settings.cardinals_only then
-      local origin = registry.area.origin
+    if data.settings.cardinals_only then
+      local origin = data.area.origin
       if abs(cur_tile.x - origin.x) >= abs(cur_tile.y - origin.y) then
         cur_tile.y = floor(origin.y)
       else
@@ -88,20 +91,19 @@ local function on_draw_capsule(e)
     if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
       -- update existing tilegrid
       drawing.last_capsule_pos = cur_tile
-      tilegrid.update(player_table.flags.drawing, cur_tile, drawing, registry)
+      tilegrid.update(cur_tile, data)
     end
   else
     -- create new tilegrid
-    player_table.flags.drawing = global.next_tilegrid_index
-    global.next_tilegrid_index = global.next_tilegrid_index + 1
-    tilegrid.construct(player_table.flags.drawing, cur_tile, e.player_index, game.get_player(e.player_index).surface.index)
+    tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index)
     -- register on_tick
     if not event.is_registered('draw_on_tick') then
-      event.on_tick(draw_on_tick, {name='draw_on_tick'})
+      event.on_tick(draw_on_tick, {name='draw_on_tick', skip_validation=true})
     end
   end
 end
 
+ --#region 
 -- tapeline edit lets you edit the tilegrid that was clicked on
 local function on_edit_capsule(e)
   if e.item.name ~= 'tapeline-edit' then return end
@@ -148,7 +150,7 @@ local function on_edit_capsule(e)
   else
     -- show selection dialog
     select_gui.populate_listbox(e.player_index, clicked_on)
-    player_table.flags.selecting = true
+    player_table.flags.selecting_tilegrid = true
   end
   player.clean_cursor()
 end
@@ -217,6 +219,7 @@ local function on_capsule_after_tutorial(e)
     end
   end
 end
+--#endregion
 
 -- --------------------------------------------------
 -- STATIC HANDLERS
@@ -224,12 +227,10 @@ end
 local function setup_player(index)
   global.players[index] = {
     flags = {
-      adjusting = false,
-      drawing = false,
-      editing = false,
-      selecting = false,
+      adjusting_tilegrid = false,
       adjustment_tutorial_shown = false,
-      capsule_tutorial_shown = false
+      capsule_tutorial_shown = false,
+      selecting_tilegrid = false
     },
     gui = {},
     last_capsule_tick = 0,
@@ -241,6 +242,11 @@ local function setup_player(index)
       increment_divisor = 5,
       split_divisor = 4,
       log_to_chat = game.get_player(index).mod_settings['log-selection-area'].value
+    },
+    tilegrids = {
+      drawing = false,
+      editing = false,
+      registry = {}
     }
   }
 end
@@ -265,12 +271,9 @@ event.on_init(function()
   -- setup global
   global.tilegrids = {
     drawing = {},
-    editable = {},
     perishing = {},
-    registry = {}
   }
   global.players = {}
-  global.next_tilegrid_index = 1
   -- set end_wait for a singleplayer game
   global.end_wait = 3
   -- create player data for any existing players
@@ -301,7 +304,7 @@ event.on_player_cursor_stack_changed(function(e)
     -- because sometimes it doesn't work properly?
     if player_gui.draw then return end
     -- if the player is currently selecting or editing, don't let them hold the capsule
-    if player_table.flags.selecting then
+    if player_table.flags.selecting_tilegrid then
       player.clean_cursor()
       player.print{'tl.finish-selection-first'}
       return
@@ -330,7 +333,7 @@ event.on_player_cursor_stack_changed(function(e)
     local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
     player_gui.select = {elems=elems}
     event.on_player_used_capsule(on_edit_capsule, {name='on_edit_capsule', player_index=e.player_index})
-  elseif player_gui.select and not player_table.flags.selecting then
+  elseif player_gui.select and not player_table.flags.selecting_tilegrid then
     select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
@@ -338,15 +341,15 @@ event.on_player_cursor_stack_changed(function(e)
   end
   -- adjust capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
-    player_table.flags.adjusting = true
+    player_table.flags.adjusting_tilegrid = true
     event.on_player_used_capsule(on_adjust_capsule, {name='on_adjust_capsule', player_index=e.player_index})
     if not player_table.flags.adjustment_tutorial_shown then
       -- show tutorial bubble
       show_tutorial(player, player_table, 'adjustment')
       event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
     end
-  elseif player_table.flags.adjusting == true then
-    player_table.flags.adjusting = false
+  elseif player_table.flags.adjusting_tilegrid == true then
+    player_table.flags.adjusting_tilegrid = false
     player_table.last_capsule_tile = nil
     event.deregister(defines.events.on_player_used_capsule, on_adjust_capsule, {name='on_adjust_capsule', player_index=e.player_index})
   end

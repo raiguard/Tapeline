@@ -20,18 +20,19 @@ local bring_to_front = rendering.bring_to_front
 
 local line_width = 1.5
 
-local function create_line(from, to, surface, color)
+local function create_line(from, to, surface, color, player_index)
   return draw_line{
     color = color,
     width = line_width,
     from = from,
     to = to,
     surface = surface,
-    draw_on_ground = true
+    draw_on_ground = true,
+    players = {player_index}
   }
 end
 
-local function update_grid(area, surface, pos_data, lines, div, color)
+local function update_grid(area, surface, pos_data, lines, div, color, player_index)
   local hor_sign = pos_data.hor_sign
   local ver_sign = pos_data.ver_sign
   local hor_anchor = pos_data.hor_anchor
@@ -44,7 +45,7 @@ local function update_grid(area, surface, pos_data, lines, div, color)
         vertical[i] = create_line(
           {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y},
           {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y},
-          surface, color
+          surface, color, player_index
         )
       end
     else
@@ -67,7 +68,7 @@ local function update_grid(area, surface, pos_data, lines, div, color)
         horizontal[i] = create_line(
           {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
           {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
-          surface, color
+          surface, color, player_index
         )
       end
     else
@@ -91,7 +92,7 @@ local function update_grid(area, surface, pos_data, lines, div, color)
   end
 end
 
-local function update_splits(area, surface, lines, div, color)
+local function update_splits(area, surface, lines, div, color, player_index)
   local ver_inc = area.width / div
   local hor_inc = area.height / div
   local horizontal = lines.horizontal
@@ -103,7 +104,7 @@ local function update_splits(area, surface, lines, div, color)
         vertical[i] = create_line(
           {x=area.left_top.x+(i*ver_inc), y=area.left_top.y},
           {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y},
-          surface, color
+          surface, color, player_index
         )
       end
     elseif #vertical > div-1 then
@@ -132,7 +133,7 @@ local function update_splits(area, surface, lines, div, color)
         horizontal[i] = create_line(
           {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)},
           {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)},
-          surface, color
+          surface, color, player_index
         )
       end
     elseif #horizontal > div-1 then
@@ -156,7 +157,7 @@ local function update_splits(area, surface, lines, div, color)
   end
 end
 
-local function construct_render_objects(data)
+local function construct_render_objects(data, player_index)
   local area = data.area
   local surface = data.surface
   local objects = {
@@ -166,7 +167,8 @@ local function construct_render_objects(data)
       left_top = area.left_top,
       right_bottom = area.right_bottom,
       surface = surface,
-      draw_on_ground = true
+      draw_on_ground = true,
+      players = {player_index}
     },
     border = draw_rectangle{
       color = {r=0.8,g=0.8,b=0.8},
@@ -174,7 +176,8 @@ local function construct_render_objects(data)
       left_top = area.left_top,
       right_bottom = area.right_bottom,
       surface = surface,
-      draw_on_ground = true
+      draw_on_ground = true,
+      players = {player_index}
     },
     labels = {
       horizontal = draw_text{
@@ -184,7 +187,8 @@ local function construct_render_objects(data)
         color = {r=0.8,g=0.8,b=0.8},
         scale = 1.5,
         alignment = 'center',
-        visible = false
+        visible = false,
+        players = {player_index}
       },
       vertical = draw_text{
         text = area.height,
@@ -194,7 +198,8 @@ local function construct_render_objects(data)
         scale = 1.5,
         orientation = 0.75,
         alignment = 'center',
-        visible = false
+        visible = false,
+        players = {player_index}
       }
     },
     base_grid = {horizontal={}, vertical={}},
@@ -205,7 +210,7 @@ local function construct_render_objects(data)
   return objects
 end
 
-local function update_render_objects(data)
+local function update_render_objects(data, player_index)
   local area = data.area
   local objects = data.objects
   local surface = data.surface
@@ -244,17 +249,17 @@ local function update_render_objects(data)
     end
     objects.base_grid.vertical = {}
   end
-  update_grid(area, surface, pos_data, objects.base_grid, 1, {r=0.5, g=0.5, b=0.5})
+  update_grid(area, surface, pos_data, objects.base_grid, 1, {r=0.5, g=0.5, b=0.5}, player_index)
   -- update subgrids if in increment mode
   if data.settings.grid_type == 1 then
     local div = data.settings.increment_divisor
-    update_grid(area, surface, pos_data, objects.subgrid_1, div, {r=0.4, g=0.8, b=0.4})
-    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, {r=0.8, g=0.3, b=0.3})
-    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, {r=0.8, g=0.8, b=0.3})
+    update_grid(area, surface, pos_data, objects.subgrid_1, div, {r=0.4, g=0.8, b=0.4}, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, {r=0.8, g=0.3, b=0.3}, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, {r=0.8, g=0.8, b=0.3}, player_index)
   -- update splits if in split mode
   elseif data.settings.grid_type == 2 then
-    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, {r=0.4, g=0.8, b=0.4})
-    update_splits(area, surface, objects.subgrid_2, 2, {r=0.8, g=0.4, b=0.4})
+    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, {r=0.4, g=0.8, b=0.4}, player_index)
+    update_splits(area, surface, objects.subgrid_2, 2, {r=0.8, g=0.4, b=0.4}, player_index)
   end
   bring_to_front(objects.border)
 end
@@ -269,14 +274,13 @@ local function destroy_render_objects(objects)
   end
 end
 
-function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_index)
+function tilegrid.construct(tile_pos, player_index, surface_index)
   local center = util.position.add(tile_pos, {x=0.5, y=0.5})
   local area = util.area.add_data(util.position.to_tile_area(center))
   area.origin = center
   local drawing = {
     last_capsule_pos = tile_pos,
     last_capsule_tick = game.ticks_played,
-    player_index = player_index,
     surface_index = surface_index
   }
   local registry = {
@@ -288,18 +292,18 @@ function tilegrid.construct(tilegrid_index, tile_pos, player_index, surface_inde
     settings = global.players[player_index].settings
   }
   registry.objects = construct_render_objects(registry)
-  global.tilegrids.drawing[tilegrid_index] = drawing
-  global.tilegrids.registry[tilegrid_index] = registry
+  global.tilegrids.drawing[player_index] = drawing
+  global.players[player_index].tilegrids.drawing = registry
 end
 
-function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
-  local area = registry.area
+function tilegrid.update(tile_pos, data)
+  local area = data.area
   -- update hot corner
-  registry.prev_hot_corner = registry.hot_corner
-  registry.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
+  data.prev_hot_corner = data.hot_corner
+  data.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
   -- update area
   local origin = area.origin
-  local hot_corner = registry.hot_corner
+  local hot_corner = data.hot_corner
   local left_top = {x=math.floor(tile_pos.x < origin.x and tile_pos.x or origin.x), y=math.floor(tile_pos.y < origin.y and tile_pos.y or origin.y)}
   local right_bottom = {x=math.ceil(tile_pos.x > origin.x and tile_pos.x or origin.x), y=math.ceil(tile_pos.y > origin.y and tile_pos.y or origin.y)}
   if hot_corner == 'right_top' or hot_corner == 'right_bottom' then
@@ -310,7 +314,7 @@ function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
   end
   local width = right_bottom.x - left_top.x
   local height = right_bottom.y - left_top.y
-  registry.area = {
+  data.area = {
     left_top = left_top,
     left_bottom = {x=left_top.x, y=right_bottom.y},
     right_top = {x=right_bottom.x, y=left_top.y},
@@ -323,18 +327,19 @@ function tilegrid.update(tilegrid_index, tile_pos, drawing, registry)
     height_changed = area.height ~= height and true or false
   }
   -- update render objects
-  update_render_objects(registry)
+  update_render_objects(data)
 end
 
-function tilegrid.destroy(tilegrid_index)
-  local registry = global.tilegrids.registry[tilegrid_index]
+function tilegrid.destroy(player_index, tilegrid_index)
+  local tilegrids = global.players[player_index].tilegrids
+  local registry = tilegrids.registry[tilegrid_index]
   destroy_render_objects(registry.objects)
-  global.tilegrids.registry[tilegrid_index] = nil
-  global.tilegrids.editable[tilegrid_index] = nil
+  tilegrids.editable[tilegrid_index] = nil
+  tilegrids.registry[tilegrid_index] = nil
 end
 
 -- destroys and recreates render objects
-function tilegrid.refresh(tilegrid_index)
+function tilegrid.refresh(player_index, tilegrid_index)
   local registry = global.tilegrids.registry[tilegrid_index]
   registry.area.width_changed = true
   registry.area.height_changed = true
