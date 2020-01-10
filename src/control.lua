@@ -41,11 +41,11 @@ local function draw_on_tick(e)
       local data = player_table.tilegrids.drawing
       -- if the grid is 1x1, just delete it
       if data.area.width == 1 and data.area.height == 1 then
-        tilegrid.destroy(i)
+        tilegrid.destroy(data)
       else
         if data.settings.auto_clear then
           -- add to perishing table
-          table_insert(perishing, {tick=cur_tick+TEMP_TILEGRID_CLEAR_DELAY, player_index=i, tilegrid_index=t.tilegrid_index})
+          table_insert(perishing, util.merge{{tick=cur_tick+TEMP_TILEGRID_CLEAR_DELAY, player_index=i}, data})
         else
           -- add to editable table
           table_insert(player_table.tilegrids.registry, table.deepcopy(data))
@@ -58,7 +58,7 @@ local function draw_on_tick(e)
   for i=1,#perishing do
     local t = perishing[i]
     if cur_tick >= t.tick then
-      tilegrid.destroy(t.player_index, t.tilegrid_index)
+      tilegrid.destroy(t)
       table_remove(perishing, i)
     end
   end
@@ -117,8 +117,8 @@ local function on_edit_capsule(e)
   local player = game.get_player(e.player_index)
   local surface_index = player.surface.index
   local clicked_on = {}
-  for i,t in pairs(global.tilegrids.editable) do
-    if t.surface_index == surface_index and util.area.contains_point(t.area, e.position) then
+  for i,t in pairs(player_table.tilegrids.registry) do
+    if t.surface == surface_index and util.area.contains_point(t.area, e.position) then
       table.insert(clicked_on, i)
     end
   end
@@ -133,11 +133,11 @@ local function on_edit_capsule(e)
     return
   elseif size == 1 then
     -- skip selection dialog
-    local tilegrid_registry = global.tilegrids.registry[clicked_on[1]]
-    local elems, last_value = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, tilegrid_registry.settings, tilegrid_registry.hot_corner)
+    local data = player_table.tilegrids.registry[clicked_on[1]]
+    local elems, last_value = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
     player_table.flags.editing = clicked_on[1]
     -- create highlight box
-    local area = global.tilegrids.registry[clicked_on[1]].area
+    local area = data.area
     local highlight_box = player.surface.create_entity{
       name = 'highlight-box',
       position = area.left_top,

@@ -17,6 +17,7 @@ local set_visible = rendering.set_visible
 local set_target = rendering.set_target
 local destroy = rendering.destroy
 local bring_to_front = rendering.bring_to_front
+local table_remove = table.remove
 
 local line_width = 1.5
 
@@ -285,7 +286,6 @@ function tilegrid.construct(tile_pos, player_index, surface_index)
   }
   local registry = {
     area = area,
-    entities = {},
     prev_hot_corner = 'right_bottom',
     hot_corner = 'right_bottom',
     surface = game.get_player(player_index).surface.index,
@@ -330,12 +330,8 @@ function tilegrid.update(tile_pos, data)
   update_render_objects(data)
 end
 
-function tilegrid.destroy(player_index, tilegrid_index)
-  local tilegrids = global.players[player_index].tilegrids
-  local registry = tilegrids.registry[tilegrid_index]
-  destroy_render_objects(registry.objects)
-  tilegrids.editable[tilegrid_index] = nil
-  tilegrids.registry[tilegrid_index] = nil
+function tilegrid.destroy(data)
+  destroy_render_objects(data.objects)
 end
 
 -- destroys and recreates render objects
