@@ -22,10 +22,10 @@ type_to_clamps = {{4,13}, {2,11}}
 
 gui.load_templates{
   pushers = {
-    horizontal = {type='empty-widget', name='pusher', style={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', name='pusher', style={vertically_stretchable=true}}
+    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style={vertically_stretchable=true}}
   },
-  checkbox = {type='checkbox', name='checkkbox', caption='Checkbox'}
+  checkbox = {type='checkbox', caption='Checkbox'}
 }
 gui.load_handlers{
 	auto_clear_checkbox = {
@@ -81,29 +81,27 @@ function self.create(parent, player_index, default_settings)
 	local grid_type = default_settings.grid_type
 	local data = gui.create(parent,
 		{type='frame', name='tl_draw_window', style='dialog_frame', direction='vertical', save_as='window', children={
-			{type='flow', name='checkboxes_flow', direction='horizontal', children={
-				{template='checkbox', name='auto_clear', caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'},
+			{type='flow', direction='horizontal', children={
+				{template='checkbox', caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'},
 					tooltip={'tl-gui-draw.autoclear-checkbox-tooltip'}, state=default_settings.auto_clear, handlers='auto_clear_checkbox', save_as=true},
 				{template='pushers.horizontal'},
-				{template='checkbox', name='cardinals', caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'},
+				{template='checkbox', caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'},
 					tooltip={'tl-gui-draw.cardinals-checkbox-tooltip'}, state=default_settings.cardinals_only, handlers='cardinals_checkbox', save_as=true}
 			}},
-			{type='flow', name='switch_flow', style={vertical_align='center'}, direction='horizontal', children={
-				{type='label', name='label', caption={'tl-gui-draw.type-switch-label'}},
+			{type='flow', style={vertical_align='center'}, direction='horizontal', children={
+				{type='label', caption={'tl-gui-draw.type-switch-label'}},
 				{template='pushers.horizontal'},
-				{type='switch', name='switch', left_label_caption={'tl-gui-draw.type-switch-increment-caption'},
-					right_label_caption={'tl-gui-draw.type-switch-split-caption'}, switch_state=type_to_switch_state[grid_type], handlers='grid_type_switch',
-					save_as=true}
+				{type='switch', left_label_caption={'tl-gui-draw.type-switch-increment-caption'}, right_label_caption={'tl-gui-draw.type-switch-split-caption'},
+					switch_state=type_to_switch_state[grid_type], handlers='grid_type_switch', save_as=true}
 			}},
-			{type='flow', name='divisor_label_flow', style={horizontal_align='center', horizontally_stretchable=true}, children={
-				{type='label', name='label', style='caption_label', caption={'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'},
-					save_as='divisor_label'},
+			{type='flow', style={horizontal_align='center', horizontally_stretchable=true}, children={
+				{type='label', style='caption_label', caption={'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}, save_as='divisor_label'},
 			}},
-			{type='flow', name='divisor_flow', style={horizontal_spacing=8, vertical_align='center'}, direction='horizontal', children={
-				{type='slider', name='slider', style={name='notched_slider', horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
+			{type='flow', style={horizontal_spacing=8, vertical_align='center'}, direction='horizontal', children={
+				{type='slider', style={name='notched_slider', horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
 					maximum_value=type_to_clamps[grid_type][2], value_step=1, value=default_settings[type_index_to_name[grid_type]..'_divisor'], discrete_slider=true,
 					discrete_values=true, handlers='divisor_slider', save_as=true},
-				{type='textfield', name='textfield', style={width=50, horizontal_align='center'}, numeric=true, lose_focus_on_confirm=true,
+				{type='textfield', style={width=50, horizontal_align='center'}, numeric=true, lose_focus_on_confirm=true,
 					text=default_settings[type_index_to_name[grid_type]..'_divisor'], handlers='divisor_textfield', save_as=true}
 			}}
 		}},
