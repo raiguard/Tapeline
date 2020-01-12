@@ -10,7 +10,7 @@ local event_registry = {}
 -- GUI filter matching functions
 local gui_filter_matchers = {
   string = function(element, filter) return element.name:match(filter) end,
-  number = function(element, filter) return element.id == filter end,
+  number = function(element, filter) return element.index == filter end,
   table = function(element, filter) return element == filter end
 }
 -- calls handler functions tied to an event
@@ -41,7 +41,7 @@ local function dispatch_event(e)
     end
     -- insert registered players if necessary
     if options.name then
-      e.registered_players = con_registry[t.name] and con_registry[t.name].players
+      e.registered_players = con_registry[options.name] and con_registry[options.name].players
     end
     -- check GUI filters if they exist
     local filters = options.gui_filters
