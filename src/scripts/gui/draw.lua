@@ -73,7 +73,7 @@ gui.add_handlers('draw', {
 
 function self.create(parent, player_index, default_settings)
 	local grid_type = default_settings.grid_type
-	local data = gui.create(parent, 'edit', player_index,
+	local data = gui.create(parent, 'draw', player_index,
 		{template='window', name='tl_draw_window', children={
 			-- checkboxes
 			{type='flow', direction='horizontal', children={

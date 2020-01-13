@@ -92,7 +92,7 @@ util.gui_templates = {
     horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
     vertical = {type='empty-widget', style={vertically_stretchable=true}}
   },
-  window = {type='frame', style={name=mod_gui.frame_style, width=252}, direction='vertical'}
+  window = {type='frame', style={name=mod_gui.frame_style, width=252}, direction='vertical', save_as='window'}
 }
 
 return util
