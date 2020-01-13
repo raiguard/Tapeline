@@ -1,22 +1,19 @@
--- ----------------------------------------------------------------------------------------------------
--- TAPELINE CONTROL SCRIPTING
+-- -- ----------------------------------------------------------------------------------------------------
+-- -- TAPELINE CONTROL SCRIPTING
 
 -- debug adapter
-pcall(require,'__debugadapter__/debugadapter.lua')
+pcall(require,'__debugadapter__.debugadapter')
 
 -- dependencies
-local event = require('lualib/event')
+local event = require('lualib.event')
 local mod_gui = require('mod-gui')
-local util = require('lualib/util')
+local util = require('lualib.util')
 
 -- modules
-local draw_gui = require('scripts/gui/draw')
-local edit_gui = require('scripts/gui/edit')
-local select_gui = require('scripts/gui/select')
-local tilegrid = require('scripts/tilegrid')
-
--- GLOBAL WIDTH VARIABLE: sets the width for all GUI windows so they're all the same
-gui_window_width = 252
+local draw_gui = require('scripts.gui.draw')
+local edit_gui = require('scripts.gui.edit')
+local select_gui = require('scripts.gui.select')
+local tilegrid = require('scripts.tilegrid')
 
 -- locals
 local abs = math.abs
@@ -219,10 +216,9 @@ local function on_capsule_after_tutorial(e)
     end
   end
 end
---#endregion
 
--- --------------------------------------------------
--- STATIC HANDLERS
+-- -- --------------------------------------------------
+-- -- STATIC HANDLERS
 
 local function setup_player(index)
   global.players[index] = {

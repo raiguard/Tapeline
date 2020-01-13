@@ -1,8 +1,10 @@
 -- ----------------------------------------------------------------------------------------------------
 -- UTILITIES
+-- Not a part of RaiLuaLib
 
-local math2d = require('__core__/lualib/math2d')
-local util = require('__core__/lualib/util')
+local math2d = require('__core__.lualib.math2d')
+local mod_gui = require('mod-gui')
+local util = require('__core__.lualib.util')
 
 util.area = {}
 
@@ -84,5 +86,13 @@ function util.textfield.set_last_valid_value(element, last_value)
   end
   return element.text
 end
+
+util.gui_templates = {
+  pushers = {
+    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style={vertically_stretchable=true}}
+  },
+  window = {type='frame', style={name=mod_gui.frame_style, width=252}, direction='vertical'}
+}
 
 return util

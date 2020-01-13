@@ -2,10 +2,10 @@
 -- DRAW GUI
 -- Edit settings related to drawing tilegrids
 
-local event = require('lualib/event')
-local gui = require('lualib/gui')
+local event = require('lualib.event')
+local gui = require('lualib.gui')
 local mod_gui = require('mod-gui')
-local util = require('lualib/util')
+local util = require('lualib.util')
 
 local self = {}
 
@@ -20,14 +20,8 @@ type_to_clamps = {{4,13}, {2,11}}
 -- --------------------------------------------------
 -- GUI DATA
 
-gui.load_templates{
-  pushers = {
-    horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
-    vertical = {type='empty-widget', style={vertically_stretchable=true}}
-  },
-  checkbox = {type='checkbox', caption='Checkbox'}
-}
-gui.load_handlers{
+gui.add_templates(util.gui_templates)
+gui.add_handlers('draw', {
 	auto_clear_checkbox = {
 		on_checked_state_changed = function(e)
 			local player_table = global.players[e.player_index]
@@ -72,31 +66,35 @@ gui.load_handlers{
 			player_table.settings[type_index_to_name[player_table.settings.grid_type]..'_divisor'] = tonumber(final_text)
 		end
 	}
-}
+})
 
 -- --------------------------------------------------
 -- LIBRARY
 
 function self.create(parent, player_index, default_settings)
 	local grid_type = default_settings.grid_type
-	local data = gui.create(parent,
-		{type='frame', name='tl_draw_window', style='dialog_frame', direction='vertical', save_as='window', children={
+	local data = gui.create(parent, 'edit', player_index,
+		{template='window', name='tl_draw_window', children={
+			-- checkboxes
 			{type='flow', direction='horizontal', children={
-				{template='checkbox', caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'},
+				{type='checkbox', caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'},
 					tooltip={'tl-gui-draw.autoclear-checkbox-tooltip'}, state=default_settings.auto_clear, handlers='auto_clear_checkbox', save_as=true},
 				{template='pushers.horizontal'},
-				{template='checkbox', caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'},
+				{type='checkbox', caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'},
 					tooltip={'tl-gui-draw.cardinals-checkbox-tooltip'}, state=default_settings.cardinals_only, handlers='cardinals_checkbox', save_as=true}
 			}},
+			-- grid type switch
 			{type='flow', style={vertical_align='center'}, direction='horizontal', children={
 				{type='label', caption={'tl-gui-draw.type-switch-label'}},
 				{template='pushers.horizontal'},
 				{type='switch', left_label_caption={'tl-gui-draw.type-switch-increment-caption'}, right_label_caption={'tl-gui-draw.type-switch-split-caption'},
 					switch_state=type_to_switch_state[grid_type], handlers='grid_type_switch', save_as=true}
 			}},
+			-- divisor label
 			{type='flow', style={horizontal_align='center', horizontally_stretchable=true}, children={
 				{type='label', style='caption_label', caption={'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}, save_as='divisor_label'},
 			}},
+			-- divisor slider and textfield
 			{type='flow', style={horizontal_spacing=8, vertical_align='center'}, direction='horizontal', children={
 				{type='slider', style={name='notched_slider', horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
 					maximum_value=type_to_clamps[grid_type][2], value_step=1, value=default_settings[type_index_to_name[grid_type]..'_divisor'], discrete_slider=true,
@@ -104,8 +102,7 @@ function self.create(parent, player_index, default_settings)
 				{type='textfield', style={width=50, horizontal_align='center'}, numeric=true, lose_focus_on_confirm=true,
 					text=default_settings[type_index_to_name[grid_type]..'_divisor'], handlers='divisor_textfield', save_as=true}
 			}}
-		}},
-		{player_index=player_index}
+		}}
 	)
 	return data
 end
@@ -123,7 +120,7 @@ function self.update(player_index)
 end
 
 function self.destroy(window, player_index)
-	gui.destroy(window, player_index)
+	gui.destroy(window, 'draw', player_index)
 end
 
 return self
