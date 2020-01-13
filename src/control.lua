@@ -131,7 +131,7 @@ local function on_edit_capsule(e)
   elseif size == 1 then
     -- skip selection dialog
     local data = player_table.tilegrids.registry[clicked_on[1]]
-    local elems, last_value = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
+    local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
     player_table.tilegrids.editing = clicked_on[1]
     -- create highlight box
     local area = data.area
@@ -143,7 +143,7 @@ local function on_edit_capsule(e)
       player = e.player_index,
       blink_interval = 30
     }
-    player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=last_value}
+    player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=elems.divisor_textfield.text}
   else
     -- show selection dialog
     select_gui.populate_listbox(e.player_index, clicked_on)

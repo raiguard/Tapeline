@@ -34,7 +34,8 @@ gui.add_handlers('select', {
   selection_listbox = {
     on_selection_state_changed = function(e)
       local player_table = global.players[e.player_index]
-      attach_highlight_box(player_table.gui.select, e.player_index, player_table.tilegrids.registry[e.element.selected_index].area)
+      local tilegrid_index = player_table.gui.select.tilegrids[e.element.selected_index]
+      attach_highlight_box(player_table.gui.select, e.player_index, player_table.tilegrids.registry[tilegrid_index].area)
     end
   },
   back_button = {
@@ -55,9 +56,9 @@ gui.add_handlers('select', {
       local tilegrid_index = gui_data.tilegrids[gui_data.elems.selection_listbox.selected_index]
       player_table.tilegrids.editing = tilegrid_index
       local tilegrid_data = player_table.tilegrids.registry[tilegrid_index]
-      local edit_gui_elems, last_value = edit_gui.create(gui_data.elems.window.parent, e.player_index, tilegrid_data.settings, tilegrid_data.hot_corner)
+      local edit_gui_elems = edit_gui.create(gui_data.elems.window.parent, e.player_index, tilegrid_data.settings, tilegrid_data.hot_corner)
       select_gui.destroy(gui_data.elems.window, e.player_index)
-      player_table.gui.edit = {elems=edit_gui_elems, highlight_box=gui_data.highlight_box, last_divisor_value=last_value}
+      player_table.gui.edit = {elems=edit_gui_elems, highlight_box=gui_data.highlight_box, last_divisor_value=edit_gui_elems.divisor_textfield.text}
       player_table.gui.select = nil
     end
   }

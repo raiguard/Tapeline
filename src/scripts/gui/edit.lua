@@ -9,6 +9,8 @@ local util = require('lualib.util')
 
 local tilegrid = require('scripts.tilegrid')
 
+local table_remove = table.remove
+
 local self = {}
 
 -- --------------------------------------------------
@@ -62,6 +64,7 @@ gui.add_handlers('edit', {
 		on_click = function(e)
 			local player_table = global.players[e.player_index]
 			tilegrid.destroy(player_table.tilegrids.registry[player_table.tilegrids.editing])
+			table_remove(player_table.tilegrids.registry, player_table.tilegrids.editing)
 			player_table.tilegrids.editing = false
 			local gui_data = player_table.gui.edit
 			self.destroy(gui_data.elems.window, game.get_player(e.player_index))
@@ -101,6 +104,9 @@ gui.add_handlers('edit', {
 	divisor_slider = {
 		on_value_changed = function(e)
 			local player_table = global.players[e.player_index]
+			local gui_data = player_table.gui.edit
+			if e.element.slider_value == tonumber(gui_data.last_divisor_value) then return end
+			gui_data.last_divisor_value = tostring(e.element.slider_value)
 			local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
 			local textfield = player_table.gui.edit.elems.divisor_textfield
 			local divisor_name = type_index_to_name[data.settings.grid_type]..'_divisor'

@@ -3,7 +3,7 @@
 -- Contains logic for creating, destroying, and updating tilegrids
 
 local util = require('lualib.util')
-local tilegrid = {}
+local self = {}
 
 local draw_rectangle = rendering.draw_rectangle
 local draw_line = rendering.draw_line
@@ -275,7 +275,7 @@ local function destroy_render_objects(objects)
   end
 end
 
-function tilegrid.construct(tile_pos, player_index, surface_index)
+function self.construct(tile_pos, player_index, surface_index)
   local center = util.position.add(tile_pos, {x=0.5, y=0.5})
   local area = util.area.add_data(util.position.to_tile_area(center))
   area.origin = center
@@ -296,7 +296,7 @@ function tilegrid.construct(tile_pos, player_index, surface_index)
   global.players[player_index].tilegrids.drawing = registry
 end
 
-function tilegrid.update(tile_pos, data)
+function self.update(tile_pos, data)
   local area = data.area
   -- update hot corner
   data.prev_hot_corner = data.hot_corner
@@ -330,12 +330,12 @@ function tilegrid.update(tile_pos, data)
   update_render_objects(data)
 end
 
-function tilegrid.destroy(data)
+function self.destroy(data)
   destroy_render_objects(data.objects)
 end
 
 -- destroys and recreates render objects
-function tilegrid.refresh(data, player_index)
+function self.refresh(data, player_index)
   data.area.width_changed = true
   data.area.height_changed = true
   destroy_render_objects(data.objects)
@@ -343,4 +343,4 @@ function tilegrid.refresh(data, player_index)
   update_render_objects(data)
 end
 
-return tilegrid
+return self
