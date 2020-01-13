@@ -77,22 +77,22 @@ function self.create(parent, player_index, default_settings)
 		{template='window', name='tl_draw_window', children={
 			-- checkboxes
 			{type='flow', direction='horizontal', children={
-				{type='checkbox', caption={'', {'tl-gui-draw.autoclear-checkbox-caption'}, ' [img=info]'},
-					tooltip={'tl-gui-draw.autoclear-checkbox-tooltip'}, state=default_settings.auto_clear, handlers='auto_clear_checkbox', save_as=true},
+				{type='checkbox', caption={'', {'tl-gui.auto-clear'}, ' [img=info]'}, tooltip={'tl-gui.auto-clear-tooltip'}, state=default_settings.auto_clear,
+					handlers='auto_clear_checkbox', save_as=true},
 				{template='pushers.horizontal'},
-				{type='checkbox', caption={'', {'tl-gui-draw.cardinals-checkbox-caption'}, ' [img=info]'},
-					tooltip={'tl-gui-draw.cardinals-checkbox-tooltip'}, state=default_settings.cardinals_only, handlers='cardinals_checkbox', save_as=true}
+				{type='checkbox', caption={'', {'tl-gui.cardinals-only'}, ' [img=info]'}, tooltip={'tl-gui.cardinals-only-tooltip'},
+					state=default_settings.cardinals_only, handlers='cardinals_checkbox', save_as=true}
 			}},
 			-- grid type switch
 			{type='flow', style={vertical_align='center'}, direction='horizontal', children={
-				{type='label', caption={'tl-gui-draw.type-switch-label'}},
+				{type='label', caption={'tl-gui.grid-type'}},
 				{template='pushers.horizontal'},
-				{type='switch', left_label_caption={'tl-gui-draw.type-switch-increment-caption'}, right_label_caption={'tl-gui-draw.type-switch-split-caption'},
+				{type='switch', left_label_caption={'tl-gui.gridtype-increment'}, right_label_caption={'tl-gui.gridtype-split'},
 					switch_state=type_to_switch_state[grid_type], handlers='grid_type_switch', save_as=true}
 			}},
 			-- divisor label
 			{type='flow', style={horizontal_align='center', horizontally_stretchable=true}, children={
-				{type='label', style='caption_label', caption={'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}, save_as='divisor_label'},
+				{type='label', style='caption_label', caption={'tl-gui.'..type_index_to_name[grid_type]..'-divisor-label'}, save_as='divisor_label'},
 			}},
 			-- divisor slider and textfield
 			{type='flow', style={horizontal_spacing=8, vertical_align='center'}, direction='horizontal', children={
@@ -113,7 +113,7 @@ function self.update(player_index)
 	local elems = player_table.gui.draw.elems
 	-- update values and names of divisor elements
 	local grid_type = settings.grid_type
-	elems.divisor_label.caption = {'tl-gui-draw.'..type_index_to_name[grid_type]..'-divisor-label-caption'}
+	elems.divisor_label.caption = {'tl-gui.'..type_index_to_name[grid_type]..'-divisor-label'}
 	elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
 	elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type]..'_divisor']
 	elems.divisor_textfield.text = settings[type_index_to_name[grid_type]..'_divisor']

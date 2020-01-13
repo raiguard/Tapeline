@@ -91,7 +91,7 @@ local function recursive_load(parent, t, output, name, player_index)
     end
     for n,func in pairs(t.handlers) do
       local con_name = elem.index..'_'..n
-      local event_name = string_gsub(n, 'on_', 'on_gui_')
+      local event_name = string_gsub(n, '^on_', 'on_gui_')
       if type(func) == 'string' then
         path = prefix..func
         func = get_subtable(prefix..func, handlers)

@@ -335,13 +335,12 @@ function tilegrid.destroy(data)
 end
 
 -- destroys and recreates render objects
-function tilegrid.refresh(player_index, tilegrid_index)
-  local registry = global.tilegrids.registry[tilegrid_index]
-  registry.area.width_changed = true
-  registry.area.height_changed = true
-  destroy_render_objects(registry.objects)
-  registry.objects = construct_render_objects(registry)
-  update_render_objects(registry)
+function tilegrid.refresh(data, player_index)
+  data.area.width_changed = true
+  data.area.height_changed = true
+  destroy_render_objects(data.objects)
+  data.objects = construct_render_objects(data)
+  update_render_objects(data)
 end
 
 return tilegrid

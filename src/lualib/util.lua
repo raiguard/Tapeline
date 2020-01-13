@@ -92,7 +92,9 @@ util.gui_templates = {
     horizontal = {type='empty-widget', style={horizontally_stretchable=true}},
     vertical = {type='empty-widget', style={vertically_stretchable=true}}
   },
-  window = {type='frame', style={name=mod_gui.frame_style, width=252}, direction='vertical', save_as='window'}
+  window = {type='frame', style={width=252}, direction='vertical', save_as='window'},
+  horizontally_centered_flow = {type='flow', style={horizontal_align='center', horizontally_stretchable=true}, direction='vertical'},
+  vertically_centered_flow = {type='flow', style={vertical_align='center'}, direction='horizontal'}
 }
 
 return util

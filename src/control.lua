@@ -132,7 +132,7 @@ local function on_edit_capsule(e)
     -- skip selection dialog
     local data = player_table.tilegrids.registry[clicked_on[1]]
     local elems, last_value = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
-    player_table.flags.editing = clicked_on[1]
+    player_table.tilegrids.editing = clicked_on[1]
     -- create highlight box
     local area = data.area
     local highlight_box = player.surface.create_entity{
@@ -156,7 +156,7 @@ end
 local function on_adjust_capsule(e)
   if e.item.name ~= 'tapeline-adjust' then return end
   local player_table = global.players[e.player_index]
-  local registry = global.tilegrids.registry[player_table.flags.editing]
+  local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
   local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
   if game.tick - player_table.last_capsule_tick > global.end_wait then
     player_table.last_capsule_tile = nil
@@ -164,7 +164,7 @@ local function on_adjust_capsule(e)
   local prev_tile = player_table.last_capsule_tile
   if prev_tile == nil then
     -- check if the player is actually on the grid
-    if util.area.contains_point(registry.area, cur_tile) then
+    if util.area.contains_point(data.area, cur_tile) then
       player_table.last_capsule_tile = cur_tile
     end
   else
@@ -174,12 +174,12 @@ local function on_adjust_capsule(e)
       local vector = util.position.subtract(cur_tile, prev_tile)
       -- apply to area and recreate constants
       local area = util.area.add_data{
-        left_top = util.position.add(registry.area.left_top, vector),
-        right_bottom = util.position.add(registry.area.right_bottom, vector),
-        origin = util.position.add(registry.area.origin, vector)
+        left_top = util.position.add(data.area.left_top, vector),
+        right_bottom = util.position.add(data.area.right_bottom, vector),
+        origin = util.position.add(data.area.origin, vector)
       }
-      registry.area = area
-      tilegrid.refresh(player_table.flags.editing)
+      data.area = area
+      tilegrid.refresh(data, e.player_index)
       -- move highlight box
       local gui_data = player_table.gui.edit
       local highlight_box = gui_data.highlight_box.surface.create_entity{
@@ -194,8 +194,6 @@ local function on_adjust_capsule(e)
       gui_data.highlight_box = highlight_box
       -- update capsule tile
       player_table.last_capsule_tile = cur_tile
-      -- update area in editable registry
-      global.tilegrids.editable[player_table.flags.editing].area = area
     end
   end
   player_table.last_capsule_tick = game.tick
