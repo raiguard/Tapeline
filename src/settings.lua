@@ -25,7 +25,7 @@ data:extend{
         type = 'string-setting',
         name = 'tilegrid-background-color',
         setting_type = 'runtime-per-user',
-        default_value = '{a=0.6}',
+        default_value = '{a=0.8}',
         order = 'da'
     },
     {
