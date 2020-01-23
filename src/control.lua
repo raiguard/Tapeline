@@ -2,7 +2,7 @@
 -- TAPELINE CONTROL SCRIPTING
 
 -- debug adapter
-pcall(require,'__debugadapter__.debugadapter')
+pcall(require,'__debugadapter__/debugadapter.lua')
 
 -- dependencies
 local event = require('lualib/event')
@@ -92,7 +92,7 @@ local function on_draw_capsule(e)
   if data then
     local drawing = global.tilegrids.drawing[e.player_index]
     local prev_tile = drawing.last_capsule_pos
-    drawing.last_capsule_tick = game.ticks_played
+    drawing.last_capsule_tick = game.tick
     -- if cardinals only, adjust thrown position
     if data.settings.cardinals_only then
       local origin = data.area.origin
