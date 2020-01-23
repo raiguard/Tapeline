@@ -148,7 +148,7 @@ gui.add_handlers('edit', {
 
 function self.create(parent, player_index, settings, hot_corner)
   local grid_type = settings.grid_type
-  return gui.create(parent, 'edit', player_index,
+  local data = gui.create(parent, 'edit', player_index,
     {template='window', name='tl_edit_window', children={
       {type='flow', direction='horizontal', children={
         -- default titlebar
@@ -193,9 +193,14 @@ function self.create(parent, player_index, settings, hot_corner)
           text=settings[type_index_to_name[grid_type]..'_divisor'], handlers='divisor_textfield', save_as=true}
       }},
       -- reposition button
-      {type='button', style={horizontally_stretchable=true, top_margin=4}, caption={'tl-gui.reposition'}, handlers='reposition_button'}
+      {type='button', style={horizontally_stretchable=true, top_margin=4}, caption={'tl-gui.reposition'}, handlers='reposition_button', save_as=true}
     }}
   )
+  if game.is_multiplayer() then
+    data.reposition_button.enabled = false
+    data.reposition_button.tooltip = {'tl-gui.multiplayer-broken'}
+  end
+  return data
 end
 
 function self.update(player_index, settings)

@@ -18,7 +18,6 @@ local tilegrid = require('scripts/tilegrid')
 -- locals
 local abs = math.abs
 local floor = math.floor
-local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
 local table_remove = table.remove
