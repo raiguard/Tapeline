@@ -6,6 +6,7 @@ Date: 2020.1.23
     - Added tilegrid editor setting to change the grid anchor corner
     - Added the ability to relocate existing tilegrids
   Changes:
+    - The capsule range overlay that appeared when holding the tapeline is now hidden
     - Render objects are now created/destroyed dynamically and others updated, instead of completely redrawing the tilegrid every time it moves
     - Tilegrids are only visible to the player who drew them
     - Visual settings are per-player again
