@@ -124,7 +124,6 @@ local function update_splits(area, surface, lines, div, color, player_index)
     for i,o in ipairs(horizontal) do
       set_from(o, {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)})
       set_to(o, {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)})
-      bring_to_front(o)
     end
   end
   if area.height_changed then
@@ -153,8 +152,14 @@ local function update_splits(area, surface, lines, div, color, player_index)
     for i,o in ipairs(vertical) do
       set_from(o, {x=area.left_top.x+(i*ver_inc), y=area.left_top.y})
       set_to(o, {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y})
-      bring_to_front(o)
     end
+  end
+  -- bring lines to front to preserve draw order
+  for i,o in ipairs(lines.horizontal) do
+    bring_to_front(o)
+  end
+  for i,o in ipairs(lines.vertical) do
+    bring_to_front(o)
   end
 end
 
