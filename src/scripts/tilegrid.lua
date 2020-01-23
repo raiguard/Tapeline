@@ -18,19 +18,19 @@ local set_target = rendering.set_target
 local destroy = rendering.destroy
 local bring_to_front = rendering.bring_to_front
 
-local function create_line(from, to, surface, color, line_width, player_index)
+local function create_line(from, to, surface, color, line_width, draw_on_ground, player_index)
   return draw_line{
     color = color,
     width = line_width,
     from = from,
     to = to,
     surface = surface,
-    draw_on_ground = true,
+    draw_on_ground = draw_on_ground,
     players = {player_index}
   }
 end
 
-local function update_grid(area, surface, pos_data, lines, div, color, line_width, player_index)
+local function update_grid(area, surface, pos_data, lines, div, color, line_width, draw_on_ground, player_index)
   local hor_sign = pos_data.hor_sign
   local ver_sign = pos_data.ver_sign
   local hor_anchor = pos_data.hor_anchor
@@ -43,7 +43,7 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
         vertical[i] = create_line(
           {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y},
           {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y},
-          surface, color, line_width, player_index
+          surface, color, line_width, draw_on_ground, player_index
         )
       end
     else
@@ -66,7 +66,7 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
         horizontal[i] = create_line(
           {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
           {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
-          surface, color, line_width, player_index
+          surface, color, line_width, draw_on_ground, player_index
         )
       end
     else
@@ -82,15 +82,15 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
     end
   end
   -- bring lines to front to preserve draw order
-  for i,o in ipairs(lines.horizontal) do
+  for _,o in ipairs(lines.horizontal) do
     bring_to_front(o)
   end
-  for i,o in ipairs(lines.vertical) do
+  for _,o in ipairs(lines.vertical) do
     bring_to_front(o)
   end
 end
 
-local function update_splits(area, surface, lines, div, color, line_width, player_index)
+local function update_splits(area, surface, lines, div, color, line_width, draw_on_ground, player_index)
   local ver_inc = area.width / div
   local hor_inc = area.height / div
   local horizontal = lines.horizontal
@@ -102,7 +102,7 @@ local function update_splits(area, surface, lines, div, color, line_width, playe
         vertical[i] = create_line(
           {x=area.left_top.x+(i*ver_inc), y=area.left_top.y},
           {x=area.left_top.x+(i*ver_inc), y=area.right_bottom.y},
-          surface, color, player_index
+          surface, color, line_width, draw_on_ground, player_index
         )
       end
     elseif #vertical > div-1 then
@@ -130,7 +130,7 @@ local function update_splits(area, surface, lines, div, color, line_width, playe
         horizontal[i] = create_line(
           {x=area.left_top.x, y=area.left_top.y+(i*hor_inc)},
           {x=area.right_bottom.x, y=area.left_top.y+(i*hor_inc)},
-          surface, color, line_width, player_index
+          surface, color, line_width, draw_on_ground, player_index
         )
       end
     elseif #horizontal > div-1 then
@@ -152,10 +152,10 @@ local function update_splits(area, surface, lines, div, color, line_width, playe
     end
   end
   -- bring lines to front to preserve draw order
-  for i,o in ipairs(lines.horizontal) do
+  for _,o in ipairs(lines.horizontal) do
     bring_to_front(o)
   end
-  for i,o in ipairs(lines.vertical) do
+  for _,o in ipairs(lines.vertical) do
     bring_to_front(o)
   end
 end
@@ -163,6 +163,7 @@ end
 local function construct_render_objects(data, player_index, visual_settings)
   local area = data.area
   local surface = data.surface
+  local draw_on_ground = visual_settings.draw_tilegrid_on_ground
   local objects = {
     background = draw_rectangle{
       color = visual_settings.tilegrid_background_color,
@@ -170,7 +171,7 @@ local function construct_render_objects(data, player_index, visual_settings)
       left_top = area.left_top,
       right_bottom = area.right_bottom,
       surface = surface,
-      draw_on_ground = true,
+      draw_on_ground = draw_on_ground,
       players = {player_index}
     },
     border = draw_rectangle{
@@ -179,7 +180,7 @@ local function construct_render_objects(data, player_index, visual_settings)
       left_top = area.left_top,
       right_bottom = area.right_bottom,
       surface = surface,
-      draw_on_ground = true,
+      draw_on_ground = draw_on_ground,
       players = {player_index}
     },
     labels = {
@@ -253,17 +254,18 @@ local function update_render_objects(data, player_index, visual_settings)
     objects.base_grid.vertical = {}
   end
   local line_width = visual_settings.tilegrid_line_width
-  update_grid(area, surface, pos_data, objects.base_grid, 1, visual_settings.tilegrid_color_1, line_width, player_index)
+  local draw_on_ground = visual_settings.draw_tilegrid_on_ground
+  update_grid(area, surface, pos_data, objects.base_grid, 1, visual_settings.tilegrid_color_1, line_width, draw_on_ground, player_index)
   -- update subgrids if in increment mode
   if data.settings.grid_type == 1 then
     local div = data.settings.increment_divisor
-    update_grid(area, surface, pos_data, objects.subgrid_1, div, visual_settings.tilegrid_color_2, line_width, player_index)
-    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, visual_settings.tilegrid_color_3, line_width, player_index)
-    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, visual_settings.tilegrid_color_4, line_width, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_1, div, visual_settings.tilegrid_color_2, line_width, draw_on_ground, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, visual_settings.tilegrid_color_3, line_width, draw_on_ground, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, visual_settings.tilegrid_color_4, line_width, draw_on_ground, player_index)
   -- update splits if in split mode
   elseif data.settings.grid_type == 2 then
-    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, visual_settings.tilegrid_color_2, line_width, player_index)
-    update_splits(area, surface, objects.subgrid_2, 2, visual_settings.tilegrid_color_3, line_width, player_index)
+    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, visual_settings.tilegrid_color_2, line_width, draw_on_ground, player_index)
+    update_splits(area, surface, objects.subgrid_2, 2, visual_settings.tilegrid_color_3, line_width, draw_on_ground, player_index)
   end
   bring_to_front(objects.border)
 end
