@@ -1,3 +1,5 @@
+if not global.tilegrids then return end
+
 -- remove any highlight boxes
 for _,t in pairs(global.tilegrids) do
   if t.highlight_box and t.highlight_box.valid then

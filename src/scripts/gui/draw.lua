@@ -2,9 +2,7 @@
 -- DRAW GUI
 -- Edit settings related to drawing tilegrids
 
-local event = require('lualib/event')
 local gui = require('lualib/gui')
-local mod_gui = require('mod-gui')
 local util = require('lualib/util')
 
 local self = {}

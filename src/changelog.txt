@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.7.0
+Version: 1.0.0
 Date: 2020.1.23
   Features:
     - Added tilegrid editor setting to change the grid anchor corner

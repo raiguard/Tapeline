@@ -2,9 +2,7 @@
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
-local event = require('lualib/event')
 local gui = require('lualib/gui')
-local mod_gui = require('mod-gui')
 local util = require('lualib/util')
 
 local tilegrid = require('scripts/tilegrid')
