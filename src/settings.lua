@@ -11,7 +11,7 @@ data:extend{
         type = 'double-setting',
         name = 'tilegrid-line-width',
         setting_type = 'runtime-per-user',
-        default_value = 2.0,
+        default_value = 1.5,
         order = 'b'
     },
     {
