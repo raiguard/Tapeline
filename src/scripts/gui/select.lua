@@ -99,7 +99,7 @@ function select_gui.populate_listbox(player_index, tilegrids)
   -- update label caption
   elems.label.caption = {'tl-gui.select-tilegrid'}
   -- attach a highlight box to the first grid on the list
-  attach_highlight_box(gui_data, player_index, registry[1].area)
+  attach_highlight_box(gui_data, player_index, registry[tilegrids[1]].area)
 end
 
 function select_gui.destroy(window, player_index)
