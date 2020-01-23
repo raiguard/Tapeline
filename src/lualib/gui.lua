@@ -3,11 +3,12 @@
 -- GUI templating and event handling
 
 -- dependencies
-local event = require('lualib.event')
-local util = require('__core__.lualib.util')
+local event = require('lualib/event')
+local util = require('__core__/lualib/util')
 
 -- locals
 local global_data
+local string_find = string.find
 local string_gsub = string.gsub
 local string_split = util.split
 local table_deepcopy = table.deepcopy
@@ -32,6 +33,35 @@ local function get_subtable(s, t)
   return o
 end
 
+local function register_handlers(gui_name, handlers_path, options)
+  local handlers_t = get_subtable(gui_name..'.'..handlers_path, handlers)
+  for n,func in pairs(handlers_t) do
+    local t = table.deepcopy(options)
+    t.name = 'gui.'..gui_name..'.'..handlers_path..'.'..n
+    -- add to global table
+    if not global_data[gui_name] then global_data[gui_name] = {} end
+    if not global_data[gui_name][t.player_index] then global_data[gui_name][t.player_index] = {} end
+    global_data[gui_name][t.player_index][t.name] = true
+    if defines.events[n] then n = defines.events[n] end
+    event.register(n, func, t)
+  end
+end
+
+local function deregister_handlers(gui_name, handlers_path, player_index, gui_events)
+  local handlers_t = get_subtable(gui_name..'.'..handlers_path, handlers)
+  gui_events = gui_events or global_data[gui_name][player_index]
+  if type(handlers_t) == 'function' then
+    local name = 'gui.'..gui_name..'.'..handlers_path
+    event.deregister_conditional(handlers_t, name, player_index)
+    gui_events[name] = nil
+  else
+    for n,func in pairs(handlers_t) do
+      event.deregister_conditional(func, n, player_index)
+      gui_events[n] = nil
+    end
+  end
+end
+
 -- recursively load a GUI template
 local function recursive_load(parent, t, output, name, player_index)
   -- load template(s)
@@ -44,72 +74,59 @@ local function recursive_load(parent, t, output, name, player_index)
       t = util.merge{get_subtable(template[i], templates), t}
     end
   end
-  -- format element table
-  local elem_t = table_deepcopy(t)
-  local style = elem_t.style
-  local iterate_style = false
-  if style and type(style) == 'table' then
-    elem_t.style = style.name
-    iterate_style = true
-  end
-  elem_t.children = nil
-  elem_t.handlers = nil
-  elem_t.save_as = nil
-  -- create element
-  local elem = parent.add(elem_t)
-  -- set runtime styles
-  if iterate_style then
-    for k,v in pairs(t.style) do
-      if k ~= 'name' then
-        elem.style[k] = v
+  local elem
+  -- skip all of this if it's a tab-and-content
+  if t.type ~= 'tab-and-content' then
+    -- format element table
+    local elem_t = table_deepcopy(t)
+    local style = elem_t.style
+    local iterate_style = false
+    if style and type(style) == 'table' then
+      elem_t.style = style.name
+      iterate_style = true
+    end
+    elem_t.children = nil
+    -- create element
+    elem = parent.add(elem_t)
+    -- set runtime styles
+    if iterate_style then
+      for k,v in pairs(t.style) do
+        if k ~= 'name' then
+          elem.style[k] = v
+        end
       end
     end
-  end
-  -- apply modifications
-  if t.mods then
-    for k,v in pairs(t.mods) do
-      elem[k] = v
-    end
-  end
-  -- add to output table
-  if t.save_as then
-    if type(t.save_as) == 'boolean' then
-      t.save_as = t.handlers
-    end
-    output[t.save_as] = elem
-  end
-  -- register handlers
-  if t.handlers then
-    local prefix = name..'.'
-    local elem_index = elem.index
-    local path
-    local append_path
-    if type(t.handlers) == 'string' then
-      path = prefix..t.handlers
-      append_path=true
-      t.handlers = get_subtable(prefix..t.handlers, handlers)
-    end
-    for n,func in pairs(t.handlers) do
-      local con_name = elem.index..'_'..n
-      local event_name = string_gsub(n, '^on_', 'on_gui_')
-      if type(func) == 'string' then
-        path = prefix..func
-        func = get_subtable(prefix..func, handlers)
+    -- apply modifications
+    if t.mods then
+      for k,v in pairs(t.mods) do
+        elem[k] = v
       end
-      event[event_name](func, {name=con_name, player_index=player_index, gui_filters=elem_index})
-      if not global_data[name] then global_data[name] = {} end
-      if not global_data[name][player_index] then global_data[name][player_index] = {} end
-      table_insert(global_data[name][player_index], {name=con_name, element=elem, path=append_path and (path..'.'..n) or path})
     end
-  end
-  -- add children
-  local children = t.children
-  if children then
-    for i=1,#children do
-      output = recursive_load(elem, children[i], output, name, player_index)
+    -- add to output table
+    if t.save_as then
+      if type(t.save_as) == 'boolean' then
+        t.save_as = t.handlers
+      end
+      output[t.save_as] = elem
     end
+    -- register handlers
+    if t.handlers then
+      register_handlers(name, t.handlers, {player_index=player_index, gui_filters=elem.index})
+    end
+    -- add children
+    local children = t.children
+    if children then
+      for i=1,#children do
+        output = recursive_load(elem, children[i], output, name, player_index)
+      end
+    end
+  else
+    local tab, content
+    output, tab = recursive_load(parent, t.tab, output, name, player_index)
+    output, content = recursive_load(parent, t.content, output, name, player_index)
+    parent.add_tab(tab, content)
   end
-  return output
+  return output, elem
 end
 
 -- -----------------------------------------------------------------------------
@@ -123,14 +140,9 @@ end)
 event.on_load(function()
   global_data = global.__lualib.gui
   local con_registry = global.__lualib.event
-  for _,pl in pairs(global_data) do
-    for _,el in pairs(pl) do
-      for i=1,#el do
-        local t = el[i]
-        local registry = con_registry[t.name]
-        event.register(registry.id, get_subtable(t.path, handlers), {name=t.name})
-      end
-      break
+  for n,t in pairs(con_registry) do
+    if string_find(n, '^gui%.') then
+      event.register(t.id, get_subtable(string_gsub(n, '^gui%.', ''), handlers), {name=n})
     end
   end
 end)
@@ -139,21 +151,22 @@ end)
 -- OBJECT
 
 function self.create(parent, name, player_index, template)
+  build_data = {}
   return recursive_load(parent, template, {}, name, player_index)
 end
 
-function self.destroy(parent, name, player_index)
-  local gui_tables = global_data[name]
+function self.destroy(parent, gui_name, player_index)
+  -- deregister handlers
+  local gui_tables = global_data[gui_name]
   local list = gui_tables[player_index]
-  for i=1,#list do
-    local t = list[i]
-    local func = get_subtable(t.path, handlers)
-    event.deregister_conditional(func, {name=t.name, player_index=player_index})
+  for n,_ in pairs(list) do
+    deregister_handlers(gui_name, string_gsub(n, '^gui%.'..gui_name..'%.', ''), player_index, list)
   end
   gui_tables[player_index] = nil
   if table_size(gui_tables) == 0 then
-    global_data[name] = nil
+    global_data[gui_name] = nil
   end
+  -- destroy GUI
   parent.destroy()
 end
 
@@ -180,5 +193,8 @@ function self.add_handlers(...)
   end
   return self
 end
+
+self.register_handlers = register_handlers
+self.deregister_handlers = deregister_handlers
 
 return self

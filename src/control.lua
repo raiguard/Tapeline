@@ -5,15 +5,15 @@
 pcall(require,'__debugadapter__.debugadapter')
 
 -- dependencies
-local event = require('lualib.event')
+local event = require('lualib/event')
 local mod_gui = require('mod-gui')
-local util = require('lualib.util')
+local util = require('lualib/util')
 
 -- modules
-local draw_gui = require('scripts.gui.draw')
-local edit_gui = require('scripts.gui.edit')
-local select_gui = require('scripts.gui.select')
-local tilegrid = require('scripts.tilegrid')
+local draw_gui = require('scripts/gui/draw')
+local edit_gui = require('scripts/gui/edit')
+local select_gui = require('scripts/gui/select')
+local tilegrid = require('scripts/tilegrid')
 
 -- locals
 local abs = math.abs
@@ -60,7 +60,7 @@ local function draw_on_tick(e)
     end
   end
   if table_size(drawing) == 0 and table_size(perishing) == 0 then
-    event.deregister(defines.events.on_tick, draw_on_tick, {name='draw_on_tick'})
+    event.deregister(defines.events.on_tick, draw_on_tick, 'draw_on_tick')
   end
 end
 
@@ -210,7 +210,7 @@ local function on_capsule_after_tutorial(e)
         bubble.start_fading_out()
       end
       player_table.bubble = nil
-      event.deregister_conditional(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
+      event.deregister_conditional(on_capsule_after_tutorial, 'on_capsule_after_tutorial', e.player_index)
     end
   end
 end
@@ -318,7 +318,7 @@ event.on_player_cursor_stack_changed(function(e)
   elseif player_gui.draw then
     draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
     player_gui.draw = nil
-    event.deregister(defines.events.on_player_used_capsule, on_draw_capsule, {name='on_draw_capsule', player_index=e.player_index})
+    event.deregister(defines.events.on_player_used_capsule, on_draw_capsule, 'on_draw_capsule', e.player_index)
   end
   -- edit capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-edit' then
@@ -331,7 +331,7 @@ event.on_player_cursor_stack_changed(function(e)
     select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
-    event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, {name='on_edit_capsule', player_index=e.player_index})
+    event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
   end
   -- adjust capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
@@ -345,7 +345,7 @@ event.on_player_cursor_stack_changed(function(e)
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
     player_table.last_capsule_tile = nil
-    event.deregister(defines.events.on_player_used_capsule, on_adjust_capsule, {name='on_adjust_capsule', player_index=e.player_index})
+    event.deregister(defines.events.on_player_used_capsule, on_adjust_capsule, 'on_adjust_capsule', e.player_index)
   end
 end)
 

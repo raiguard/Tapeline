@@ -2,12 +2,12 @@
 -- SELECT GUI
 -- Select which tilegrid to edit
 
-local event = require('lualib.event')
-local gui = require('lualib.gui')
+local event = require('lualib/event')
+local gui = require('lualib/gui')
 local mod_gui = require('mod-gui')
-local util = require('lualib.util')
+local util = require('lualib/util')
 
-local edit_gui = require('scripts.gui.edit')
+local edit_gui = require('scripts/gui/edit')
 
 local select_gui = {}
 
@@ -32,14 +32,14 @@ end
 gui.add_templates(util.gui_templates)
 gui.add_handlers('select', {
   selection_listbox = {
-    on_selection_state_changed = function(e)
+    on_gui_selection_state_changed = function(e)
       local player_table = global.players[e.player_index]
       local tilegrid_index = player_table.gui.select.tilegrids[e.element.selected_index]
       attach_highlight_box(player_table.gui.select, e.player_index, player_table.tilegrids.registry[tilegrid_index].area)
     end
   },
   back_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.select
       player_table.flags.selecting_tilegrid = false
@@ -49,7 +49,7 @@ gui.add_handlers('select', {
     end
   },
   confirm_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       local player_table = global.players[e.player_index]
       player_table.flags.selecting_tilegrid = false
       local gui_data = player_table.gui.select

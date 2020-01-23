@@ -2,12 +2,12 @@
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
-local event = require('lualib.event')
-local gui = require('lualib.gui')
+local event = require('lualib/event')
+local gui = require('lualib/gui')
 local mod_gui = require('mod-gui')
-local util = require('lualib.util')
+local util = require('lualib/util')
 
-local tilegrid = require('scripts.tilegrid')
+local tilegrid = require('scripts/tilegrid')
 
 local table_remove = table.remove
 
@@ -46,7 +46,7 @@ end
 gui.add_templates(util.gui_templates)
 gui.add_handlers('edit', {
   save_changes_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       local player_table = global.players[e.player_index]
       player_table.flags.editing = false
       self.destroy(player_table.gui.edit.elems.window, game.get_player(e.player_index))
@@ -55,13 +55,13 @@ gui.add_handlers('edit', {
     end
   },
   delete_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       e.element.parent.visible = false
       e.element.parent.parent.children[2].visible = true
     end
   },
   confirm_yes_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       local player_table = global.players[e.player_index]
       tilegrid.destroy(player_table.tilegrids.registry[player_table.tilegrids.editing])
       table_remove(player_table.tilegrids.registry, player_table.tilegrids.editing)
@@ -79,13 +79,13 @@ gui.add_handlers('edit', {
     end
   },
   confirm_no_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       e.element.parent.visible = false
       e.element.parent.parent.children[1].visible = true
     end
   },
   origin_dropdown = {
-    on_selection_state_changed = function(e)
+    on_gui_selection_state_changed = function(e)
       local player_table = global.players[e.player_index]
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       data.hot_corner = util.area.opposite_corner(index_to_corner[e.element.selected_index])
@@ -93,7 +93,7 @@ gui.add_handlers('edit', {
     end
   },
   grid_type_switch = {
-    on_switch_state_changed = function(e)
+    on_gui_switch_state_changed = function(e)
       local player_table = global.players[e.player_index]
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       data.settings.grid_type = switch_state_to_type_index[e.element.switch_state]
@@ -102,7 +102,7 @@ gui.add_handlers('edit', {
     end
   },
   divisor_slider = {
-    on_value_changed = function(e)
+    on_gui_value_changed = function(e)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.edit
       if e.element.slider_value == tonumber(gui_data.last_divisor_value) then return end
@@ -116,7 +116,7 @@ gui.add_handlers('edit', {
     end
   },
   divisor_textfield = {
-    on_text_changed = function(e)
+    on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
       local settings_table = get_settings_table(e.player_index)
       local gui_data = player_table.gui.edit
@@ -126,7 +126,7 @@ gui.add_handlers('edit', {
         gui_data.elems.divisor_slider.slider_value = new_value
       end
     end,
-    on_confirmed = function(e)
+    on_gui_confirmed = function(e)
       local player_table = global.players[e.player_index]
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       local final_text = util.textfield.set_last_valid_value(e.element, player_table.gui.edit.last_divisor_value)
@@ -135,7 +135,7 @@ gui.add_handlers('edit', {
     end
   },
   reposition_button = {
-    on_click = function(e)
+    on_gui_click = function(e)
       local player = game.get_player(e.player_index)
       player.clean_cursor()
       player.cursor_stack.set_stack{name='tapeline-adjust'}
@@ -155,7 +155,7 @@ function self.create(parent, player_index, settings, hot_corner)
         {template='vertically_centered_flow', children={
           {type='label', style='heading_1_label', caption={'tl-gui.edit-settings'}},
           {template='pushers.horizontal'},
-          {type='sprite-button', style={name='item_and_count_select_confirm', top_margin=0}, sprite='utility/check_mark', tooltip={'tl-gui.save-changes'},
+          {type='sprite-button', style={name='tl_green_icon_button', top_margin=0}, sprite='utility/confirm_slot', tooltip={'tl-gui.save-changes'},
             handlers='save_changes_button'},
           {type='sprite-button', style='red_icon_button', sprite='utility/trash', tooltip={'tl-gui.delete-tilegrid'}, handlers='delete_button'}
         }},

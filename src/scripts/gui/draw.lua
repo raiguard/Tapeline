@@ -2,10 +2,10 @@
 -- DRAW GUI
 -- Edit settings related to drawing tilegrids
 
-local event = require('lualib.event')
-local gui = require('lualib.gui')
+local event = require('lualib/event')
+local gui = require('lualib/gui')
 local mod_gui = require('mod-gui')
-local util = require('lualib.util')
+local util = require('lualib/util')
 
 local self = {}
 
@@ -23,26 +23,26 @@ type_to_clamps = {{4,13}, {2,11}}
 gui.add_templates(util.gui_templates)
 gui.add_handlers('draw', {
   auto_clear_checkbox = {
-    on_checked_state_changed = function(e)
+    on_gui_checked_state_changed = function(e)
       local player_table = global.players[e.player_index]
       player_table.settings.auto_clear = e.element.state
     end
   },
   cardinals_checkbox = {
-    on_checked_state_changed = function(e)
+    on_gui_checked_state_changed = function(e)
       local player_table = global.players[e.player_index]
       player_table.settings.cardinals_only = e.element.state
     end
   },
   grid_type_switch = {
-    on_switch_state_changed = function(e)
+    on_gui_switch_state_changed = function(e)
       local player_table = global.players[e.player_index]
       player_table.settings.grid_type = switch_state_to_type_index[e.element.switch_state]
       self.update(e.player_index)
     end
   },
   divisor_slider = {
-    on_value_changed = function(e)
+    on_gui_value_changed = function(e)
       local player_table = global.players[e.player_index]
       local textfield = player_table.gui.draw.elems.divisor_textfield
       local divisor_name = type_index_to_name[player_table.settings.grid_type]..'_divisor'
@@ -51,7 +51,7 @@ gui.add_handlers('draw', {
     end
   },
   divisor_textfield = {
-    on_text_changed = function(e)
+    on_gui_text_changed = function(e)
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.draw
       local new_value = util.textfield.clamp_number_input(e.element, type_to_clamps[player_table.settings.grid_type], gui_data.last_divisor_value)
@@ -60,7 +60,7 @@ gui.add_handlers('draw', {
         gui_data.elems.divisor_slider.slider_value = new_value
       end
     end,
-    on_confirmed = function(e)
+    on_gui_confirmed = function(e)
       local player_table = global.players[e.player_index]
       local final_text = util.textfield.set_last_valid_value(e.element, player_table.gui.draw.last_divisor_value)
       player_table.settings[type_index_to_name[player_table.settings.grid_type]..'_divisor'] = tonumber(final_text)
