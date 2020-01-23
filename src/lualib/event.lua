@@ -56,6 +56,9 @@ local function dispatch_event(e)
       e.registered_players = con_data.players
       -- if there are GUI filters, check them
       gui_filters = con_data.gui_filters[e.player_index]
+      if not gui_filters and table_size(con_data.gui_filters) > 0 then
+        goto continue
+      end
     else
       gui_filters = t.gui_filters
     end
@@ -86,7 +89,6 @@ local function dispatch_event(e)
       game.force_crc()
     end
   end
-  log(serpent.block(event_registry[3]))
   return event
 end
 -- pass-through handlers for special events
@@ -129,13 +131,13 @@ function event.register(id, handler, options)
     if not t then
       global_data[name] = {id=id, players={}, gui_filters={}}
       t = global_data[name]
-    else
+    elseif player_index then
       -- check if the player already registered this event
       local players = t.players
       for i=1,#players do
         if players[i] == player_index then
           -- don't do anything
-          log('Tried to re-register a conditional event for player '..player_index..', skipping!')
+          log('Tried to re-register \''..name..'\' for player '..player_index..', skipping!')
           return event
         end
       end
@@ -149,7 +151,9 @@ function event.register(id, handler, options)
         error('Must specify a player_index when using gui filters on a conditional event.')
       end
     end
-    table_insert(t.players, player_index)
+    if player_index then
+      table_insert(t.players, player_index)
+    end
     if skip_registration then return event end
   end
   -- register handler
@@ -306,7 +310,7 @@ function event.load_conditional_handlers(data)
   for name, handler in pairs(data) do
     local registry = global_data[name]
     if registry then
-        event.register(registry.id, handler, {name=name, gui_filters=registry.gui_filters})
+      event.register(registry.id, handler, {name=name})
     end
   end
   return event
