@@ -1,4 +1,4 @@
--- ----------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
@@ -13,7 +13,7 @@ local table_remove = table.remove
 
 local self = {}
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- LOCAL UTILITIES
 
 type_to_switch_state = {'left', 'right'}
@@ -40,7 +40,7 @@ local function get_settings_table(player_index)
   return tilegrids.registry[tilegrids.editing].settings
 end
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- GUI DATA
 
 gui.add_templates(util.gui_templates)
@@ -48,7 +48,7 @@ gui.add_handlers('edit', {
   save_changes_button = {
     on_gui_click = function(e)
       local player_table = global.players[e.player_index]
-      player_table.flags.editing = false
+      player_table.tilegrids.editing = false
       self.destroy(player_table.gui.edit.elems.window, game.get_player(e.player_index))
       player_table.gui.edit.highlight_box.destroy()
       player_table.gui.edit = nil
@@ -89,7 +89,7 @@ gui.add_handlers('edit', {
       local player_table = global.players[e.player_index]
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       data.hot_corner = util.area.opposite_corner(index_to_corner[e.element.selected_index])
-      tilegrid.refresh(data, e.player_index)
+      tilegrid.refresh(data, e.player_index, player_table.settings.visual)
     end
   },
   grid_type_switch = {
@@ -97,8 +97,8 @@ gui.add_handlers('edit', {
       local player_table = global.players[e.player_index]
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       data.settings.grid_type = switch_state_to_type_index[e.element.switch_state]
-      self.update(e.player_index)
-      tilegrid.refresh(data, e.player_index)
+      self.update(e.player_index, data.settings)
+      tilegrid.refresh(data, e.player_index, player_table.settings.visual)
     end
   },
   divisor_slider = {
@@ -112,7 +112,7 @@ gui.add_handlers('edit', {
       local divisor_name = type_index_to_name[data.settings.grid_type]..'_divisor'
       data.settings[divisor_name] = e.element.slider_value
       textfield.text = e.element.slider_value
-      tilegrid.refresh(data, e.player_index)
+      tilegrid.refresh(data, e.player_index, player_table.settings.visual)
     end
   },
   divisor_textfield = {
@@ -131,7 +131,7 @@ gui.add_handlers('edit', {
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
       local final_text = util.textfield.set_last_valid_value(e.element, player_table.gui.edit.last_divisor_value)
       data.settings[type_index_to_name[data.settings.grid_type]..'_divisor'] = tonumber(final_text)
-      tilegrid.refresh(data, e.player_index)
+      tilegrid.refresh(data, e.player_index, player_table.settings.visual)
     end
   },
   reposition_button = {
@@ -143,7 +143,7 @@ gui.add_handlers('edit', {
   }
 })
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- LIBRARY
 
 function self.create(parent, player_index, settings, hot_corner)
@@ -198,9 +198,9 @@ function self.create(parent, player_index, settings, hot_corner)
   )
 end
 
-function self.update(player_index)
+function self.update(player_index, settings)
   local player_table = global.players[player_index]
-  local settings = player_table.settings
+  settings = settings or player_table.tilegrids.registry[player_table.tilegrids.editing]
   local elems = player_table.gui.edit.elems
   -- update values and names of divisor elements
   local grid_type = settings.grid_type

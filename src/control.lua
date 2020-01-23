@@ -1,5 +1,5 @@
--- -- ----------------------------------------------------------------------------------------------------
--- -- TAPELINE CONTROL SCRIPTING
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- TAPELINE CONTROL SCRIPTING
 
 -- debug adapter
 pcall(require,'__debugadapter__.debugadapter')
@@ -18,11 +18,24 @@ local tilegrid = require('scripts/tilegrid')
 -- locals
 local abs = math.abs
 local floor = math.floor
-local TEMP_TILEGRID_CLEAR_DELAY = 60
+local string_find = string.find
+local string_gsub = string.gsub
 local table_insert = table.insert
 local table_remove = table.remove
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
+-- UTILITIES
+
+-- gets the values of all player mod settings and sticks them into the player's table
+local function update_player_visual_settings(player_index, player)
+  local t = global.players[player_index].settings.visual
+  for k,vt in pairs(player.mod_settings) do
+    -- use load() to convert table strings to actual tables
+    t[string_gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+  end
+end
+
+-- -----------------------------------------------------------------------------
 -- CONDITIONAL HANDLERS
 
 -- finish drawing tilegrids, perish tilegrids
@@ -35,6 +48,7 @@ local function draw_on_tick(e)
     if t.last_capsule_tick + end_wait < cur_tick then
       -- finish up tilegrid
       local player_table = global.players[i]
+      local visual_settings = player_table.settings.visual
       local data = player_table.tilegrids.drawing
       -- if the grid is 1x1, just delete it
       if data.area.width == 1 and data.area.height == 1 then
@@ -42,10 +56,15 @@ local function draw_on_tick(e)
       else
         if data.settings.auto_clear then
           -- add to perishing table
-          table_insert(perishing, util.merge{{tick=cur_tick+TEMP_TILEGRID_CLEAR_DELAY, player_index=i}, data})
+          table_insert(perishing, util.merge{{tick=cur_tick+floor(visual_settings.tilegrid_clear_delay*60), player_index=i}, data})
         else
           -- add to editable table
           table_insert(player_table.tilegrids.registry, table.deepcopy(data))
+        end
+        -- log selection dimensions
+        if visual_settings.log_selection_area then
+          local area = data.area
+          game.get_player(i).print('Dimensions: '..area.width..'x'..area.height)
         end
       end
       player_table.tilegrids.drawing = false
@@ -88,11 +107,11 @@ local function on_draw_capsule(e)
     if prev_tile.x ~= cur_tile.x or prev_tile.y ~= cur_tile.y then
       -- update existing tilegrid
       drawing.last_capsule_pos = cur_tile
-      tilegrid.update(cur_tile, data)
+      tilegrid.update(cur_tile, data, e.player_index, player_table.settings.visual)
     end
   else
     -- create new tilegrid
-    tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index)
+    tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index, player_table.settings.visual)
     -- register on_tick
     if not event.is_registered('draw_on_tick') then
       event.on_tick(draw_on_tick, {name='draw_on_tick', skip_validation=true})
@@ -179,7 +198,7 @@ local function on_adjust_capsule(e)
         origin = util.position.add(data.area.origin, vector)
       }
       data.area = area
-      tilegrid.refresh(data, e.player_index)
+      tilegrid.refresh(data, e.player_index, player_table.settings.visual)
       -- move highlight box
       local gui_data = player_table.gui.edit
       local highlight_box = gui_data.highlight_box.surface.create_entity{
@@ -215,7 +234,7 @@ local function on_capsule_after_tutorial(e)
   end
 end
 
--- -- --------------------------------------------------
+-- -- -----------------------------------------------------------------------------
 -- -- STATIC HANDLERS
 
 local function setup_player(index)
@@ -235,7 +254,7 @@ local function setup_player(index)
       grid_type = 1,
       increment_divisor = 5,
       split_divisor = 4,
-      log_to_chat = game.get_player(index).mod_settings['log-selection-area'].value
+      visual = {}
     },
     tilegrids = {
       drawing = false,
@@ -273,6 +292,7 @@ event.on_init(function()
   -- create player data for any existing players
   for i,player in pairs(game.players) do
     setup_player(i)
+    update_player_visual_settings(i, player)
   end
 end)
 
@@ -285,6 +305,20 @@ event.on_load(function()
     on_adjust_capsule = on_adjust_capsule,
     on_capsule_after_tutorial = on_capsule_after_tutorial
   }
+end)
+
+event.on_runtime_mod_setting_changed(function(e)
+  update_player_visual_settings(e.player_index, game.get_player(e.player_index))
+  local name = e.setting
+  if name ~= 'tilegrid-clear-delay' and name ~= 'log-selection-area' then
+    -- refresh all persistent tilegrids for the player
+    local player_table = global.players[e.player_index]
+    local visual_settings = player_table.settings.visual
+    local registry = player_table.tilegrids.registry
+    for i=1,#registry do
+      tilegrid.refresh(registry[i], e.player_index, visual_settings)
+    end
+  end
 end)
 
 -- when a player's cursor stack changes
@@ -302,7 +336,7 @@ event.on_player_cursor_stack_changed(function(e)
       player.clean_cursor()
       player.print{'tl.finish-selection-first'}
       return
-    elseif player_table.flags.editing then
+    elseif player_table.tilegrids.editing ~= false then
       player.clean_cursor()
       player.print{'tl.finish-editing-first'}
       return
@@ -310,7 +344,6 @@ event.on_player_cursor_stack_changed(function(e)
     if player_table.flags.capsule_tutorial_shown == false then
       -- show tutorial bubble
       show_tutorial(player, player_table, 'capsule')
-      event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
     end
     local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
     player_gui.draw = {elems=elems, last_divisor_value=last_value}
@@ -340,7 +373,6 @@ event.on_player_cursor_stack_changed(function(e)
     if not player_table.flags.adjustment_tutorial_shown then
       -- show tutorial bubble
       show_tutorial(player, player_table, 'adjustment')
-      event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=e.player_index})
     end
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
@@ -351,6 +383,7 @@ end)
 
 event.on_player_created(function(e)
   setup_player(e.player_index)
+  update_player_visual_settings(e.player_index, game.get_player(e.player_index))
 end)
 
 event.on_player_joined_game(function(e)

@@ -1,8 +1,16 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.7.0
-Date: 2019.12.01
+Date: 2020.1.23
+  Features:
+    - Added tilegrid editor setting to change the grid anchor corner
+    - Added the ability to relocate existing tilegrids
   Changes:
-    - Removed STDLIB depencency
+    - Render objects are now created/destroyed dynamically and others updated, instead of completely redrawing the tilegrid every time it moves
+    - Tilegrids are only visible to the player who drew them
+    - Visual settings are per-player again
+    - Color settings are no longer pre-determined and can be fully customized
+    - Removed depency on the STDLIB mod
+    - Removed tilegrid settings buttons. Tilegrids are now edited by clicking on them with the edit capsule
 
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.1

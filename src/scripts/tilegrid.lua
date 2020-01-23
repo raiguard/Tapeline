@@ -1,4 +1,4 @@
--- ----------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- TILEGRID
 -- Contains logic for creating, destroying, and updating tilegrids
 
@@ -158,12 +158,12 @@ local function update_splits(area, surface, lines, div, color, player_index)
   end
 end
 
-local function construct_render_objects(data, player_index)
+local function construct_render_objects(data, player_index, visual_settings)
   local area = data.area
   local surface = data.surface
   local objects = {
     background = draw_rectangle{
-      color = {a=0.6},
+      color = visual_settings.tilegrid_background_color,
       filled = true,
       left_top = area.left_top,
       right_bottom = area.right_bottom,
@@ -172,7 +172,7 @@ local function construct_render_objects(data, player_index)
       players = {player_index}
     },
     border = draw_rectangle{
-      color = {r=0.8,g=0.8,b=0.8},
+      color = visual_settings.tilegrid_border_color,
       width = line_width,
       left_top = area.left_top,
       right_bottom = area.right_bottom,
@@ -185,7 +185,7 @@ local function construct_render_objects(data, player_index)
         text = area.width,
         surface = surface,
         target = {x=area.midpoints.x, y=area.left_top.y-0.85},
-        color = {r=0.8,g=0.8,b=0.8},
+        color = visual_settings.tilegrid_label_color,
         scale = 1.5,
         alignment = 'center',
         visible = false,
@@ -195,7 +195,7 @@ local function construct_render_objects(data, player_index)
         text = area.height,
         surface = surface,
         target = {x=area.left_top.x-0.85, y=area.midpoints.y},
-        color = {r=0.8,g=0.8,b=0.8},
+        color = visual_settings.tilegrid_label_color,
         scale = 1.5,
         orientation = 0.75,
         alignment = 'center',
@@ -211,7 +211,7 @@ local function construct_render_objects(data, player_index)
   return objects
 end
 
-local function update_render_objects(data, player_index)
+local function update_render_objects(data, player_index, visual_settings)
   local area = data.area
   local objects = data.objects
   local surface = data.surface
@@ -250,17 +250,17 @@ local function update_render_objects(data, player_index)
     end
     objects.base_grid.vertical = {}
   end
-  update_grid(area, surface, pos_data, objects.base_grid, 1, {r=0.5, g=0.5, b=0.5}, player_index)
+  update_grid(area, surface, pos_data, objects.base_grid, 1, visual_settings.tilegrid_color_1, player_index)
   -- update subgrids if in increment mode
   if data.settings.grid_type == 1 then
     local div = data.settings.increment_divisor
-    update_grid(area, surface, pos_data, objects.subgrid_1, div, {r=0.4, g=0.8, b=0.4}, player_index)
-    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, {r=0.8, g=0.3, b=0.3}, player_index)
-    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, {r=0.8, g=0.8, b=0.3}, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_1, div, visual_settings.tilegrid_color_2, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_2, div^2, visual_settings.tilegrid_color_3, player_index)
+    update_grid(area, surface, pos_data, objects.subgrid_3, div^3, visual_settings.tilegrid_color_4, player_index)
   -- update splits if in split mode
   elseif data.settings.grid_type == 2 then
-    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, {r=0.4, g=0.8, b=0.4}, player_index)
-    update_splits(area, surface, objects.subgrid_2, 2, {r=0.8, g=0.4, b=0.4}, player_index)
+    update_splits(area, surface, objects.subgrid_1, data.settings.split_divisor, visual_settings.tilegrid_color_2, player_index)
+    update_splits(area, surface, objects.subgrid_2, 2, visual_settings.tilegrid_color_3, player_index)
   end
   bring_to_front(objects.border)
 end
@@ -275,7 +275,7 @@ local function destroy_render_objects(objects)
   end
 end
 
-function self.construct(tile_pos, player_index, surface_index)
+function self.construct(tile_pos, player_index, surface_index, visual_settings)
   local center = util.position.add(tile_pos, {x=0.5, y=0.5})
   local area = util.area.add_data(util.position.to_tile_area(center))
   area.origin = center
@@ -291,12 +291,12 @@ function self.construct(tile_pos, player_index, surface_index)
     surface = game.get_player(player_index).surface.index,
     settings = global.players[player_index].settings
   }
-  registry.objects = construct_render_objects(registry)
+  registry.objects = construct_render_objects(registry, player_index, visual_settings)
   global.tilegrids.drawing[player_index] = drawing
   global.players[player_index].tilegrids.drawing = registry
 end
 
-function self.update(tile_pos, data)
+function self.update(tile_pos, data, player_index, visual_settings)
   local area = data.area
   -- update hot corner
   data.prev_hot_corner = data.hot_corner
@@ -327,7 +327,7 @@ function self.update(tile_pos, data)
     height_changed = area.height ~= height and true or false
   }
   -- update render objects
-  update_render_objects(data)
+  update_render_objects(data, player_index, visual_settings)
 end
 
 function self.destroy(data)
@@ -335,12 +335,12 @@ function self.destroy(data)
 end
 
 -- destroys and recreates render objects
-function self.refresh(data, player_index)
+function self.refresh(data, player_index, visual_settings)
   data.area.width_changed = true
   data.area.height_changed = true
   destroy_render_objects(data.objects)
-  data.objects = construct_render_objects(data)
-  update_render_objects(data)
+  data.objects = construct_render_objects(data, player_index, visual_settings)
+  update_render_objects(data, player_index, visual_settings)
 end
 
 return self
