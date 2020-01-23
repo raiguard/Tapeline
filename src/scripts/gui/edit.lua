@@ -104,9 +104,9 @@ gui.add_handlers('edit', {
       local player_table = global.players[e.player_index]
       local gui_data = player_table.gui.edit
       if e.element.slider_value == tonumber(gui_data.last_divisor_value) then return end
-      gui_data.last_divisor_value = tostring(e.element.slider_value)
+      gui_data.last_divisor_value = e.element.slider_value
       local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
-      local textfield = player_table.gui.edit.elems.divisor_textfield
+      local textfield = gui_data.elems.divisor_textfield
       local divisor_name = type_index_to_name[data.settings.grid_type]..'_divisor'
       data.settings[divisor_name] = e.element.slider_value
       textfield.text = e.element.slider_value
@@ -187,7 +187,7 @@ function self.create(parent, player_index, settings, hot_corner)
         {type='slider', style={name='notched_slider', horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
           maximum_value=type_to_clamps[grid_type][2], value_step=1, value=settings[type_index_to_name[grid_type]..'_divisor'], discrete_slider=true,
           discrete_values=true, handlers='divisor_slider', save_as=true},
-        {type='textfield', style={width=50, horizontal_align='center'}, numeric=true, lose_focus_on_confirm=true,
+        {type='textfield', style='tl_slider_textfield', numeric=true, lose_focus_on_confirm=true,
           text=settings[type_index_to_name[grid_type]..'_divisor'], handlers='divisor_textfield', save_as=true}
       }},
       -- reposition button

@@ -42,10 +42,12 @@ gui.add_handlers('draw', {
   divisor_slider = {
     on_gui_value_changed = function(e)
       local player_table = global.players[e.player_index]
-      local textfield = player_table.gui.draw.elems.divisor_textfield
+      local gui_data = player_table.gui.draw
       local divisor_name = type_index_to_name[player_table.settings.grid_type]..'_divisor'
+      if e.element.slider_value == tonumber(gui_data.last_divisor_value) then return end
+      gui_data.last_divisor_value = e.element.slider_value
       player_table.settings[divisor_name] = e.element.slider_value
-      textfield.text = e.element.slider_value
+      gui_data.elems.divisor_textfield.text = e.element.slider_value
     end
   },
   divisor_textfield = {
@@ -97,7 +99,7 @@ function self.create(parent, player_index, default_settings)
         {type='slider', style={name='notched_slider', horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
           maximum_value=type_to_clamps[grid_type][2], value_step=1, value=default_settings[type_index_to_name[grid_type]..'_divisor'], discrete_slider=true,
           discrete_values=true, handlers='divisor_slider', save_as=true},
-        {type='textfield', style={width=50, horizontal_align='center'}, numeric=true, lose_focus_on_confirm=true,
+        {type='textfield', style='tl_slider_textfield', numeric=true, lose_focus_on_confirm=true,
           text=default_settings[type_index_to_name[grid_type]..'_divisor'], handlers='divisor_textfield', save_as=true}
       }}
     }}
