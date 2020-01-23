@@ -1,17 +1,15 @@
--- ----------------------------------------------------------------------------------------------------
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- SELECT GUI
 -- Select which tilegrid to edit
 
-local event = require('lualib/event')
 local gui = require('lualib/gui')
-local mod_gui = require('mod-gui')
 local util = require('lualib/util')
 
 local edit_gui = require('scripts/gui/edit')
 
 local select_gui = {}
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- LOCAL UTILITIES
 
 local function attach_highlight_box(gui_data, player_index, area)
@@ -26,7 +24,7 @@ local function attach_highlight_box(gui_data, player_index, area)
   }
 end
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
 gui.add_templates(util.gui_templates)
@@ -64,7 +62,7 @@ gui.add_handlers('select', {
   }
 })
 
--- --------------------------------------------------
+-- -----------------------------------------------------------------------------
 -- LIBRARY
 
 function select_gui.create(parent, player_index)
