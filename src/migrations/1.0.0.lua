@@ -50,9 +50,13 @@ for i,t in pairs(global.players) do
     }
   }
   local visual_settings = data.settings.visual
-  for k,vt in pairs(game.get_player(i).mod_settings) do
-    -- use load() to convert table strings to actual tables
-    visual_settings[string.gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+  local s = game.get_player(i).mod_settings
+  for k,vt in pairs(s) do
+    if string.find(k, '^tl%-') then
+      -- use load() to convert table strings to actual tables
+      k = string.gsub(k, 'tl%-', '')
+      visual_settings[string.gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+    end
   end
   new_global.players[i] = data
 end

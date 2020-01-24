@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: 2020.1.24
+  Changes:
+    - Added a prefix to all of the settings prototypes to avoid conflicts with other mods
+  Bugfixes:
+    - Fixed a crash when literally any other mod was loaded
+    - Fixed a crash when perishing multiple tapelines at once
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2020.1.23
   Features:

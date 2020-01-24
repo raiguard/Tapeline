@@ -18,6 +18,7 @@ local tilegrid = require('scripts/tilegrid')
 -- locals
 local abs = math.abs
 local floor = math.floor
+local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
 local table_remove = table.remove
@@ -28,9 +29,13 @@ local table_remove = table.remove
 -- gets the values of all player mod settings and sticks them into the player's table
 local function update_player_visual_settings(player_index, player)
   local t = global.players[player_index].settings.visual
-  for k,vt in pairs(player.mod_settings) do
-    -- use load() to convert table strings to actual tables
-    t[string_gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+  local s = player.mod_settings
+  for k,vt in pairs(s) do
+    if string_find(k, '^tl%-') then
+      -- use load() to convert table strings to actual tables
+      k = string_gsub(k, 'tl%-', '')
+      t[string_gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+    end
   end
 end
 
@@ -39,7 +44,7 @@ end
 
 -- finish drawing tilegrids, perish tilegrids
 local function draw_on_tick(e)
-  local cur_tick = game.tick
+  local cur_tick = e.tick
   local end_wait = global.end_wait
   local drawing = global.tilegrids.drawing
   local perishing = global.tilegrids.perishing
@@ -55,7 +60,13 @@ local function draw_on_tick(e)
       else
         if data.settings.auto_clear then
           -- add to perishing table
-          table_insert(perishing, util.merge{{tick=cur_tick+floor(visual_settings.tilegrid_clear_delay*60), player_index=i}, data})
+          local death_tick = cur_tick+floor(visual_settings.tilegrid_clear_delay*60)
+          local pt = perishing[death_tick]
+          if not pt then
+            perishing[death_tick] = {}
+            pt = perishing[death_tick]
+          end
+          pt[#pt+1] = util.merge{{player_index=i}, data}
         else
           -- add to editable table
           table_insert(player_table.tilegrids.registry, table.deepcopy(data))
@@ -70,12 +81,12 @@ local function draw_on_tick(e)
       drawing[i] = nil
     end
   end
-  for i=1,#perishing do
-    local t = perishing[i]
-    if cur_tick >= t.tick then
-      tilegrid.destroy(t)
-      table_remove(perishing, i)
+  local pt = perishing[cur_tick]
+  if pt then
+    for i=1,#pt do
+      tilegrid.destroy(pt[i])
     end
+    perishing[cur_tick] = nil
   end
   if table_size(drawing) == 0 and table_size(perishing) == 0 then
     event.deregister(defines.events.on_tick, draw_on_tick, 'draw_on_tick')
