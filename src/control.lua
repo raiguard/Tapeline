@@ -3,16 +3,24 @@
 
 -- debug adapter
 pcall(require,'__debugadapter__/debugadapter.lua')
+if __DebugAdapter then
+  script.on_event('DEBUG-INSPECT-GLOBAL', function(e)
+    local breakpoint -- put breakpoint here to inspect global at any time
+  end)
+end
 
 -- dependencies
 local event = require('lualib/event')
 local mod_gui = require('mod-gui')
-local util = require('lualib/util')
+local util = require('scripts/util')
 
--- modules
+-- guis
 local draw_gui = require('scripts/gui/draw')
 local edit_gui = require('scripts/gui/edit')
 local select_gui = require('scripts/gui/select')
+
+-- scripts
+require('scripts/migrations')
 local tilegrid = require('scripts/tilegrid')
 
 -- locals
@@ -419,10 +427,3 @@ event.register({'tapeline-cycle-forwards', 'tapeline-cycle-backwards'}, function
     end
   end
 end)
-
--- DEBUGGING
-if __DebugAdapter then
-  event.register('DEBUG-INSPECT-GLOBAL', function(e)
-    local breakpoint -- put breakpoint here to inspect global at any time
-  end)
-end

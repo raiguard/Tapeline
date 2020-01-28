@@ -3,7 +3,7 @@
 -- Edit settings on a current tilegrid
 
 local gui = require('lualib/gui')
-local util = require('lualib/util')
+local util = require('scripts/util')
 
 local tilegrid = require('scripts/tilegrid')
 

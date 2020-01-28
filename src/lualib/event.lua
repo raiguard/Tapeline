@@ -189,7 +189,12 @@ function event.register(id, handler, options)
     n_options.gui_filters = nil
     if name then gui_filters = nil end
     -- add the handler to the events table
-     table.insert(registry, {handler=handler, gui_filters=gui_filters, options=n_options})
+    local data = {handler=handler, gui_filters=gui_filters, options=n_options}
+    if options.insert_at_front then
+      table_insert(registry, 1, data)
+    else
+      table_insert(registry, data)
+    end
   end
   return event -- function call chaining
 end

@@ -3,7 +3,7 @@
 -- Select which tilegrid to edit
 
 local gui = require('lualib/gui')
-local util = require('lualib/util')
+local util = require('scripts/util')
 
 local edit_gui = require('scripts/gui/edit')
 
