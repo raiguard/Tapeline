@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.2
-Date: 2020.1.28
+Date: 2020.1.29
   Changes:
     - Moved most of the migrations to on_configuration_changed
     - Moved util file out of the lualib folder

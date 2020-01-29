@@ -283,16 +283,16 @@ end
 -- SHORTCUT FUNCTIONS
 
 -- bootstrap events
-function event.on_init(handler)
-  return event.register('on_init', handler)
+function event.on_init(handler, options)
+  return event.register('on_init', handler, options)
 end
 
-function event.on_load(handler)
-  return event.register('on_load', handler)
+function event.on_load(handler, options)
+  return event.register('on_load', handler, options)
 end
 
-function event.on_configuration_changed(handler)
-  return event.register('on_configuration_changed', handler)
+function event.on_configuration_changed(handler, options)
+  return event.register('on_configuration_changed', handler, options)
 end
 
 function event.on_nth_tick(nthTick, handler, options)
