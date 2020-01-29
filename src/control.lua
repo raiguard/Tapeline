@@ -29,7 +29,6 @@ local floor = math.floor
 local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
-local table_remove = table.remove
 
 -- -----------------------------------------------------------------------------
 -- UTILITIES
@@ -41,7 +40,7 @@ local function update_player_visual_settings(player_index, player)
   for k,vt in pairs(s) do
     if string_find(k, '^tl%-') then
       -- use load() to convert table strings to actual tables
-      k = string_gsub(k, 'tl%-', '')
+      k = string_gsub(k, '^tl%-', '')
       t[string_gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
     end
   end
