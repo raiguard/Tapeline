@@ -176,7 +176,7 @@ local function on_edit_capsule(e)
     -- create highlight box
     local area = data.area
     local highlight_box = player.surface.create_entity{
-      name = 'highlight-box',
+      name = 'tl-highlight-box',
       position = area.left_top,
       bounding_box = util.area.expand(area, 0.25),
       render_player_index = e.player_index,
@@ -223,7 +223,7 @@ local function on_adjust_capsule(e)
       -- move highlight box
       local gui_data = player_table.gui.edit
       local highlight_box = gui_data.highlight_box.surface.create_entity{
-        name = 'highlight-box',
+        name = 'tl-highlight-box',
         position = area.left_top,
         bounding_box = util.area.expand(area, 0.25),
         render_player_index = e.player_index,
@@ -298,7 +298,7 @@ local function show_tutorial(player, player_table, type)
   player_table.flags[type..'_tutorial_shown'] = true
   if player.character then
     player_table.bubble = player.surface.create_entity{
-      name = 'compi-speech-bubble',
+      name = 'tl-speech-bubble',
       position = player.position,
       text = {'tl.'..type..'-tutorial-text'},
       source = player.character

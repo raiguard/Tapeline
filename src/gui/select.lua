@@ -16,7 +16,7 @@ local select_gui = {}
 local function attach_highlight_box(gui_data, player_index, area)
   if gui_data.highlight_box then gui_data.highlight_box.destroy() end
   gui_data.highlight_box = game.get_player(player_index).surface.create_entity{
-    name = 'highlight-box',
+    name = 'tl-highlight-box',
     position = area.left_top,
     bounding_box = util.area.expand(area, 0.25),
     render_player_index = player_index,

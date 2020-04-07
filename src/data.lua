@@ -90,6 +90,19 @@ data:extend{
     name = 'tapeline-cycle-backwards',
     key_sequence = '',
     linked_game_control = 'cycle-blueprint-backwards'
+  },
+  -- other
+  {
+    type = 'highlight-box',
+    name = 'tl-highlight-box'
+  },
+  {
+    type = "speech-bubble",
+    name = "tl-speech-bubble",
+    style = "compilatron_speech_bubble",
+    wrapper_flow_style = "compilatron_speech_bubble_wrapper",
+    fade_in_out_ticks = 60 * 0.5,
+    flags = {"not-on-map", "placeable-off-grid"}
   }
 }
 
