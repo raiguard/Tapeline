@@ -1,11 +1,9 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATIONS
 
-local event = require('__RaiLuaLib__.lualib.event')
-
 -- table of migration functions
-local migrations = {
-  ['0.6.0'] = function(e)
+return {
+  ['0.6.0'] = function()
     -- create missing global tables
     global.drawing = {}
     global.tilegrids = {}
@@ -51,7 +49,7 @@ local migrations = {
       end
     end
   end,
-  ['1.0.0'] = function(e)
+  ['1.0.0'] = function()
     -- remove any highlight boxes
     for _,t in pairs(global.tilegrids) do
       if t.highlight_box and t.highlight_box.valid then
@@ -110,36 +108,9 @@ local migrations = {
       new_global.players[i] = data
     end
     global = new_global
+  end,
+  ['1.1.0'] = function()
+    -- remove GUI data from global, it's no longer needed
+    global.__lualib.gui = nil
   end
 }
-
--- returns true if v2 is newer than v1, false if otherwise
-local function compare_versions(v1, v2)
-  local v1_split = util.split(v1, '.')
-  local v2_split = util.split(v2, '.')
-  for i=1,#v1_split do
-    if v1_split[i] < v2_split[i] then
-      return true
-    end
-  end
-  return false
-end
-
--- handle migrations
-event.on_configuration_changed(function(e)
-  local changes = e.mod_changes[script.mod_name]
-  if changes then
-    local old = changes.old_version
-    if old then
-      -- version migrations
-      local migrate = false
-      for v,f in pairs(migrations) do
-        if migrate or compare_versions(old, v) then
-          migrate = true
-          log('Applying migration: '..v)
-          f(e)
-        end
-      end
-    end
-  end
-end, {insert_at_front=true})

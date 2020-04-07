@@ -4,6 +4,7 @@
 -- dependencies
 local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
+local migration = require('__RaiLuaLib__.lualib.migration')
 local mod_gui = require('mod-gui')
 local util = require('scripts.util')
 
@@ -13,7 +14,7 @@ local edit_gui = require('gui.edit')
 local select_gui = require('gui.select')
 
 -- scripts
-require('scripts.migrations')
+local migrations = require('scripts.migrations')
 local tilegrid = require('scripts.tilegrid')
 
 -- locals
@@ -23,7 +24,7 @@ local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
 
--- GUI templates
+-- common GUI templates
 gui.templates:extend{
   pushers = {
     horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
@@ -140,7 +141,6 @@ local function on_draw_capsule(e)
   end
 end
 
- --#region 
 -- tapeline edit lets you edit the tilegrid that was clicked on
 local function on_edit_capsule(e)
   if e.item.name ~= 'tapeline-edit' then return end
@@ -325,6 +325,10 @@ event.on_init(function()
   end
 end)
 
+event.on_configuration_changed(function(e)
+  migration.on_config_changed(e, migrations)
+end, {insert_at=1})
+
 event.on_runtime_mod_setting_changed(function(e)
   update_player_visual_settings(e.player_index, game.get_player(e.player_index))
   local name = e.setting
@@ -339,7 +343,6 @@ event.on_runtime_mod_setting_changed(function(e)
   end
 end)
 
--- when a player's cursor stack changes
 event.on_player_cursor_stack_changed(function(e)
   local player_table = global.players[e.player_index]
   local player = game.get_player(e.player_index)
@@ -363,8 +366,8 @@ event.on_player_cursor_stack_changed(function(e)
       -- show tutorial bubble
       show_tutorial(player, player_table, 'capsule')
     end
-    local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
-    player_gui.draw = {elems=elems, last_divisor_value=last_value}
+    local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
+    player_gui.draw = {elems=elems, last_divisor_value=elems.divisor_textfield.text}
     event.enable('on_draw_capsule', e.player_index)
   elseif player_gui.draw then
     draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
