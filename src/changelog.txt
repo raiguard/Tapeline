@@ -5,30 +5,27 @@ Date: ????
     - 
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.3
-Date: 2020.1.29
+Date: 2020-01-29
   Changes:
     - Unlocked the adjust button in multiplayer, as the base game bug caused by using it has been fixed
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.2
-Date: 2020.1.29
+Date: 2020-01-29
   Changes:
     - Moved most of the migrations to on_configuration_changed
     - Moved util file out of the lualib folder
     - Updated thumbnail
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.1
-Date: 2020.1.24
+Date: 2020-01-24
   Changes:
     - Added a prefix to all of the settings prototypes to avoid conflicts with other mods
   Bugfixes:
     - Fixed a crash when literally any other mod was loaded
     - Fixed a crash when perishing multiple tapelines at once
-
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
-Date: 2020.1.23
+Date: 2020-01-23
   Features:
     - Updated to Factorio 0.18
     - Added tilegrid editor setting to change the grid anchor corner
@@ -41,18 +38,16 @@ Date: 2020.1.23
     - Color settings are no longer pre-determined and can be fully customized
     - Removed depency on the STDLIB mod
     - Removed tilegrid settings buttons. Tilegrids are now edited by clicking on them with the edit capsule
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.1
-Date: 2019.11.17
+Date: 2019-11-17
   Optimisations:
     - Significantly reduced the amount of tilegrid updates when using restrict to cardinals mode
   Bugfixes:
     - Fixed crash when entering a mini-tutorial
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.6.0
-Date: 2019.8.23
+Date: 2019-08-23
   Optimisations:
     - Required everything locally
     - Basic optimizations to on_tick and tilegrid rendering logic
@@ -66,10 +61,9 @@ Date: 2019.8.23
     - The tilegrid you are currently editing now blinks
     - Switched to new built-in slider snapping functionality
     - Divisor textfield now behaves better, and supports enter-to-confirm
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.5.0
-Date: 2019.6.27
+Date: 2019-06-27
   Features:
     - Added tilegrid settings GUI
     - Added the ability to restrict a tilegrid to cardinal directions when drawing
@@ -78,29 +72,26 @@ Date: 2019.6.27
     - Completely rewrote the mod to draw the tilegrid as you drag, instead of using a selection tool
     - Refined tapeline icon
     - Converted visual tilegrid settings to map settings to keep consistency in multiplayer
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.0
-Date: 2019.6.14
+Date: 2019-06-14
   Changes:
     - Organized mod settings
     - Removed limitations on line width setting
     - Removed "tapeline tool" item from item filters list
     - Removed hotkey definition from shortcut button label
     - Various small optimizations
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.1
-Date: 2019.3.12
+Date: 2019-03-12
   Changes:
     - Minor optimizations to tilegrid area logic (thanks Nexela!)
   Bugfixes:
     - Fixed that using the keyboard shortcut with a full inventory would delete whatever was in your hand
     - Fixed default hotkey not actually being Alt+M
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
-Date: 2019.3.11
+Date: 2019-03-11
   Features:
     - Added color customization settings
   Changes:
@@ -109,10 +100,9 @@ Date: 2019.3.11
     - Updated locale
     - Changed default color pallete
     - Changed default hotkey to Alt+M (from Ctrl+M)
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
-Date: 2019.3.10
+Date: 2019-03-10
   Features:
     - Added alternate selection mode (shift+select) that splits the tapeline into a configurable amount of groups, and displays the midpoint of both axes
     - Added option to change the number of sections an alternate selection is split into
@@ -123,10 +113,9 @@ Date: 2019.3.10
     - Updated thumbnail
   Bugfixes:
     - Corrected minor typo in mod description
-
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.0
-Date: 2019.3.8
+Date: 2019-03-08
   Features:
     - Added tapeline tool
     - Added tapeline tool shortcut to toolbar
