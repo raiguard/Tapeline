@@ -2,18 +2,18 @@
 -- TAPELINE CONTROL SCRIPTING
 
 -- dependencies
-local event = require('lualib/event')
+local event = require('__RaiLuaLib__.lualib.event')
 local mod_gui = require('mod-gui')
-local util = require('scripts/util')
+local util = require('scripts.util')
 
 -- guis
-local draw_gui = require('scripts/gui/draw')
-local edit_gui = require('scripts/gui/edit')
-local select_gui = require('scripts/gui/select')
+local draw_gui = require('scripts.gui.draw')
+local edit_gui = require('scripts.gui.edit')
+local select_gui = require('scripts.gui.select')
 
 -- scripts
-require('scripts/migrations')
-local tilegrid = require('scripts/tilegrid')
+require('scripts.migrations')
+local tilegrid = require('scripts.tilegrid')
 
 -- locals
 local abs = math.abs

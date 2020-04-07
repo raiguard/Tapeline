@@ -2,10 +2,10 @@
 -- SELECT GUI
 -- Select which tilegrid to edit
 
-local gui = require('lualib/gui')
-local util = require('scripts/util')
+local gui = require('__RaiLuaLib__.lualib.gui')
+local util = require('scripts.util')
 
-local edit_gui = require('scripts/gui/edit')
+local edit_gui = require('scripts.gui.edit')
 
 local select_gui = {}
 

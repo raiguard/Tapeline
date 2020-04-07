@@ -1,7 +1,7 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- MIGRATIONS
 
-local event = require('lualib/event')
+local event = require('__RaiLuaLib__.lualib.event')
 
 -- table of migration functions
 local migrations = {

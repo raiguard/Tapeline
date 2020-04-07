@@ -2,10 +2,10 @@
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
-local gui = require('lualib/gui')
-local util = require('scripts/util')
+local gui = require('__RaiLuaLib__.lualib.gui')
+local util = require('scripts.util')
 
-local tilegrid = require('scripts/tilegrid')
+local tilegrid = require('scripts.tilegrid')
 
 local table_remove = table.remove
 
