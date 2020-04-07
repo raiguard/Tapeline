@@ -109,7 +109,7 @@ return {
     end
     global = new_global
   end,
-  ['1.1.0'] = function()
+  ['1.0.4'] = function()
     -- remove GUI data from global, it's no longer needed
     global.__lualib.gui = nil
   end

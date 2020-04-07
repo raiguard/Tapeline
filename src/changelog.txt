@@ -1,9 +1,12 @@
 ---------------------------------------------------------------------------------------------------
-Version: 1.1.0
+Version: 1.0.4
 Date: ????
   Changes:
     - Removed lualib and made it a separate mod, RaiLuaLib
     - Updated changelog formatting
+  Bugfixes:
+    - Fixed a crash when setting the textfield on the draw GUI to an invalid value right after opening the GUI
+    - Fixed that if the mod was removed, any existing highlight boxes or tutorial bubbles would remain behind, staying forever
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.3
 Date: 2020-01-29
