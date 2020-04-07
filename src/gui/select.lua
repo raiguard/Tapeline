@@ -68,7 +68,7 @@ gui.handlers:extend{
 -- LIBRARY
 
 function select_gui.create(parent, player_index)
-  return gui.create(parent, 'select', player_index,
+  return gui.build(parent, {
     {template='window', children={
       {type='label', style='caption_label', caption={'tl-gui.click-on-tilegrid'}, save_as='label'},
       {type='list-box', items={}, handlers='select.selection_listbox', save_as='selection_listbox'},
@@ -78,7 +78,7 @@ function select_gui.create(parent, player_index)
         {type='button', style='confirm_button', caption={'gui.confirm'}, handlers='select.confirm_button'}
       }}
     }}
-  )
+  })
 end
 
 function select_gui.populate_listbox(player_index, tilegrids)

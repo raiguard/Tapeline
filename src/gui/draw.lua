@@ -2,6 +2,7 @@
 -- DRAW GUI
 -- Edit settings related to drawing tilegrids
 
+local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
 local util = require('scripts.util')
 
@@ -122,7 +123,7 @@ end
 
 function self.destroy(window, player_index)
   window.destroy()
-  gui.disable_group('gui.draw', player_index)
+  event.disable_group('gui.draw', player_index)
 end
 
 return self

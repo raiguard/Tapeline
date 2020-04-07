@@ -100,7 +100,7 @@ local function draw_on_tick(e)
     perishing[cur_tick] = nil
   end
   if table_size(drawing) == 0 and table_size(perishing) == 0 then
-    event.deregister(defines.events.on_tick, draw_on_tick, 'draw_on_tick')
+    event.disable('draw_on_tick')
   end
 end
 
@@ -134,8 +134,8 @@ local function on_draw_capsule(e)
     -- create new tilegrid
     tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index, player_table.settings.visual)
     -- register on_tick
-    if not event.is_registered('draw_on_tick') then
-      event.on_tick(draw_on_tick, {name='draw_on_tick', skip_validation=true})
+    if not event.is_enabled('draw_on_tick') then
+      event.enable('draw_on_tick')
     end
   end
 end
@@ -250,10 +250,18 @@ local function on_capsule_after_tutorial(e)
         bubble.start_fading_out()
       end
       player_table.bubble = nil
-      event.deregister_conditional(on_capsule_after_tutorial, 'on_capsule_after_tutorial', e.player_index)
+      event.disable('on_capsule_after_tutorial', e.player_index)
     end
   end
 end
+
+event.register_conditional{
+  draw_on_tick = {id=defines.events.on_tick, handler=draw_on_tick, options={skip_validation=true}},
+  on_draw_capsule = {id=defines.events.on_player_used_capsule, handler=on_draw_capsule},
+  on_edit_capsule = {id=defines.events.on_player_used_capsule, handler=on_edit_capsule},
+  on_adjust_capsule = {id=defines.events.on_player_used_capsule, handler=on_adjust_capsule},
+  on_capsule_after_tutorial = {id=defines.events.on_player_used_capsule, handler=on_capsule_after_tutorial}
+}
 
 -- -- -----------------------------------------------------------------------------
 -- -- STATIC HANDLERS
@@ -298,7 +306,7 @@ local function show_tutorial(player, player_table, type)
   else
     player.print{'tl.'..type..'-tutorial-text'}
   end
-  event.on_player_used_capsule(on_capsule_after_tutorial, {name='on_capsule_after_tutorial', player_index=player.index})
+  event.enable('on_capsule_after_tutorial', player.index)
 end
 
 event.on_init(function()
@@ -315,17 +323,6 @@ event.on_init(function()
     setup_player(i)
     update_player_visual_settings(i, player)
   end
-end)
-
-event.on_load(function()
-  -- re-register conditional handlers if needed
-  event.load_conditional_handlers{
-    draw_on_tick = draw_on_tick,
-    on_draw_capsule = on_draw_capsule,
-    on_edit_capsule = on_edit_capsule,
-    on_adjust_capsule = on_adjust_capsule,
-    on_capsule_after_tutorial = on_capsule_after_tutorial
-  }
 end)
 
 event.on_runtime_mod_setting_changed(function(e)
@@ -368,11 +365,11 @@ event.on_player_cursor_stack_changed(function(e)
     end
     local elems, last_value = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
     player_gui.draw = {elems=elems, last_divisor_value=last_value}
-    event.on_player_used_capsule(on_draw_capsule, {name='on_draw_capsule', player_index=e.player_index})
+    event.enable('on_draw_capsule', e.player_index)
   elseif player_gui.draw then
     draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
     player_gui.draw = nil
-    event.deregister(defines.events.on_player_used_capsule, on_draw_capsule, 'on_draw_capsule', e.player_index)
+    event.disable('on_draw_capsule', e.player_index)
   end
   -- edit capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-edit' then
@@ -380,17 +377,17 @@ event.on_player_cursor_stack_changed(function(e)
     if player_gui.select then return end
     local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
     player_gui.select = {elems=elems}
-    event.on_player_used_capsule(on_edit_capsule, {name='on_edit_capsule', player_index=e.player_index})
+    event.enable('on_edit_capsule', e.player_index)
   elseif player_gui.select and not player_table.flags.selecting_tilegrid then
     select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
-    event.deregister(defines.events.on_player_used_capsule, on_edit_capsule, 'on_edit_capsule', e.player_index)
+    event.disable('on_edit_capsule', e.player_index)
   end
   -- adjust capsule
   if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
     player_table.flags.adjusting_tilegrid = true
-    event.on_player_used_capsule(on_adjust_capsule, {name='on_adjust_capsule', player_index=e.player_index})
+    event.enable('on_adjust_capsule', e.player_index)
     if not player_table.flags.adjustment_tutorial_shown then
       -- show tutorial bubble
       show_tutorial(player, player_table, 'adjustment')
@@ -398,7 +395,7 @@ event.on_player_cursor_stack_changed(function(e)
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
     player_table.last_capsule_tile = nil
-    event.deregister(defines.events.on_player_used_capsule, on_adjust_capsule, 'on_adjust_capsule', e.player_index)
+    event.disable('on_adjust_capsule', e.player_index)
   end
 end)
 

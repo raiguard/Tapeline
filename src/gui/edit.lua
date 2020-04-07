@@ -149,7 +149,7 @@ gui.handlers:extend{
 
 function self.create(parent, player_index, settings, hot_corner)
   local grid_type = settings.grid_type
-  local data = gui.create(parent, {
+  local data = gui.build(parent, {
     {template='window', name='tl_edit_window', children={
       {type='flow', direction='horizontal', children={
         -- default titlebar
