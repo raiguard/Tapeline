@@ -1,7 +1,15 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- RAILUALIB EVENT MODULE
+-- Multi-handler registration, conditional event handling, and GUI event filtering.
 
--- DOCUMENTATION: https://github.com/raiguard/SmallFactorioMods/wiki/Event-Module-Documentation
+-- Copyright (c) 2020 raiguard - https://github.com/raiguard
+-- Permission is hereby granted, free of charge, to those obtaining this software or a portion thereof, to copy the contents of this software into their own
+-- Factorio mod, and modify it to suit their needs. This is permissed under the condition that this notice and copyright information, as well as the link to
+-- the documentation, are not omitted, and that any changes from the original are documented.
+
+-- DOCUMENTATION: https://github.com/raiguard/Factorio-SmallMods/wiki/Event-Module-Documentation
+
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 local util = require('__core__/lualib/util')
 
@@ -137,7 +145,9 @@ function event.register(id, handler, options)
       for i=1,#players do
         if players[i] == player_index then
           -- don't do anything
-          log('Tried to re-register \''..name..'\' for player '..player_index..', skipping!')
+          if not options.suppress_logging then
+            log('Tried to re-register conditional event \''..name..'\' for player '..player_index..', skipping!')
+          end
           return event
         end
       end
@@ -179,7 +189,9 @@ function event.register(id, handler, options)
       -- if it is a conditional event,
       if t.handler == handler and not name then
         -- remove handler for re-insertion at the bottom
-        log('Re-registering existing event ID, moving to bottom')
+        if not options.suppress_logging then
+          log('Re-registering existing event \''..n..'\', moving to bottom')
+        end
         table.remove(registry, i)
       end
     end
@@ -276,7 +288,14 @@ function event.generate_id(name)
   if not custom_id_registry[name] then
     custom_id_registry[name] = script.generate_event_name()
   end
-  return custom_id_registry[name], event
+  return custom_id_registry[name]
+end
+
+-- updates the GUI filters for the given conditional event
+function event.update_gui_filters(name, player_index, filters)
+  local event_data = global.__lualib.event[name]
+  if not event_data then error('Cannot update GUI filters for a non-existent event!') end
+  event_data.gui_filters[player_index] = filters
 end
 
 -- -------------------------------------

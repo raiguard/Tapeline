@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.3
+Date: 2020.1.29
+  Changes:
+    - Unlocked the adjust button in multiplayer, as the base game bug caused by using it has been fixed
+
+---------------------------------------------------------------------------------------------------
 Version: 1.0.2
 Date: 2020.1.29
   Changes:

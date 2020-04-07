@@ -2,6 +2,15 @@
 -- RAILUALIB GUI MODULE
 -- GUI templating and event handling
 
+-- Copyright (c) 2020 raiguard - https://github.com/raiguard
+-- Permission is hereby granted, free of charge, to those obtaining this software or a portion thereof, to copy the contents of this software into their own
+-- Factorio mod, and modify it to suit their needs. This is permissed under the condition that this notice and copyright information, as well as the link to
+-- the documentation, are not omitted, and that any changes from the original are documented.
+
+-- DOCUMENTATION: https://github.com/raiguard/Factorio-SmallMods/wiki/GUI-Module-Documentation
+
+-- -------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 -- dependencies
 local event = require('lualib/event')
 local util = require('__core__/lualib/util')
@@ -26,7 +35,7 @@ local self = {}
 -- LOCAL UTILITIES
 
 local function get_subtable(s, t)
-  local o = table_deepcopy(t)
+  local o = t
   for _,key in pairs(string_split(s, '%.')) do
     o = o[key]
   end
@@ -107,11 +116,33 @@ local function recursive_load(parent, t, output, name, player_index)
       if type(t.save_as) == 'boolean' then
         t.save_as = t.handlers
       end
-      output[t.save_as] = elem
+      -- recursively create tables as needed
+      local out = {}
+      local prev = out
+      local nav
+      local keys = string_split(t.save_as, '%.')
+      local num_keys = #keys
+      for i=1,num_keys do
+        local key = keys[i]
+        nav = out[key]
+        if not nav then
+          if i < num_keys then
+            prev[key] = {}
+            prev = prev[key]
+          else
+            prev[key] = elem
+          end
+        end
+      end
+      output = table_merge{output, out}
     end
     -- register handlers
     if t.handlers then
-      register_handlers(name, t.handlers, {player_index=player_index, gui_filters=elem.index})
+      if name and player_index then
+        register_handlers(name, t.handlers, {player_index=player_index, gui_filters=elem.index})
+      else
+        error('Must specify name and player index to register GUI events!')
+      end
     end
     -- add children
     local children = t.children
@@ -147,27 +178,47 @@ event.on_load(function()
   end
 end)
 
+event.on_configuration_changed(function(e)
+  if not global.__lualib.gui then
+    global.__lualib.gui = {}
+    global_data = global.__lualib.gui
+  end
+end)
+
 -- -----------------------------------------------------------------------------
 -- OBJECT
 
-function self.create(parent, name, player_index, template)
+-- name and player_index are only required if we're registering events
+function self.build(parent, ...)
+  local arg = {...}
+  local template, name, player_index
+  if #arg == 1 then
+    template = arg[1]
+  elseif #arg == 3 then
+    name = arg[1]
+    player_index = arg[2]
+    template = arg[3]
+  else
+    error('Invalid arguments for gui.build!')
+  end
   build_data = {}
   return recursive_load(parent, template, {}, name, player_index)
 end
 
-function self.destroy(parent, gui_name, player_index)
+-- deregisters all handlers for the given GUI
+function self.deregister_all(gui_name, player_index)
   -- deregister handlers
   local gui_tables = global_data[gui_name]
-  local list = gui_tables[player_index]
-  for n,_ in pairs(list) do
-    deregister_handlers(gui_name, string_gsub(n, '^gui%.'..gui_name..'%.', ''), player_index, list)
+  if gui_tables then
+    local list = gui_tables[player_index]
+    for n,_ in pairs(list) do
+      deregister_handlers(gui_name, string_gsub(n, '^gui%.'..gui_name..'%.', ''), player_index, list)
+    end
+    gui_tables[player_index] = nil
+    if table_size(gui_tables) == 0 then
+      global_data[gui_name] = nil
+    end
   end
-  gui_tables[player_index] = nil
-  if table_size(gui_tables) == 0 then
-    global_data[gui_name] = nil
-  end
-  -- destroy GUI
-  parent.destroy()
 end
 
 function self.add_templates(...)
@@ -192,6 +243,26 @@ function self.add_handlers(...)
     handlers[arg[1]] = arg[2]
   end
   return self
+end
+
+-- calls a GUI template as a function
+function self.call_template(path, ...)
+  return get_subtable(path, templates)(...)
+end
+
+-- retrieves and returns a GUI template
+function self.get_template(path)
+  return get_subtable(path, templates)
+end
+
+-- calls a GUI handler
+function self.call_handler(path, ...)
+  return get_subtable(path, handlers)(...)
+end
+
+-- retrieves and returns a handler
+function self.get_handler(path)
+  return get_subtable(path, handlers)
 end
 
 self.register_handlers = register_handlers

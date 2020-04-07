@@ -194,10 +194,6 @@ function self.create(parent, player_index, settings, hot_corner)
       {type='button', style={horizontally_stretchable=true, top_margin=4}, caption={'tl-gui.reposition'}, handlers='reposition_button', save_as=true}
     }}
   )
-  if game.is_multiplayer() then
-    data.reposition_button.enabled = false
-    data.reposition_button.tooltip = {'tl-gui.multiplayer-broken'}
-  end
   return data
 end
 
