@@ -2,10 +2,11 @@
 -- SELECT GUI
 -- Select which tilegrid to edit
 
+local event = require('__RaiLuaLib__.lualib.event')
 local gui = require('__RaiLuaLib__.lualib.gui')
 local util = require('scripts.util')
 
-local edit_gui = require('scripts.gui.edit')
+local edit_gui = require('gui.edit')
 
 local select_gui = {}
 
@@ -27,40 +28,41 @@ end
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
-gui.add_templates(util.gui_templates)
-gui.add_handlers('select', {
-  selection_listbox = {
-    on_gui_selection_state_changed = function(e)
-      local player_table = global.players[e.player_index]
-      local tilegrid_index = player_table.gui.select.tilegrids[e.element.selected_index]
-      attach_highlight_box(player_table.gui.select, e.player_index, player_table.tilegrids.registry[tilegrid_index].area)
-    end
-  },
-  back_button = {
-    on_gui_click = function(e)
-      local player_table = global.players[e.player_index]
-      local gui_data = player_table.gui.select
-      player_table.flags.selecting_tilegrid = false
-      select_gui.destroy(gui_data.elems.window, e.player_index)
-      gui_data.highlight_box.destroy()
-      player_table.gui.select = nil
-    end
-  },
-  confirm_button = {
-    on_gui_click = function(e)
-      local player_table = global.players[e.player_index]
-      player_table.flags.selecting_tilegrid = false
-      local gui_data = player_table.gui.select
-      local tilegrid_index = gui_data.tilegrids[gui_data.elems.selection_listbox.selected_index]
-      player_table.tilegrids.editing = tilegrid_index
-      local tilegrid_data = player_table.tilegrids.registry[tilegrid_index]
-      local edit_gui_elems = edit_gui.create(gui_data.elems.window.parent, e.player_index, tilegrid_data.settings, tilegrid_data.hot_corner)
-      select_gui.destroy(gui_data.elems.window, e.player_index)
-      player_table.gui.edit = {elems=edit_gui_elems, highlight_box=gui_data.highlight_box, last_divisor_value=edit_gui_elems.divisor_textfield.text}
-      player_table.gui.select = nil
-    end
+gui.handlers:extend{
+  select = {
+    selection_listbox = {
+      on_gui_selection_state_changed = function(e)
+        local player_table = global.players[e.player_index]
+        local tilegrid_index = player_table.gui.select.tilegrids[e.element.selected_index]
+        attach_highlight_box(player_table.gui.select, e.player_index, player_table.tilegrids.registry[tilegrid_index].area)
+      end
+    },
+    back_button = {
+      on_gui_click = function(e)
+        local player_table = global.players[e.player_index]
+        local gui_data = player_table.gui.select
+        player_table.flags.selecting_tilegrid = false
+        select_gui.destroy(gui_data.elems.window, e.player_index)
+        gui_data.highlight_box.destroy()
+        player_table.gui.select = nil
+      end
+    },
+    confirm_button = {
+      on_gui_click = function(e)
+        local player_table = global.players[e.player_index]
+        player_table.flags.selecting_tilegrid = false
+        local gui_data = player_table.gui.select
+        local tilegrid_index = gui_data.tilegrids[gui_data.elems.selection_listbox.selected_index]
+        player_table.tilegrids.editing = tilegrid_index
+        local tilegrid_data = player_table.tilegrids.registry[tilegrid_index]
+        local edit_gui_elems = edit_gui.create(gui_data.elems.window.parent, e.player_index, tilegrid_data.settings, tilegrid_data.hot_corner)
+        select_gui.destroy(gui_data.elems.window, e.player_index)
+        player_table.gui.edit = {elems=edit_gui_elems, highlight_box=gui_data.highlight_box, last_divisor_value=edit_gui_elems.divisor_textfield.text}
+        player_table.gui.select = nil
+      end
+    }
   }
-})
+}
 
 -- -----------------------------------------------------------------------------
 -- LIBRARY
@@ -69,11 +71,11 @@ function select_gui.create(parent, player_index)
   return gui.create(parent, 'select', player_index,
     {template='window', children={
       {type='label', style='caption_label', caption={'tl-gui.click-on-tilegrid'}, save_as='label'},
-      {type='list-box', items={}, handlers='selection_listbox', save_as=true},
+      {type='list-box', items={}, handlers='select.selection_listbox', save_as='selection_listbox'},
       {template='vertically_centered_flow', mods={visible=false}, save_as='dialog_flow', children={
-        {type='button', style='back_button', caption={'gui.cancel'}, handlers='back_button'},
+        {type='button', style='back_button', caption={'gui.cancel'}, handlers='select.back_button'},
         {template='pushers.horizontal'},
-        {type='button', style='confirm_button', caption={'gui.confirm'}, handlers='confirm_button'}
+        {type='button', style='confirm_button', caption={'gui.confirm'}, handlers='select.confirm_button'}
       }}
     }}
   )
@@ -103,7 +105,8 @@ function select_gui.populate_listbox(player_index, tilegrids)
 end
 
 function select_gui.destroy(window, player_index)
-  gui.destroy(window, 'select', player_index)
+  window.destroy()
+  event.disable_group('gui.select', player_index)
 end
 
 return select_gui

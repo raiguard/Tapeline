@@ -3,13 +3,14 @@
 
 -- dependencies
 local event = require('__RaiLuaLib__.lualib.event')
+local gui = require('__RaiLuaLib__.lualib.gui')
 local mod_gui = require('mod-gui')
 local util = require('scripts.util')
 
 -- guis
-local draw_gui = require('scripts.gui.draw')
-local edit_gui = require('scripts.gui.edit')
-local select_gui = require('scripts.gui.select')
+local draw_gui = require('gui.draw')
+local edit_gui = require('gui.edit')
+local select_gui = require('gui.select')
 
 -- scripts
 require('scripts.migrations')
@@ -21,6 +22,17 @@ local floor = math.floor
 local string_find = string.find
 local string_gsub = string.gsub
 local table_insert = table.insert
+
+-- GUI templates
+gui.templates:extend{
+  pushers = {
+    horizontal = {type='empty-widget', style_mods={horizontally_stretchable=true}},
+    vertical = {type='empty-widget', style_mods={vertically_stretchable=true}}
+  },
+  window = {type='frame', style_mods={width=252}, direction='vertical', save_as='window'},
+  horizontally_centered_flow = {type='flow', style_mods={horizontal_align='center', horizontally_stretchable=true}, direction='vertical'},
+  vertically_centered_flow = {type='flow', style_mods={vertical_align='center'}, direction='horizontal'}
+}
 
 -- -----------------------------------------------------------------------------
 -- UTILITIES
