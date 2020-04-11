@@ -18,10 +18,10 @@ local migrations = require("scripts.migrations")
 local tilegrid = require("scripts.tilegrid")
 
 -- locals
-local abs = math.abs
 local floor = math.floor
-local string_find = string.find
+local math_abs = math.abs
 local string_gsub = string.gsub
+local string_sub = string.sub
 local table_insert = table.insert
 
 -- common GUI templates
@@ -43,7 +43,7 @@ local function update_player_visual_settings(player_index, player)
   local t = global.players[player_index].settings.visual
   local s = player.mod_settings
   for k,vt in pairs(s) do
-    if string_find(k, "^tl%-") then
+    if string_sub(k, 1, 3) == 'tl-' then
       -- use load() to convert table strings to actual tables
       k = string_gsub(k, "^tl%-", "")
       t[string_gsub(k, "%-", "_")] = load("return "..tostring(vt.value))()
@@ -119,7 +119,7 @@ local function on_draw_capsule(e)
     -- if cardinals only, adjust thrown position
     if data.settings.cardinals_only then
       local origin = data.area.origin
-      if abs(cur_tile.x - origin.x) >= abs(cur_tile.y - origin.y) then
+      if math_abs(cur_tile.x - origin.x) >= math_abs(cur_tile.y - origin.y) then
         cur_tile.y = floor(origin.y)
       else
         cur_tile.x = floor(origin.x)
