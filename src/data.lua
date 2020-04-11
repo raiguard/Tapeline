@@ -81,6 +81,13 @@ data:extend{
   },
   {
     type = "custom-input",
+    name = "tl-get-edit-tool",
+    key_sequence = "",
+    action = "create-blueprint-item",
+    item_to_create = "tapeline-edit"
+  },
+  {
+    type = "custom-input",
     name = "tapeline-cycle-forwards",
     key_sequence = "",
     linked_game_control = "cycle-blueprint-forwards"

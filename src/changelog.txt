@@ -1,7 +1,10 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.5
 Date: ????
+  Features:
+    - Added keyboard shortcut to get the edit tool directly (disabled by default)
   Changes:
+    - Switched to double quotes everywhere
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.4
 Date: 2020-04-07
