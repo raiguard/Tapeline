@@ -2,11 +2,11 @@
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
-local util = require('scripts.util')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
+local util = require("scripts.util")
 
-local tilegrid = require('scripts.tilegrid')
+local tilegrid = require("scripts.tilegrid")
 
 local table_remove = table.remove
 
@@ -15,16 +15,16 @@ local self = {}
 -- -----------------------------------------------------------------------------
 -- LOCAL UTILITIES
 
-type_to_switch_state = {'left', 'right'}
+type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
-type_index_to_name = {'increment', 'split'}
+type_index_to_name = {"increment", "split"}
 type_to_clamps = {{4,13}, {2,11}}
 
 origin_localized_items = {
-  {'tl-gui.origin-left_top'},
-  {'tl-gui.origin-right_top'},
-  {'tl-gui.origin-left_bottom'},
-  {'tl-gui.origin-right_bottom'}
+  {"tl-gui.origin-left_top"},
+  {"tl-gui.origin-right_top"},
+  {"tl-gui.origin-left_bottom"},
+  {"tl-gui.origin-right_bottom"}
 }
 corner_to_index = {
   left_top = 1,
@@ -32,7 +32,7 @@ corner_to_index = {
   left_bottom = 3,
   right_bottom = 4
 }
-index_to_corner = {'left_top', 'right_top', 'left_bottom', 'right_bottom'}
+index_to_corner = {"left_top", "right_top", "left_bottom", "right_bottom"}
 
 local function get_settings_table(player_index)
   local tilegrids = global.players[player_index].tilegrids
@@ -73,7 +73,7 @@ gui.handlers:extend{
         -- clean player cursor
         local player = game.get_player(e.player_index)
         local stack = player.cursor_stack
-        if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
+        if stack and stack.valid_for_read and stack.name == "tapeline-adjust" then
           player.clean_cursor()
         end
       end
@@ -109,7 +109,7 @@ gui.handlers:extend{
         gui_data.last_divisor_value = e.element.slider_value
         local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
         local textfield = gui_data.elems.divisor_textfield
-        local divisor_name = type_index_to_name[data.settings.grid_type]..'_divisor'
+        local divisor_name = type_index_to_name[data.settings.grid_type].."_divisor"
         data.settings[divisor_name] = e.element.slider_value
         textfield.text = e.element.slider_value
         tilegrid.refresh(data, e.player_index, player_table.settings.visual)
@@ -130,7 +130,7 @@ gui.handlers:extend{
         local player_table = global.players[e.player_index]
         local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
         local final_text = util.textfield.set_last_valid_value(e.element, player_table.gui.edit.last_divisor_value)
-        data.settings[type_index_to_name[data.settings.grid_type]..'_divisor'] = tonumber(final_text)
+        data.settings[type_index_to_name[data.settings.grid_type].."_divisor"] = tonumber(final_text)
         tilegrid.refresh(data, e.player_index, player_table.settings.visual)
       end
     },
@@ -138,7 +138,7 @@ gui.handlers:extend{
       on_gui_click = function(e)
         local player = game.get_player(e.player_index)
         player.clean_cursor()
-        player.cursor_stack.set_stack{name='tapeline-adjust'}
+        player.cursor_stack.set_stack{name="tapeline-adjust"}
       end
     }
   }
@@ -150,52 +150,52 @@ gui.handlers:extend{
 function self.create(parent, player_index, settings, hot_corner)
   local grid_type = settings.grid_type
   local data = gui.build(parent, {
-    {template='window', name='tl_edit_window', children={
-      {type='flow', direction='horizontal', children={
+    {template="window", name="tl_edit_window", children={
+      {type="flow", direction="horizontal", children={
         -- default titlebar
-        {template='vertically_centered_flow', children={
-          {type='label', style='heading_1_label', caption={'tl-gui.edit-settings'}},
-          {template='pushers.horizontal'},
-          {type='sprite-button', style='tl_green_icon_button', style_mods={top_margin=0}, sprite='utility/confirm_slot', tooltip={'tl-gui.save-changes'},
-            handlers='edit.save_changes_button'},
-          {type='sprite-button', style='red_icon_button', sprite='utility/trash', tooltip={'tl-gui.delete-tilegrid'}, handlers='edit.delete_button'}
+        {template="vertically_centered_flow", children={
+          {type="label", style="heading_1_label", caption={"tl-gui.edit-settings"}},
+          {template="pushers.horizontal"},
+          {type="sprite-button", style="tl_green_icon_button", style_mods={top_margin=0}, sprite="utility/confirm_slot", tooltip={"tl-gui.save-changes"},
+            handlers="edit.save_changes_button"},
+          {type="sprite-button", style="red_icon_button", sprite="utility/trash", tooltip={"tl-gui.delete-tilegrid"}, handlers="edit.delete_button"}
         }},
         -- confirmation titlebar
-        {template='vertically_centered_flow', mods={visible=false}, children={
-          {type='label', style='tl_invalid_bold_label', caption={'tl-gui.confirm-delete'}},
-          {template='pushers.horizontal'},
-          {type='sprite-button', style='tool_button', sprite='utility/reset', handlers='edit.confirm_no_button'},
-          {type='sprite-button', style='red_icon_button', sprite='utility/trash', handlers='edit.confirm_yes_button'},
+        {template="vertically_centered_flow", mods={visible=false}, children={
+          {type="label", style="tl_invalid_bold_label", caption={"tl-gui.confirm-delete"}},
+          {template="pushers.horizontal"},
+          {type="sprite-button", style="tool_button", sprite="utility/reset", handlers="edit.confirm_no_button"},
+          {type="sprite-button", style="red_icon_button", sprite="utility/trash", handlers="edit.confirm_yes_button"},
         }}
       }},
       -- origin
-      {template='vertically_centered_flow', children={
-        {type='label', caption={'', {'tl-gui.origin'}, ' [img=info]'}, tooltip={'tl-gui.origin-tooltip'}},
-        {template='pushers.horizontal'},
-        {type='drop-down', items=origin_localized_items, selected_index=corner_to_index[util.area.opposite_corner(hot_corner)], handlers='edit.origin_dropdown'}
+      {template="vertically_centered_flow", children={
+        {type="label", caption={"", {"tl-gui.origin"}, " [img=info]"}, tooltip={"tl-gui.origin-tooltip"}},
+        {template="pushers.horizontal"},
+        {type="drop-down", items=origin_localized_items, selected_index=corner_to_index[util.area.opposite_corner(hot_corner)], handlers="edit.origin_dropdown"}
       }},
       -- grid type switch
-      {type='flow', style_mods={vertical_align='center'}, direction='horizontal', children={
-        {type='label', caption={'tl-gui.grid-type'}},
-        {template='pushers.horizontal'},
-        {type='switch', left_label_caption={'tl-gui.gridtype-increment'}, right_label_caption={'tl-gui.gridtype-split'},
-          switch_state=type_to_switch_state[grid_type], handlers='edit.grid_type_switch', save_as='grid_type_switch'}
+      {type="flow", style_mods={vertical_align="center"}, direction="horizontal", children={
+        {type="label", caption={"tl-gui.grid-type"}},
+        {template="pushers.horizontal"},
+        {type="switch", left_label_caption={"tl-gui.gridtype-increment"}, right_label_caption={"tl-gui.gridtype-split"},
+          switch_state=type_to_switch_state[grid_type], handlers="edit.grid_type_switch", save_as="grid_type_switch"}
       }},
       -- divisor label
-      {type='flow', style_mods={horizontal_align='center', horizontally_stretchable=true}, children={
-        {type='label', style='caption_label', caption={'tl-gui.'..type_index_to_name[grid_type]..'-divisor-label'}, save_as='divisor_label'},
+      {type="flow", style_mods={horizontal_align="center", horizontally_stretchable=true}, children={
+        {type="label", style="caption_label", caption={"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}, save_as="divisor_label"},
       }},
       -- divisor slider and textfield
-      {type='flow', style_mods={horizontal_spacing=8, vertical_align='center'}, direction='horizontal', children={
-        {type='slider', style='notched_slider', style_mods={horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
-          maximum_value=type_to_clamps[grid_type][2], value_step=1, value=settings[type_index_to_name[grid_type]..'_divisor'], discrete_slider=true,
-          discrete_values=true, handlers='edit.divisor_slider', save_as='divisor_slider'},
-        {type='textfield', style='tl_slider_textfield', numeric=true, lose_focus_on_confirm=true,
-          text=settings[type_index_to_name[grid_type]..'_divisor'], handlers='edit.divisor_textfield', save_as='divisor_textfield'}
+      {type="flow", style_mods={horizontal_spacing=8, vertical_align="center"}, direction="horizontal", children={
+        {type="slider", style="notched_slider", style_mods={horizontally_stretchable=true}, minimum_value=type_to_clamps[grid_type][1],
+          maximum_value=type_to_clamps[grid_type][2], value_step=1, value=settings[type_index_to_name[grid_type].."_divisor"], discrete_slider=true,
+          discrete_values=true, handlers="edit.divisor_slider", save_as="divisor_slider"},
+        {type="textfield", style="tl_slider_textfield", numeric=true, lose_focus_on_confirm=true,
+          text=settings[type_index_to_name[grid_type].."_divisor"], handlers="edit.divisor_textfield", save_as="divisor_textfield"}
       }},
       -- reposition button
-      {type='button', style_mods={horizontally_stretchable=true, top_margin=4}, caption={'tl-gui.reposition'}, handlers='edit.reposition_button',
-        save_as='reposition_button'}
+      {type="button", style_mods={horizontally_stretchable=true, top_margin=4}, caption={"tl-gui.reposition"}, handlers="edit.reposition_button",
+        save_as="reposition_button"}
     }}
   })
   return data
@@ -207,18 +207,18 @@ function self.update(player_index, settings)
   local elems = player_table.gui.edit.elems
   -- update values and names of divisor elements
   local grid_type = settings.grid_type
-  elems.divisor_label.caption = {'tl-gui.'..type_index_to_name[grid_type]..'-divisor-label'}
+  elems.divisor_label.caption = {"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}
   elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
-  elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type]..'_divisor']
-  elems.divisor_textfield.text = settings[type_index_to_name[grid_type]..'_divisor']
+  elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type].."_divisor"]
+  elems.divisor_textfield.text = settings[type_index_to_name[grid_type].."_divisor"]
 end
 
 function self.destroy(window, player)
   window.destroy()
-  event.disable_group('gui.edit', player.index)
+  event.disable_group("gui.edit", player.index)
   -- remove capsule from hand if it's there
   local stack = player.cursor_stack
-  if stack and stack.valid_for_read and stack.name == 'tapeline-adjust' then
+  if stack and stack.valid_for_read and stack.name == "tapeline-adjust" then
     player.clean_cursor()
   end
 end

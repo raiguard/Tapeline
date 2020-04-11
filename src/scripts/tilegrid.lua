@@ -2,7 +2,7 @@
 -- TILEGRID
 -- Contains logic for creating, destroying, and updating tilegrids
 
-local util = require('scripts.util')
+local util = require("scripts.util")
 local self = {}
 
 local draw_rectangle = rendering.draw_rectangle
@@ -41,8 +41,8 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
     if #vertical+1 < area.width/div then
       for i=#vertical+1,(area.width-1)/div do
         vertical[i] = create_line(
-          {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y},
-          {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y},
+          {x=area[ver_anchor.."_top"].x+(i*ver_sign*div), y=area.left_top.y},
+          {x=area[ver_anchor.."_top"].x+(i*ver_sign*div), y=area.right_bottom.y},
           surface, color, line_width, draw_on_ground, player_index
         )
       end
@@ -54,8 +54,8 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
     end
     -- update existing horizontal lines
     for i,o in ipairs(lines.horizontal) do
-      set_from(o, {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
-      set_to(o, {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)})
+      set_from(o, {x=area.left_top.x, y=area["left_"..hor_anchor].y+(i*hor_sign*div)})
+      set_to(o, {x=area.right_bottom.x, y=area["left_"..hor_anchor].y+(i*hor_sign*div)})
     end
   end
   if area.height_changed then
@@ -64,8 +64,8 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
     if #horizontal+1 < (area.height/div) then
       for i=#horizontal+1,(area.height-1)/div do
         horizontal[i] = create_line(
-          {x=area.left_top.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
-          {x=area.right_bottom.x, y=area['left_'..hor_anchor].y+(i*hor_sign*div)},
+          {x=area.left_top.x, y=area["left_"..hor_anchor].y+(i*hor_sign*div)},
+          {x=area.right_bottom.x, y=area["left_"..hor_anchor].y+(i*hor_sign*div)},
           surface, color, line_width, draw_on_ground, player_index
         )
       end
@@ -77,8 +77,8 @@ local function update_grid(area, surface, pos_data, lines, div, color, line_widt
     end
     -- update existing vertical lines
     for i,o in ipairs(lines.vertical) do
-      set_from(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.left_top.y})
-      set_to(o, {x=area[ver_anchor..'_top'].x+(i*ver_sign*div), y=area.right_bottom.y})
+      set_from(o, {x=area[ver_anchor.."_top"].x+(i*ver_sign*div), y=area.left_top.y})
+      set_to(o, {x=area[ver_anchor.."_top"].x+(i*ver_sign*div), y=area.right_bottom.y})
     end
   end
   -- bring lines to front to preserve draw order
@@ -190,7 +190,7 @@ local function construct_render_objects(data, player_index, visual_settings)
         target = {x=area.midpoints.x, y=area.left_top.y-0.85},
         color = visual_settings.tilegrid_label_color,
         scale = 1.5,
-        alignment = 'center',
+        alignment = "center",
         visible = false,
         players = {player_index}
       },
@@ -201,7 +201,7 @@ local function construct_render_objects(data, player_index, visual_settings)
         color = visual_settings.tilegrid_label_color,
         scale = 1.5,
         orientation = 0.75,
-        alignment = 'center',
+        alignment = "center",
         visible = false,
         players = {player_index}
       }
@@ -235,10 +235,10 @@ local function update_render_objects(data, player_index, visual_settings)
   -- GRIDS
   --
   local pos_data = {
-    hor_sign = data.hot_corner:find('top') and -1 or 1,
-    ver_sign = data.hot_corner:find('left') and -1 or 1,
-    hor_anchor = data.hot_corner:find('top') and 'bottom' or 'top',
-    ver_anchor = data.hot_corner:find('left') and 'right' or 'left'
+    hor_sign = data.hot_corner:find("top") and -1 or 1,
+    ver_sign = data.hot_corner:find("left") and -1 or 1,
+    hor_anchor = data.hot_corner:find("top") and "bottom" or "top",
+    ver_anchor = data.hot_corner:find("left") and "right" or "left"
   }
   -- update base grid
   if data.prev_hot_corner ~= data.hot_corner then
@@ -272,7 +272,7 @@ end
 
 local function destroy_render_objects(objects)
   for i,o in pairs(objects) do
-    if type(o) == 'table' then
+    if type(o) == "table" then
       destroy_render_objects(o)
     else
       destroy(o)
@@ -291,8 +291,8 @@ function self.construct(tile_pos, player_index, surface_index, visual_settings)
   }
   local registry = {
     area = area,
-    prev_hot_corner = 'right_bottom',
-    hot_corner = 'right_bottom',
+    prev_hot_corner = "right_bottom",
+    hot_corner = "right_bottom",
     surface = game.get_player(player_index).surface.index,
     settings = global.players[player_index].settings
   }
@@ -305,16 +305,16 @@ function self.update(tile_pos, data, player_index, visual_settings)
   local area = data.area
   -- update hot corner
   data.prev_hot_corner = data.hot_corner
-  data.hot_corner = (tile_pos.x >= area.origin.x and 'right' or 'left')..'_'..(tile_pos.y >= area.origin.y and 'bottom' or 'top')
+  data.hot_corner = (tile_pos.x >= area.origin.x and "right" or "left").."_"..(tile_pos.y >= area.origin.y and "bottom" or "top")
   -- update area
   local origin = area.origin
   local hot_corner = data.hot_corner
   local left_top = {x=math.floor(tile_pos.x < origin.x and tile_pos.x or origin.x), y=math.floor(tile_pos.y < origin.y and tile_pos.y or origin.y)}
   local right_bottom = {x=math.ceil(tile_pos.x > origin.x and tile_pos.x or origin.x), y=math.ceil(tile_pos.y > origin.y and tile_pos.y or origin.y)}
-  if hot_corner == 'right_top' or hot_corner == 'right_bottom' then
+  if hot_corner == "right_top" or hot_corner == "right_bottom" then
     right_bottom.x = right_bottom.x + 1
   end
-  if hot_corner == 'left_bottom' or hot_corner == 'right_bottom' then
+  if hot_corner == "left_bottom" or hot_corner == "right_bottom" then
     right_bottom.y = right_bottom.y + 1
   end
   local width = right_bottom.x - left_top.x

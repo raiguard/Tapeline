@@ -1,9 +1,9 @@
 -- -------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- UTILITIES
 
-local math2d = require('__core__.lualib.math2d')
-local mod_gui = require('mod-gui')
-local util = require('__core__.lualib.util')
+local math2d = require("__core__.lualib.math2d")
+local mod_gui = require("mod-gui")
+local util = require("__core__.lualib.util")
 
 util.area = {}
 
@@ -12,15 +12,15 @@ function util.area.expand(area, amount)
 end
 
 function util.area.opposite_corner(corner)
-  if corner:find('left') then
-    corner = corner:gsub('left', 'right')
+  if corner:find("left") then
+    corner = corner:gsub("left", "right")
   else
-    corner = corner:gsub('right', 'left')
+    corner = corner:gsub("right", "left")
   end
-  if corner:find('top') then
-    corner = corner:gsub('top', 'bottom')
+  if corner:find("top") then
+    corner = corner:gsub("top", "bottom")
   else
-    corner = corner:gsub('bottom', 'top')
+    corner = corner:gsub("bottom", "top")
   end
   return corner
 end
@@ -67,12 +67,12 @@ util.textfield = {}
 
 function util.textfield.clamp_number_input(element, clamps, last_value)
   local text = element.text
-  if text == ''
+  if text == ""
   or (clamps[1] and tonumber(text) < clamps[1])
   or (clamps[2] and tonumber(text) > clamps[2]) then
-    element.style = 'tl_invalid_slider_textfield'
+    element.style = "tl_invalid_slider_textfield"
   else
-    element.style = 'tl_slider_textfield'
+    element.style = "tl_slider_textfield"
     last_value = text
   end
   return last_value
@@ -81,7 +81,7 @@ end
 function util.textfield.set_last_valid_value(element, last_value)
   if element.text ~= last_value then
     element.text = last_value
-    element.style = 'tl_slider_textfield'
+    element.style = "tl_slider_textfield"
   end
   return element.text
 end

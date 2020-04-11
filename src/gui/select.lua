@@ -2,11 +2,11 @@
 -- SELECT GUI
 -- Select which tilegrid to edit
 
-local event = require('__RaiLuaLib__.lualib.event')
-local gui = require('__RaiLuaLib__.lualib.gui')
-local util = require('scripts.util')
+local event = require("__RaiLuaLib__.lualib.event")
+local gui = require("__RaiLuaLib__.lualib.gui")
+local util = require("scripts.util")
 
-local edit_gui = require('gui.edit')
+local edit_gui = require("gui.edit")
 
 local select_gui = {}
 
@@ -16,7 +16,7 @@ local select_gui = {}
 local function attach_highlight_box(gui_data, player_index, area)
   if gui_data.highlight_box then gui_data.highlight_box.destroy() end
   gui_data.highlight_box = game.get_player(player_index).surface.create_entity{
-    name = 'tl-highlight-box',
+    name = "tl-highlight-box",
     position = area.left_top,
     bounding_box = util.area.expand(area, 0.25),
     render_player_index = player_index,
@@ -69,13 +69,13 @@ gui.handlers:extend{
 
 function select_gui.create(parent, player_index)
   return gui.build(parent, {
-    {template='window', children={
-      {type='label', style='caption_label', caption={'tl-gui.click-on-tilegrid'}, save_as='label'},
-      {type='list-box', items={}, handlers='select.selection_listbox', save_as='selection_listbox'},
-      {template='vertically_centered_flow', mods={visible=false}, save_as='dialog_flow', children={
-        {type='button', style='back_button', caption={'gui.cancel'}, handlers='select.back_button'},
-        {template='pushers.horizontal'},
-        {type='button', style='confirm_button', caption={'gui.confirm'}, handlers='select.confirm_button'}
+    {template="window", children={
+      {type="label", style="caption_label", caption={"tl-gui.click-on-tilegrid"}, save_as="label"},
+      {type="list-box", items={}, handlers="select.selection_listbox", save_as="selection_listbox"},
+      {template="vertically_centered_flow", mods={visible=false}, save_as="dialog_flow", children={
+        {type="button", style="back_button", caption={"gui.cancel"}, handlers="select.back_button"},
+        {template="pushers.horizontal"},
+        {type="button", style="confirm_button", caption={"gui.confirm"}, handlers="select.confirm_button"}
       }}
     }}
   })
@@ -90,7 +90,7 @@ function select_gui.populate_listbox(player_index, tilegrids)
   -- populate listbox
   for _,i in ipairs(tilegrids) do
     local area = registry[i].area
-    listbox.add_item(area.width..', '..area.height)
+    listbox.add_item(area.width..", "..area.height)
   end
   listbox.selected_index = 1
   -- change element visibility
@@ -99,14 +99,14 @@ function select_gui.populate_listbox(player_index, tilegrids)
   -- add data to global table
   gui_data.tilegrids = tilegrids
   -- update label caption
-  elems.label.caption = {'tl-gui.select-tilegrid'}
+  elems.label.caption = {"tl-gui.select-tilegrid"}
   -- attach a highlight box to the first grid on the list
   attach_highlight_box(gui_data, player_index, registry[tilegrids[1]].area)
 end
 
 function select_gui.destroy(window, player_index)
   window.destroy()
-  event.disable_group('gui.select', player_index)
+  event.disable_group("gui.select", player_index)
 end
 
 return select_gui

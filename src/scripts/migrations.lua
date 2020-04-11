@@ -3,13 +3,13 @@
 
 -- table of migration functions
 return {
-  ['0.6.0'] = function()
+  ["0.6.0"] = function()
     -- create missing global tables
     global.drawing = {}
     global.tilegrids = {}
     -- move all tilegrid tables to tilegrids subtable
     for k,v in pairs(global) do
-        if type(k) == 'number' then
+        if type(k) == "number" then
             global.tilegrids[k] = table.deepcopy(v)
             global[k] = nil
         end
@@ -42,14 +42,14 @@ return {
           player_table.center_gui = nil
           player_table.mod_gui = nil
           -- if the player is currently holding a tapeline capsule, destroy it
-          if p.cursor_stack and p.cursor_stack.valid_for_read and p.cursor_stack.name == 'tapeline-capsule' then
+          if p.cursor_stack and p.cursor_stack.valid_for_read and p.cursor_stack.name == "tapeline-capsule" then
               p.clean_cursor()
           end
         end
       end
     end
   end,
-  ['1.0.0'] = function()
+  ["1.0.0"] = function()
     -- remove any highlight boxes
     for _,t in pairs(global.tilegrids) do
       if t.highlight_box and t.highlight_box.valid then
@@ -57,7 +57,7 @@ return {
       end
     end
     -- clear all render objects
-    rendering.clear('Tapeline')
+    rendering.clear("Tapeline")
     -- assemble new global table
     local new_global = {
       __lualib = {
@@ -99,17 +99,17 @@ return {
       local visual_settings = data.settings.visual
       local s = game.get_player(i).mod_settings
       for k,vt in pairs(s) do
-        if string.find(k, '^tl%-') then
+        if string.find(k, "^tl%-") then
           -- use load() to convert table strings to actual tables
-          k = string.gsub(k, 'tl%-', '')
-          visual_settings[string.gsub(k, '%-', '_')] = load('return '..tostring(vt.value))()
+          k = string.gsub(k, "tl%-", "")
+          visual_settings[string.gsub(k, "%-", "_")] = load("return "..tostring(vt.value))()
         end
       end
       new_global.players[i] = data
     end
     global = new_global
   end,
-  ['1.0.4'] = function()
+  ["1.0.4"] = function()
     -- remove GUI data from global, it's no longer needed
     global.__lualib.gui = nil
   end
