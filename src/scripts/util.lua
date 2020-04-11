@@ -2,7 +2,6 @@
 -- UTILITIES
 
 local math2d = require("__core__.lualib.math2d")
-local mod_gui = require("mod-gui")
 local util = require("__core__.lualib.util")
 
 util.area = {}

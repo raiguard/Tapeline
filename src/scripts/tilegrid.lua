@@ -3,7 +3,7 @@
 -- Contains logic for creating, destroying, and updating tilegrids
 
 local util = require("scripts.util")
-local self = {}
+local tilegrid = {}
 
 local draw_rectangle = rendering.draw_rectangle
 local draw_line = rendering.draw_line
@@ -280,7 +280,7 @@ local function destroy_render_objects(objects)
   end
 end
 
-function self.construct(tile_pos, player_index, surface_index, visual_settings)
+function tilegrid.construct(tile_pos, player_index, surface_index, visual_settings)
   local center = util.position.add(tile_pos, {x=0.5, y=0.5})
   local area = util.area.add_data(util.position.to_tile_area(center))
   area.origin = center
@@ -301,7 +301,7 @@ function self.construct(tile_pos, player_index, surface_index, visual_settings)
   global.players[player_index].tilegrids.drawing = registry
 end
 
-function self.update(tile_pos, data, player_index, visual_settings)
+function tilegrid.update(tile_pos, data, player_index, visual_settings)
   local area = data.area
   -- update hot corner
   data.prev_hot_corner = data.hot_corner
@@ -335,12 +335,12 @@ function self.update(tile_pos, data, player_index, visual_settings)
   update_render_objects(data, player_index, visual_settings)
 end
 
-function self.destroy(data)
+function tilegrid.destroy(data)
   destroy_render_objects(data.objects)
 end
 
 -- destroys and recreates render objects
-function self.refresh(data, player_index, visual_settings)
+function tilegrid.refresh(data, player_index, visual_settings)
   data.area.width_changed = true
   data.area.height_changed = true
   destroy_render_objects(data.objects)
@@ -348,4 +348,4 @@ function self.refresh(data, player_index, visual_settings)
   update_render_objects(data, player_index, visual_settings)
 end
 
-return self
+return tilegrid
