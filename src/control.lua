@@ -26,12 +26,6 @@ gui.add_templates{
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
--- show tutorial text in either a speech bubble or in chat
-local function show_tutorial(player, player_table, type)
-  player_table.flags[type.."_tutorial_shown"] = true
-  player.print{"tl."..type.."-tutorial-text"}
-end
-
 -- BOOTSTRAP
 
 event.on_init(function()
@@ -76,7 +70,8 @@ event.on_player_cursor_stack_changed(function(e)
     end
     -- show tutorial
     if player_table.flags.capsule_tutorial_shown == false then
-      show_tutorial(player, player_table, "capsule")
+      player_table.flags.capsule_tutorial_shown = true
+      player.print{"tl.capsule-tutorial-text"}
     end
 
     local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
@@ -100,8 +95,8 @@ event.on_player_cursor_stack_changed(function(e)
   if stack and stack.valid_for_read and stack.name == "tl-adjust-capsule" then
     player_table.flags.adjusting_tilegrid = true
     if not player_table.flags.adjustment_tutorial_shown then
-      -- show tutorial bubble
-      show_tutorial(player, player_table, "adjustment")
+      player_table.flags.adjustment_tutorial_shown = true
+      player.print{"tl.adjustment-tutorial-text"}
     end
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
