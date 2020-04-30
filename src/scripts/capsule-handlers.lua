@@ -1,7 +1,12 @@
-local capsule_event = {}
+local capsule_handlers = {}
 
--- finish drawing tilegrids, perish tilegrids
-local function draw_on_tick(e)
+local tilegrid = require("scripts.tilegrid")
+
+local math_abs = math.abs
+local math_floor = math.floor
+local table_insert = table.insert
+
+function capsule_handlers.draw_on_tick(e)
   local cur_tick = e.tick
   local end_wait = global.end_wait
   local drawing = global.tilegrids.drawing
@@ -18,7 +23,7 @@ local function draw_on_tick(e)
       else
         if data.settings.auto_clear then
           -- add to perishing table
-          local death_tick = cur_tick+floor(visual_settings.tilegrid_clear_delay*60)
+          local death_tick = cur_tick+math_floor(visual_settings.tilegrid_clear_delay*60)
           local pt = perishing[death_tick]
           if not pt then
             perishing[death_tick] = {}
@@ -47,15 +52,13 @@ local function draw_on_tick(e)
     perishing[cur_tick] = nil
   end
   if table_size(drawing) == 0 and table_size(perishing) == 0 then
-    event.disable("draw_on_tick")
+    -- event.disable("draw_on_tick")
   end
 end
 
--- tapeline draw draws a new tilegrid
-local function on_draw_capsule(e)
-  if e.item.name ~= "tapeline-draw" then return end
+function capsule_handlers.draw(e)
   local player_table = global.players[e.player_index]
-  local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
+  local cur_tile = {x=math_floor(e.position.x), y=math_floor(e.position.y)}
   local data = player_table.tilegrids.drawing
   -- check if currently drawing
   if data then
@@ -66,9 +69,9 @@ local function on_draw_capsule(e)
     if data.settings.cardinals_only then
       local origin = data.area.origin
       if math_abs(cur_tile.x - origin.x) >= math_abs(cur_tile.y - origin.y) then
-        cur_tile.y = floor(origin.y)
+        cur_tile.y = math_floor(origin.y)
       else
-        cur_tile.x = floor(origin.x)
+        cur_tile.x = math_floor(origin.x)
       end
     end
     -- if the current tile position differs from the last known tile position
@@ -81,17 +84,16 @@ local function on_draw_capsule(e)
     -- create new tilegrid
     tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index, player_table.settings.visual)
     -- register on_tick
-    if not event.is_enabled("draw_on_tick") then
-      event.enable("draw_on_tick")
-    end
+    -- if not event.is_enabled("draw_on_tick") then
+    --   event.enable("draw_on_tick")
+    -- end
   end
 end
 
--- tapeline edit lets you edit the tilegrid that was clicked on
-local function on_edit_capsule(e)
+function capsule_handlers.edit(e)
   if e.item.name ~= "tapeline-edit" then return end
   local player_table = global.players[e.player_index]
-  local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
+  local cur_tile = {x=math_floor(e.position.x), y=math_floor(e.position.y)}
   -- to avoid spamming messages, check against last tile position
   local prev_tile = player_table.last_capsule_tile
   if prev_tile and prev_tile.x == cur_tile.x and prev_tile.y == cur_tile.y then return end
@@ -117,33 +119,32 @@ local function on_edit_capsule(e)
   elseif size == 1 then
     -- skip selection dialog
     local data = player_table.tilegrids.registry[clicked_on[1]]
-    local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
-    player_table.tilegrids.editing = clicked_on[1]
-    -- create highlight box
-    local area = data.area
-    local highlight_box = player.surface.create_entity{
-      name = "tl-highlight-box",
-      position = area.left_top,
-      bounding_box = util.area.expand(area, 0.25),
-      render_player_index = e.player_index,
-      player = e.player_index,
-      blink_interval = 30
-    }
-    player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=elems.divisor_textfield.text}
+    -- local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
+    -- player_table.tilegrids.editing = clicked_on[1]
+    -- -- create highlight box
+    -- local area = data.area
+    -- local highlight_box = player.surface.create_entity{
+    --   name = "tl-highlight-box",
+    --   position = area.left_top,
+    --   bounding_box = util.area.expand(area, 0.25),
+    --   render_player_index = e.player_index,
+    --   player = e.player_index,
+    --   blink_interval = 30
+    -- }
+    -- player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=elems.divisor_textfield.text}
   else
     -- show selection dialog
-    select_gui.populate_listbox(e.player_index, clicked_on)
+    -- select_gui.populate_listbox(e.player_index, clicked_on)
     player_table.flags.selecting_tilegrid = true
   end
   player.clean_cursor()
 end
 
--- tapeline adjust lets you drag an existing tilegrid around to move it
-local function on_adjust_capsule(e)
+function capsule_handlers.adjust(e)
   if e.item.name ~= "tapeline-adjust" then return end
   local player_table = global.players[e.player_index]
   local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
-  local cur_tile = {x=floor(e.position.x), y=floor(e.position.y)}
+  local cur_tile = {x=math_floor(e.position.x), y=math_floor(e.position.y)}
   if game.tick - player_table.last_capsule_tick > global.end_wait then
     player_table.last_capsule_tile = nil
   end
@@ -185,4 +186,4 @@ local function on_adjust_capsule(e)
   player_table.last_capsule_tick = game.tick
 end
 
-return capsule_event
+return capsule_handlers
