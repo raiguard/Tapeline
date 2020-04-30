@@ -129,7 +129,7 @@ end)
 
 -- GUI
 
-gui.register_events()
+gui.register_handlers()
 
 -- PLAYER
 

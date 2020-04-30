@@ -1,3 +1,5 @@
+local gui = require("__flib__.control.gui")
+
 return {
   ["0.6.0"] = function()
     -- create missing global tables
@@ -111,6 +113,6 @@ return {
   end,
   ["1.1.0"] = function()
     global.__lualib = nil
-
+    gui.init()
   end
 }
