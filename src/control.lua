@@ -3,12 +3,12 @@ local gui = require("__flib__.control.gui")
 local migration = require("__flib__.control.migration")
 local mod_gui = require("mod-gui")
 
-local draw_gui = require("scripts.gui.draw")
-local select_gui = require("scripts.gui.select")
 local capsule_handlers = require("scripts.capsule-handlers")
+local draw_gui = require("scripts.gui.draw")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
+local select_gui = require("scripts.gui.select")
 local tilegrid = require("scripts.tilegrid")
 
 local string_sub = string.sub
@@ -45,7 +45,7 @@ end)
 
 event.on_configuration_changed(function(e)
   migration.on_config_changed(e, migrations)
-end, {insert_at=1})
+end)
 
 -- CAPSULES
 
