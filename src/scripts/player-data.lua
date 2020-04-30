@@ -1,5 +1,8 @@
 local player_data = {}
 
+local string_gsub = string.gsub
+local string_sub = string.sub
+
 function player_data.init(player_index)
   global.players[player_index] = {
     flags = {

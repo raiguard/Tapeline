@@ -1,15 +1,18 @@
-local event = require("__RaiLuaLib__.lualib.event")
-local gui = require("__RaiLuaLib__.lualib.gui")
-local migration = require("__RaiLuaLib__.lualib.migration")
-local mod_gui = require("mod-gui")
-local util = require("scripts.util")
+local event = require("__flib__.control.event")
+local gui = require("__flib__.control.gui")
+local migration = require("__flib__.control.migration")
+-- local mod_gui = require("mod-gui")
 
-local draw_gui = require("gui.draw")
-local edit_gui = require("gui.edit")
-local select_gui = require("gui.select")
+-- local draw_gui = require("gui.draw")
+-- local edit_gui = require("gui.edit")
+-- local select_gui = require("gui.select")
 
+-- local capsule_event = require("scripts.capsule-event")
+local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
+local player_data = require("scripts.player-data")
 local tilegrid = require("scripts.tilegrid")
+local util = require("scripts.util")
 
 -- local floor = math.floor
 -- local math_abs = math.abs
@@ -17,7 +20,7 @@ local tilegrid = require("scripts.tilegrid")
 -- local string_sub = string.sub
 -- local table_insert = table.insert
 
-gui.templates:extend{
+gui.add_templates{
   pushers = {
     horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
     vertical = {type="empty-widget", style_mods={vertically_stretchable=true}}
@@ -33,32 +36,15 @@ gui.templates:extend{
 -- show tutorial text in either a speech bubble or in chat
 local function show_tutorial(player, player_table, type)
   player_table.flags[type.."_tutorial_shown"] = true
-  if player.character then
-    player_table.bubble = player.surface.create_entity{
-      name = "tl-speech-bubble",
-      position = player.position,
-      text = {"tl."..type.."-tutorial-text"},
-      source = player.character
-    }
-  else
-    player.print{"tl."..type.."-tutorial-text"}
-  end
-  event.enable("on_capsule_after_tutorial", player.index)
+  player.print{"tl."..type.."-tutorial-text"}
 end
 
 event.on_init(function()
-  -- setup global
-  global.tilegrids = {
-    drawing = {},
-    perishing = {},
-  }
-  global.players = {}
-  -- set end_wait for a singleplayer game
-  global.end_wait = 3
-  -- create player data for any existing players
-  for i,player in pairs(game.players) do
-    setup_player(i)
-    update_player_visual_settings(i, player)
+  gui.init()
+
+  global_data.init()
+  for i in pairs(game.players) do
+    player_data.init(i)
   end
 end)
 
@@ -67,17 +53,17 @@ event.on_configuration_changed(function(e)
 end, {insert_at=1})
 
 event.on_runtime_mod_setting_changed(function(e)
-  update_player_visual_settings(e.player_index, game.get_player(e.player_index))
-  local name = e.setting
-  if name ~= "tilegrid-clear-delay" and name ~= "log-selection-area" then
-    -- refresh all persistent tilegrids for the player
-    local player_table = global.players[e.player_index]
-    local visual_settings = player_table.settings.visual
-    local registry = player_table.tilegrids.registry
-    for i=1,#registry do
-      tilegrid.refresh(registry[i], e.player_index, visual_settings)
-    end
-  end
+  -- -- update_player_visual_settings(e.player_index, game.get_player(e.player_index))
+  -- local name = e.setting
+  -- if name ~= "tilegrid-clear-delay" and name ~= "log-selection-area" then
+  --   -- refresh all persistent tilegrids for the player
+  --   local player_table = global.players[e.player_index]
+  --   local visual_settings = player_table.settings.visual
+  --   local registry = player_table.tilegrids.registry
+  --   for i=1,#registry do
+  --     tilegrid.refresh(registry[i], e.player_index, visual_settings)
+  --   end
+  -- end
 end)
 
 event.on_player_cursor_stack_changed(function(e)
@@ -103,31 +89,31 @@ event.on_player_cursor_stack_changed(function(e)
       -- show tutorial bubble
       show_tutorial(player, player_table, "capsule")
     end
-    local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
-    player_gui.draw = {elems=elems, last_divisor_value=elems.divisor_textfield.text}
-    event.enable("on_draw_capsule", e.player_index)
+    -- local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
+    -- player_gui.draw = {elems=elems, last_divisor_value=elems.divisor_textfield.text}
+    -- event.enable("on_draw_capsule", e.player_index)
   elseif player_gui.draw then
-    draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
+    -- draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
     player_gui.draw = nil
-    event.disable("on_draw_capsule", e.player_index)
+    -- event.disable("on_draw_capsule", e.player_index)
   end
   -- edit capsule
   if stack and stack.valid_for_read and stack.name == "tapeline-edit" then
     -- because sometimes it doesn't work properly?
     if player_gui.select then return end
-    local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
-    player_gui.select = {elems=elems}
-    event.enable("on_edit_capsule", e.player_index)
+    -- local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
+    -- player_gui.select = {elems=elems}
+    -- event.enable("on_edit_capsule", e.player_index)
   elseif player_gui.select and not player_table.flags.selecting_tilegrid then
-    select_gui.destroy(player_gui.select.elems.window, player.index)
+    -- select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
-    event.disable("on_edit_capsule", e.player_index)
+    -- event.disable("on_edit_capsule", e.player_index)
   end
   -- adjust capsule
   if stack and stack.valid_for_read and stack.name == "tapeline-adjust" then
     player_table.flags.adjusting_tilegrid = true
-    event.enable("on_adjust_capsule", e.player_index)
+    -- event.enable("on_adjust_capsule", e.player_index)
     if not player_table.flags.adjustment_tutorial_shown then
       -- show tutorial bubble
       show_tutorial(player, player_table, "adjustment")
@@ -135,13 +121,12 @@ event.on_player_cursor_stack_changed(function(e)
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
     player_table.last_capsule_tile = nil
-    event.disable("on_adjust_capsule", e.player_index)
+    -- event.disable("on_adjust_capsule", e.player_index)
   end
 end)
 
 event.on_player_created(function(e)
-  setup_player(e.player_index)
-  update_player_visual_settings(e.player_index, game.get_player(e.player_index))
+  player_data.init(e.player_index)
 end)
 
 event.on_player_joined_game(function(e)

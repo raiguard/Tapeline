@@ -2,8 +2,8 @@
 -- DRAW GUI
 -- Edit settings related to drawing tilegrids
 
-local event = require("__RaiLuaLib__.lualib.event")
-local gui = require("__RaiLuaLib__.lualib.gui")
+local event = require("__flib__.control.event")
+local gui = require("__flib__.control.gui")
 local util = require("scripts.util")
 
 local self = {}

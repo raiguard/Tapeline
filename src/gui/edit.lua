@@ -2,8 +2,8 @@
 -- EDIT GUI
 -- Edit settings on a current tilegrid
 
-local event = require("__RaiLuaLib__.lualib.event")
-local gui = require("__RaiLuaLib__.lualib.gui")
+local event = require("__flib__.control.event")
+local gui = require("__flib__.control.gui")
 local util = require("scripts.util")
 
 local tilegrid = require("scripts.tilegrid")
