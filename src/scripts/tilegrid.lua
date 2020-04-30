@@ -1,9 +1,6 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- TILEGRID
--- Contains logic for creating, destroying, and updating tilegrids
+local tilegrid = {}
 
 local util = require("scripts.util")
-local tilegrid = {}
 
 local draw_rectangle = rendering.draw_rectangle
 local draw_line = rendering.draw_line

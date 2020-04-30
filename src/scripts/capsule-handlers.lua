@@ -1,5 +1,9 @@
 local capsule_handlers = {}
 
+local mod_gui = require("mod-gui")
+
+local edit_gui = require("scripts.gui.edit")
+local select_gui = require("scripts.gui.select")
 local tilegrid = require("scripts.tilegrid")
 
 local math_abs = math.abs
@@ -51,9 +55,6 @@ function capsule_handlers.draw_on_tick(e)
     end
     perishing[cur_tick] = nil
   end
-  if table_size(drawing) == 0 and table_size(perishing) == 0 then
-    -- event.disable("draw_on_tick")
-  end
 end
 
 function capsule_handlers.draw(e)
@@ -83,15 +84,10 @@ function capsule_handlers.draw(e)
   else
     -- create new tilegrid
     tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index, player_table.settings.visual)
-    -- register on_tick
-    -- if not event.is_enabled("draw_on_tick") then
-    --   event.enable("draw_on_tick")
-    -- end
   end
 end
 
 function capsule_handlers.edit(e)
-  if e.item.name ~= "tapeline-edit" then return end
   local player_table = global.players[e.player_index]
   local cur_tile = {x=math_floor(e.position.x), y=math_floor(e.position.y)}
   -- to avoid spamming messages, check against last tile position
@@ -119,29 +115,28 @@ function capsule_handlers.edit(e)
   elseif size == 1 then
     -- skip selection dialog
     local data = player_table.tilegrids.registry[clicked_on[1]]
-    -- local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
-    -- player_table.tilegrids.editing = clicked_on[1]
-    -- -- create highlight box
-    -- local area = data.area
-    -- local highlight_box = player.surface.create_entity{
-    --   name = "tl-highlight-box",
-    --   position = area.left_top,
-    --   bounding_box = util.area.expand(area, 0.25),
-    --   render_player_index = e.player_index,
-    --   player = e.player_index,
-    --   blink_interval = 30
-    -- }
-    -- player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=elems.divisor_textfield.text}
+    local elems = edit_gui.create(mod_gui.get_frame_flow(player), e.player_index, data.settings, data.hot_corner)
+    player_table.tilegrids.editing = clicked_on[1]
+    -- create highlight box
+    local area = data.area
+    local highlight_box = player.surface.create_entity{
+      name = "tl-highlight-box",
+      position = area.left_top,
+      bounding_box = util.area.expand(area, 0.25),
+      render_player_index = e.player_index,
+      player = e.player_index,
+      blink_interval = 30
+    }
+    player_table.gui.edit = {elems=elems, highlight_box=highlight_box, last_divisor_value=elems.divisor_textfield.text}
   else
     -- show selection dialog
-    -- select_gui.populate_listbox(e.player_index, clicked_on)
+    select_gui.populate_listbox(e.player_index, clicked_on)
     player_table.flags.selecting_tilegrid = true
   end
   player.clean_cursor()
 end
 
 function capsule_handlers.adjust(e)
-  if e.item.name ~= "tapeline-adjust" then return end
   local player_table = global.players[e.player_index]
   local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
   local cur_tile = {x=math_floor(e.position.x), y=math_floor(e.position.y)}

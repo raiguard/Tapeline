@@ -1,17 +1,9 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- SELECT GUI
--- Select which tilegrid to edit
+local select_gui = {}
 
-local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 local util = require("scripts.util")
 
-local edit_gui = require("gui.edit")
-
-local select_gui = {}
-
--- -----------------------------------------------------------------------------
--- LOCAL UTILITIES
+local edit_gui = require("scripts.gui.edit")
 
 local function attach_highlight_box(gui_data, player_index, area)
   if gui_data.highlight_box then gui_data.highlight_box.destroy() end
@@ -25,10 +17,7 @@ local function attach_highlight_box(gui_data, player_index, area)
   }
 end
 
--- -----------------------------------------------------------------------------
--- EVENT HANDLERS
-
-gui.handlers:extend{
+gui.add_handlers{
   select = {
     selection_listbox = {
       on_gui_selection_state_changed = function(e)
@@ -63,9 +52,6 @@ gui.handlers:extend{
     }
   }
 }
-
--- -----------------------------------------------------------------------------
--- LIBRARY
 
 function select_gui.create(parent, player_index)
   return gui.build(parent, {
@@ -105,8 +91,8 @@ function select_gui.populate_listbox(player_index, tilegrids)
 end
 
 function select_gui.destroy(window, player_index)
+  gui.update_filters("select", player_index, nil, "remove")
   window.destroy()
-  event.disable_group("gui.select", player_index)
 end
 
 return select_gui

@@ -1,25 +1,14 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- DRAW GUI
--- Edit settings related to drawing tilegrids
+local draw_gui = {}
 
-local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 local util = require("scripts.util")
-
-local self = {}
-
--- -----------------------------------------------------------------------------
--- LOCAL UTILITIES
 
 type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
 type_index_to_name = {"increment", "split"}
 type_to_clamps = {{4,13}, {2,11}}
 
--- -----------------------------------------------------------------------------
--- GUI DATA
-
-gui.handlers:extend{
+gui.add_handlers{
   draw = {
     auto_clear_checkbox = {
       on_gui_checked_state_changed = function(e)
@@ -37,7 +26,7 @@ gui.handlers:extend{
       on_gui_switch_state_changed = function(e)
         local player_table = global.players[e.player_index]
         player_table.settings.grid_type = switch_state_to_type_index[e.element.switch_state]
-        self.update(e.player_index)
+        draw_gui.update(e.player_index)
       end
     },
     divisor_slider = {
@@ -70,10 +59,7 @@ gui.handlers:extend{
   }
 }
 
--- -----------------------------------------------------------------------------
--- LIBRARY
-
-function self.create(parent, player_index, default_settings)
+function draw_gui.create(parent, player_index, default_settings)
   local grid_type = default_settings.grid_type
   local data = gui.build(parent, {
     {template="window", name="tl_draw_window", children={
@@ -109,7 +95,7 @@ function self.create(parent, player_index, default_settings)
   return data
 end
 
-function self.update(player_index)
+function draw_gui.update(player_index)
   local player_table = global.players[player_index]
   local settings = player_table.settings
   local elems = player_table.gui.draw.elems
@@ -121,9 +107,9 @@ function self.update(player_index)
   elems.divisor_textfield.text = settings[type_index_to_name[grid_type].."_divisor"]
 end
 
-function self.destroy(window, player_index)
+function draw_gui.destroy(window, player_index)
+  gui.update_filters("draw", player_index, nil, "remove")
   window.destroy()
-  event.disable_group("gui.draw", player_index)
 end
 
-return self
+return draw_gui

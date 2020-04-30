@@ -1,24 +1,17 @@
 local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 local migration = require("__flib__.control.migration")
--- local mod_gui = require("mod-gui")
+local mod_gui = require("mod-gui")
 
--- local draw_gui = require("gui.draw")
--- local edit_gui = require("gui.edit")
--- local select_gui = require("gui.select")
-
+local draw_gui = require("scripts.gui.draw")
+local select_gui = require("scripts.gui.select")
 local capsule_handlers = require("scripts.capsule-handlers")
 local global_data = require("scripts.global-data")
 local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
--- local tilegrid = require("scripts.tilegrid")
-local util = require("scripts.util")
+local tilegrid = require("scripts.tilegrid")
 
--- local floor = math.floor
--- local math_abs = math.abs
--- local string_gsub = string.gsub
--- local string_sub = string.sub
--- local table_insert = table.insert
+local string_sub = string.sub
 
 gui.add_templates{
   pushers = {
@@ -48,6 +41,12 @@ event.on_init(function()
   for i in pairs(game.players) do
     player_data.init(i)
   end
+
+  gui.build_lookup_tables()
+end)
+
+event.on_load(function()
+  gui.build_lookup_tables()
 end)
 
 event.on_configuration_changed(function(e)
@@ -61,9 +60,8 @@ event.on_player_cursor_stack_changed(function(e)
   local player = game.get_player(e.player_index)
   local stack = player.cursor_stack
   local player_gui = player_table.gui
-  if not stack or not stack.valid_for_read then return end
 
-  if stack.name == "tapeline-draw" then
+  if stack and stack.valid_for_read and stack.name == "tl-draw-capsule" then
     -- because sometimes it doesn't work properly?
     if player_gui.draw then return end
     -- if the player is currently selecting or editing, don't let them hold the capsule
@@ -81,31 +79,26 @@ event.on_player_cursor_stack_changed(function(e)
       show_tutorial(player, player_table, "capsule")
     end
 
-    -- local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
-    -- player_gui.draw = {elems=elems, last_divisor_value=elems.divisor_textfield.text}
-    -- event.enable("on_draw_capsule", e.player_index)
+    local elems = draw_gui.create(mod_gui.get_frame_flow(player), player.index, player_table.settings)
+    player_gui.draw = {elems=elems, last_divisor_value=elems.divisor_textfield.text}
   elseif player_gui.draw then
-    -- draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
+    draw_gui.destroy(player_table.gui.draw.elems.window, player.index)
     player_gui.draw = nil
-    -- event.disable("on_draw_capsule", e.player_index)
   end
 
-  if stack.name == "tapeline-edit" then
+  if stack and stack.valid_for_read and stack.name == "tl-edit-capsule" then
     -- because sometimes it doesn't work properly?
     if player_gui.select then return end
-    -- local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
-    -- player_gui.select = {elems=elems}
-    -- event.enable("on_edit_capsule", e.player_index)
+    local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
+    player_gui.select = {elems=elems}
   elseif player_gui.select and not player_table.flags.selecting_tilegrid then
-    -- select_gui.destroy(player_gui.select.elems.window, player.index)
+    select_gui.destroy(player_gui.select.elems.window, player.index)
     player_gui.select = nil
     player_table.last_capsule_tile = nil
-    -- event.disable("on_edit_capsule", e.player_index)
   end
 
-  if stack.name == "tapeline-adjust" then
+  if stack and stack.valid_for_read and stack.name == "tl-adjust-capsule" then
     player_table.flags.adjusting_tilegrid = true
-    -- event.enable("on_adjust_capsule", e.player_index)
     if not player_table.flags.adjustment_tutorial_shown then
       -- show tutorial bubble
       show_tutorial(player, player_table, "adjustment")
@@ -113,7 +106,6 @@ event.on_player_cursor_stack_changed(function(e)
   elseif player_table.flags.adjusting_tilegrid == true then
     player_table.flags.adjusting_tilegrid = false
     player_table.last_capsule_tile = nil
-    -- event.disable("on_adjust_capsule", e.player_index)
   end
 end)
 
@@ -141,6 +133,10 @@ event.on_player_used_capsule(function(e)
   end
 end)
 
+-- GUI
+
+gui.register_events()
+
 -- PLAYER
 
 event.on_player_created(function(e)
@@ -165,17 +161,19 @@ end)
 -- SETTINGS
 
 event.on_runtime_mod_setting_changed(function(e)
-  -- -- update_player_visual_settings(e.player_index, game.get_player(e.player_index))
-  -- local name = e.setting
-  -- if name ~= "tilegrid-clear-delay" and name ~= "log-selection-area" then
-  --   -- refresh all persistent tilegrids for the player
-  --   local player_table = global.players[e.player_index]
-  --   local visual_settings = player_table.settings.visual
-  --   local registry = player_table.tilegrids.registry
-  --   for i=1,#registry do
-  --     tilegrid.refresh(registry[i], e.player_index, visual_settings)
-  --   end
-  -- end
+  local name = e.setting
+  if string_sub(name, 1, 3) == "tl-" then
+    player_data.update_settings(game.get_player(e.player_index), global.players[e.player_index])
+    if name ~= "tl-tilegrid-clear-delay" and name ~= "tl-log-selection-area" then
+      -- refresh all persistent tilegrids for the player
+      local player_table = global.players[e.player_index]
+      local visual_settings = player_table.settings.visual
+      local registry = player_table.tilegrids.registry
+      for i=1,#registry do
+        tilegrid.refresh(registry[i], e.player_index, visual_settings)
+      end
+    end
+  end
 end)
 
 -- TICK

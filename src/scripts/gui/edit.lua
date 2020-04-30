@@ -1,8 +1,5 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- EDIT GUI
--- Edit settings on a current tilegrid
+local edit_gui = {}
 
-local event = require("__flib__.control.event")
 local gui = require("__flib__.control.gui")
 local util = require("scripts.util")
 
@@ -10,10 +7,6 @@ local tilegrid = require("scripts.tilegrid")
 
 local table_remove = table.remove
 
-local self = {}
-
--- -----------------------------------------------------------------------------
--- LOCAL UTILITIES
 
 type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
@@ -39,17 +32,13 @@ local function get_settings_table(player_index)
   return tilegrids.registry[tilegrids.editing].settings
 end
 
--- -----------------------------------------------------------------------------
--- GUI DATA
-
-gui.handlers:extend{
+gui.add_handlers{
   edit = {
-
     save_changes_button = {
       on_gui_click = function(e)
         local player_table = global.players[e.player_index]
         player_table.tilegrids.editing = false
-        self.destroy(player_table.gui.edit.elems.window, game.get_player(e.player_index))
+        edit_gui.destroy(player_table.gui.edit.elems.window, game.get_player(e.player_index))
         player_table.gui.edit.highlight_box.destroy()
         player_table.gui.edit = nil
       end
@@ -67,7 +56,7 @@ gui.handlers:extend{
         table_remove(player_table.tilegrids.registry, player_table.tilegrids.editing)
         player_table.tilegrids.editing = false
         local gui_data = player_table.gui.edit
-        self.destroy(gui_data.elems.window, game.get_player(e.player_index))
+        edit_gui.destroy(gui_data.elems.window, game.get_player(e.player_index))
         gui_data.highlight_box.destroy()
         player_table.gui.edit = nil
         -- clean player cursor
@@ -97,7 +86,7 @@ gui.handlers:extend{
         local player_table = global.players[e.player_index]
         local data = player_table.tilegrids.registry[player_table.tilegrids.editing]
         data.settings.grid_type = switch_state_to_type_index[e.element.switch_state]
-        self.update(e.player_index, data.settings)
+        edit_gui.update(e.player_index, data.settings)
         tilegrid.refresh(data, e.player_index, player_table.settings.visual)
       end
     },
@@ -138,16 +127,13 @@ gui.handlers:extend{
       on_gui_click = function(e)
         local player = game.get_player(e.player_index)
         player.clean_cursor()
-        player.cursor_stack.set_stack{name="tapeline-adjust"}
+        player.cursor_stack.set_stack{name="tl-adjust-capsule"}
       end
     }
   }
 }
 
--- -----------------------------------------------------------------------------
--- LIBRARY
-
-function self.create(parent, player_index, settings, hot_corner)
+function edit_gui.create(parent, player_index, settings, hot_corner)
   local grid_type = settings.grid_type
   local data = gui.build(parent, {
     {template="window", name="tl_edit_window", children={
@@ -201,7 +187,7 @@ function self.create(parent, player_index, settings, hot_corner)
   return data
 end
 
-function self.update(player_index, settings)
+function edit_gui.update(player_index, settings)
   local player_table = global.players[player_index]
   settings = settings or player_table.tilegrids.registry[player_table.tilegrids.editing]
   local elems = player_table.gui.edit.elems
@@ -213,14 +199,14 @@ function self.update(player_index, settings)
   elems.divisor_textfield.text = settings[type_index_to_name[grid_type].."_divisor"]
 end
 
-function self.destroy(window, player)
+function edit_gui.destroy(window, player)
+  gui.update_filters("edit", player.index, nil, "remove")
   window.destroy()
-  event.disable_group("gui.edit", player.index)
   -- remove capsule from hand if it's there
   local stack = player.cursor_stack
-  if stack and stack.valid_for_read and stack.name == "tapeline-adjust" then
+  if stack and stack.valid_for_read and stack.name == "tl-adjust-capsule" then
     player.clean_cursor()
   end
 end
 
-return self
+return edit_gui

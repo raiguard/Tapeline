@@ -1,8 +1,6 @@
--- -------------------------------------------------------------------------------------------------------------------------------------------------------------
--- UTILITIES
+local util = require("__core__.lualib.util")
 
 local math2d = require("__core__.lualib.math2d")
-local util = require("__core__.lualib.util")
 
 util.area = {}
 
