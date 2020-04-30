@@ -139,7 +139,17 @@ event.on_player_created(function(e)
 end)
 
 event.on_player_removed(function(e)
-  -- TODO destroy grids and data
+  -- destroy all tilegrids
+  local tilegrids = global.players[e.player_index].tilegrids
+  if tilegrids.drawing then
+    tilegrid.destroy(tilegrids.drawing)
+  end
+  local registry = tilegrids.registry
+  for i=1,#registry do
+    tilegrid.destroy(registry[i])
+  end
+  -- remove player data
+  global.players[e.player_index] = nil
 end)
 
 event.on_player_joined_game(function(e)
