@@ -32,24 +32,19 @@ function player_data.init(player_index)
 end
 
 function player_data.update_settings(player, player_table)
-
-end
-
-function player_data.refresh(player, player_table)
-
-end
-
--- gets the values of all player mod settings and sticks them into the player's table
-local function update_player_visual_settings(player_index, player)
-  local t = global.players[player_index].settings.visual
+  local t = player_table.settings.visual
   local s = player.mod_settings
   for k,vt in pairs(s) do
     if string_sub(k, 1, 3) == 'tl-' then
-      -- use load() to convert table strings to actual tables
       k = string_gsub(k, "^tl%-", "")
+      -- use load() to convert table strings to actual tables
       t[string_gsub(k, "%-", "_")] = load("return "..tostring(vt.value))()
     end
   end
+end
+
+function player_data.refresh(player, player_table)
+  player_data.update_settings(player, player_table)
 end
 
 return player_data
