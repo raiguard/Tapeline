@@ -122,10 +122,10 @@ event.register({"tl-cycle-forwards", "tl-cycle-backwards"}, function(e)
   local player = game.get_player(e.player_index)
   local stack = player.cursor_stack
   if stack and stack.valid_for_read then
-    if stack.name == "tapeline-draw" then
-      player.cursor_stack.set_stack{name="tapeline-edit", count=1}
-    elseif stack.name == "tapeline-edit" then
-      player.cursor_stack.set_stack{name="tapeline-draw", count=1}
+    if stack.name == "tl-draw-capsule" then
+      player.cursor_stack.set_stack{name="tl-edit-capsule", count=1}
+    elseif stack.name == "tl-edit-capsule" then
+      player.cursor_stack.set_stack{name="tl-draw-capsule", count=1}
     end
   end
 end)
