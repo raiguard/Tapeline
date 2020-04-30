@@ -54,63 +54,63 @@ local function capsule(name, icon, cooldown)
 end
 
 data:extend{
-  -- shortcut
-  {
-    type = "shortcut",
-    name = "tapeline-shortcut",
-    order = "a[alt-mode]-b[copy]",
-    associated_control_input = "get-tapeline-tool",
-    action = "create-blueprint-item",
-    item_to_create = "tapeline-draw",
-    icon = shortcut_icon("x32.png", 32),
-    small_icon = shortcut_icon("x24.png", 24),
-    disabled_icon = shortcut_icon("x32-white.png", 32),
-    disabled_small_icon = shortcut_icon("x24-white.png", 24)
-  },
   -- capsules
-  capsule("tapeline-draw", "__Tapeline__/graphics/shortcut-bar/tapeline-x32-white.png", 3),
-  capsule("tapeline-adjust", "__Tapeline__/graphics/item/adjust.png", 1),
-  capsule("tapeline-edit", "__Tapeline__/graphics/item/edit.png", 10),
+  capsule("tl-adjust-capsule", "__Tapeline__/graphics/item/adjust.png", 1),
+  capsule("tl-draw-capsule", "__Tapeline__/graphics/shortcut-bar/tapeline-x32-white.png", 3),
+  capsule("tl-edit-capsule", "__Tapeline__/graphics/item/edit.png", 10),
   -- custom inputs
   {
     type = "custom-input",
-    name = "get-tapeline-tool",
+    name = "tl-get-draw-capsule",
     key_sequence = "ALT + M",
     action = "create-blueprint-item",
-    item_to_create = "tapeline-draw"
+    item_to_create = "tl-draw-capsule"
   },
   {
     type = "custom-input",
-    name = "tl-get-edit-tool",
+    name = "tl-get-edit-capsule",
     key_sequence = "",
     action = "create-blueprint-item",
-    item_to_create = "tapeline-edit"
+    item_to_create = "tl-edit-capsule"
   },
   {
     type = "custom-input",
-    name = "tapeline-cycle-forwards",
+    name = "tl-cycle-forwards",
     key_sequence = "",
     linked_game_control = "cycle-blueprint-forwards"
   },
   {
     type = "custom-input",
-    name = "tapeline-cycle-backwards",
+    name = "tl-cycle-backwards",
     key_sequence = "",
     linked_game_control = "cycle-blueprint-backwards"
+  },
+  -- shortcut
+  {
+    type = "shortcut",
+    name = "tl-get-draw-capsule",
+    order = "a[alt-mode]-b[copy]",
+    associated_control_input = "tl-get-draw-capsule",
+    action = "create-blueprint-item",
+    item_to_create = "tl-draw-capsule",
+    icon = shortcut_icon("x32.png", 32),
+    small_icon = shortcut_icon("x24.png", 24),
+    disabled_icon = shortcut_icon("x32-white.png", 32),
+    disabled_small_icon = shortcut_icon("x24-white.png", 24)
   },
   -- other
   {
     type = "highlight-box",
     name = "tl-highlight-box"
   },
-  {
-    type = "speech-bubble",
-    name = "tl-speech-bubble",
-    style = "compilatron_speech_bubble",
-    wrapper_flow_style = "compilatron_speech_bubble_wrapper",
-    fade_in_out_ticks = 60 * 0.5,
-    flags = {"not-on-map", "placeable-off-grid"}
-  }
+  -- {
+  --   type = "speech-bubble",
+  --   name = "tl-speech-bubble",
+  --   style = "compilatron_speech_bubble",
+  --   wrapper_flow_style = "compilatron_speech_bubble_wrapper",
+  --   fade_in_out_ticks = 60 * 0.5,
+  --   flags = {"not-on-map", "placeable-off-grid"}
+  -- }
 }
 
 -- GUI STYLES
