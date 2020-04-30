@@ -127,7 +127,7 @@ styles.tl_green_button = {
   hovered_graphical_set = {
     base = {position = {102, 17}, corner_size = 8},
     shadow = default_dirt,
-    glow = default_glow(green_arrow_button_glow_color, 0.5)
+    glow = default_glow(green_button_glow_color, 0.5)
   },
   clicked_graphical_set = {
     base = {position = {119, 17}, corner_size = 8},
