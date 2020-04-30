@@ -102,65 +102,12 @@ data:extend{
   {
     type = "highlight-box",
     name = "tl-highlight-box"
-  },
-  -- {
-  --   type = "speech-bubble",
-  --   name = "tl-speech-bubble",
-  --   style = "compilatron_speech_bubble",
-  --   wrapper_flow_style = "compilatron_speech_bubble_wrapper",
-  --   fade_in_out_ticks = 60 * 0.5,
-  --   flags = {"not-on-map", "placeable-off-grid"}
-  -- }
+  }
 }
 
 -- GUI STYLES
 
 local styles = data.raw["gui-style"].default
-
-styles.tl_green_button = {
-  type = "button_style",
-  parent = "button",
-  default_graphical_set = {
-    base = {position = {68, 17}, corner_size = 8},
-    shadow = default_dirt
-  },
-  hovered_graphical_set = {
-    base = {position = {102, 17}, corner_size = 8},
-    shadow = default_dirt,
-    glow = default_glow(green_button_glow_color, 0.5)
-  },
-  clicked_graphical_set = {
-    base = {position = {119, 17}, corner_size = 8},
-    shadow = default_dirt
-  },
-  disabled_graphical_set = {
-    base = {position = {85, 17}, corner_size = 8},
-    shadow = default_dirt
-  }
-}
-
-styles.tl_green_icon_button = {
-  type = "button_style",
-  parent = "tl_green_button",
-  padding = 0,
-  size = 28
-}
-
-styles.tl_edit_confirm_button = {
-  type = "button_style",
-  parent = "tl_green_icon_button",
-  top_margin = 0
-}
-
-styles.tl_horizontal_pusher = {
-  type = "empty_widget_style",
-  horizontally_stretchable = "on"
-}
-
-styles.tl_vertical_pusher = {
-  type = "empty_widget_style",
-  vertically_stretchable = "on"
-}
 
 styles.tl_slider_textfield = {
   type = "textbox_style",
@@ -191,18 +138,6 @@ styles.tl_invalid_bold_label = {
   type = "label_style",
   parent = "bold_label",
   font_color = warning_red_color
-}
-
-styles.tl_vertically_centered_flow = {
-  type="horizontal_flow_style",
-  vertical_align = "center",
-  vertically_stretchable = "on"
-}
-
-styles.tl_horizontally_centered_flow = {
-  type = "vertical_flow_style",
-  horizontal_align = "center",
-  horizontally_stretchable = "on"
 }
 
 styles.tl_stretchable_button = {

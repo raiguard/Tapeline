@@ -142,8 +142,8 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
         {template="vertically_centered_flow", children={
           {type="label", style="heading_1_label", caption={"tl-gui.edit-settings"}},
           {template="pushers.horizontal"},
-          {type="sprite-button", style="tl_green_icon_button", style_mods={top_margin=0}, sprite="utility/confirm_slot", tooltip={"tl-gui.save-changes"},
-            handlers="edit.save_changes_button"},
+          {type="sprite-button", style="item_and_count_select_confirm", style_mods={top_margin=0}, sprite="utility/confirm_slot",
+            tooltip={"tl-gui.save-changes"}, handlers="edit.save_changes_button"},
           {type="sprite-button", style="red_icon_button", sprite="utility/trash", tooltip={"tl-gui.delete-tilegrid"}, handlers="edit.delete_button"}
         }},
         -- confirmation titlebar
