@@ -104,7 +104,6 @@ event.on_player_cursor_stack_changed(function(e)
   end
 end)
 
--- scroll between the items when the player shift+scrolls
 event.register({"tl-cycle-forwards", "tl-cycle-backwards"}, function(e)
   local player = game.get_player(e.player_index)
   local stack = player.cursor_stack
@@ -152,7 +151,7 @@ event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
 
-event.on_player_joined_game(function(e)
+event.on_player_joined_game(function()
   -- check if game is multiplayer
   if game.is_multiplayer() then
     -- check if end_wait has already been adjusted

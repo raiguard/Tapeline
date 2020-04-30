@@ -2,22 +2,28 @@ local util = require("__core__.lualib.util")
 
 local math2d = require("__core__.lualib.math2d")
 
+local string_find = string.find
+local string_gsub = string.gsub
+
 util.area = {}
 
 function util.area.expand(area, amount)
-  return {left_top={x=area.left_top.x-amount, y=area.left_top.y-amount}, right_bottom={x=area.right_bottom.x+amount, y=area.right_bottom.y+amount}}
+  return {
+    left_top={x=area.left_top.x-amount, y=area.left_top.y-amount},
+    right_bottom={x=area.right_bottom.x+amount, y=area.right_bottom.y+amount}
+  }
 end
 
 function util.area.opposite_corner(corner)
-  if corner:find("left") then
-    corner = corner:gsub("left", "right")
+  if string_find(corner, "left") then
+    corner = string_gsub(corner, "left", "right")
   else
-    corner = corner:gsub("right", "left")
+    corner = string_gsub(corner, "right", "left")
   end
-  if corner:find("top") then
-    corner = corner:gsub("top", "bottom")
+  if string_find(corner, "top") then
+    corner = string_gsub(corner, "top", "bottom")
   else
-    corner = corner:gsub("bottom", "top")
+    corner = string_gsub(corner, "bottom", "top")
   end
   return corner
 end
