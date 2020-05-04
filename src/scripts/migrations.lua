@@ -69,7 +69,8 @@ return {
         perishing = {}
       }
     }
-    for i,t in pairs(global.players) do
+    -- create new player tables
+    for i in pairs(game.players) do
       local data = {
         flags = {
           adjusting_tilegrid = false,
@@ -105,7 +106,6 @@ return {
       end
       new_global.players[i] = data
     end
-    global = new_global
   end,
   ["1.0.4"] = function()
     -- remove GUI data from global, it's no longer needed
