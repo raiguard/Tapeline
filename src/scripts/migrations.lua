@@ -1,4 +1,4 @@
-local gui = require("__flib__.control.gui")
+local gui = require("__flib__.gui")
 
 return {
   ["0.6.0"] = function()

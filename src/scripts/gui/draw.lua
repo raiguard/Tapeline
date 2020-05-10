@@ -1,6 +1,6 @@
 local draw_gui = {}
 
-local gui = require("__flib__.control.gui")
+local gui = require("__flib__.gui")
 local util = require("scripts.util")
 
 type_to_switch_state = {"left", "right"}

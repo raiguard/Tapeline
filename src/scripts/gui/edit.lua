@@ -1,6 +1,6 @@
 local edit_gui = {}
 
-local gui = require("__flib__.control.gui")
+local gui = require("__flib__.gui")
 local util = require("scripts.util")
 
 local tilegrid = require("scripts.tilegrid")
