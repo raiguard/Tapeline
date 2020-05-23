@@ -7,6 +7,7 @@ Date: ????
     - Refactored the mod structure to improve performace and simplicity
     - Switched from RaiLuaLib to FLib
     - Switched to double quotes everywhere
+    - Minor GUI style cleanup for 0.18.27
   Bugfixes:
     - Fixed that a player's tilegrids and data would remain behind if they were removed
 ---------------------------------------------------------------------------------------------------

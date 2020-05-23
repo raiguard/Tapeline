@@ -11,7 +11,7 @@ local table_remove = table.remove
 type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
 type_index_to_name = {"increment", "split"}
-type_to_clamps = {{4,13}, {2,11}}
+type_to_clamps = {{4, 13}, {2, 11}}
 
 origin_localized_items = {
   {"tl-gui.origin-left_top"},
@@ -142,16 +142,16 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
         {template="vertically_centered_flow", children={
           {type="label", style="heading_1_label", caption={"tl-gui.edit-settings"}},
           {template="pushers.horizontal"},
-          {type="sprite-button", style="item_and_count_select_confirm", style_mods={top_margin=0}, sprite="utility/confirm_slot",
+          {type="sprite-button", style="item_and_count_select_confirm", style_mods={top_margin=0}, sprite="utility/check_mark",
             tooltip={"tl-gui.save-changes"}, handlers="edit.save_changes_button"},
-          {type="sprite-button", style="red_icon_button", sprite="utility/trash", tooltip={"tl-gui.delete-tilegrid"}, handlers="edit.delete_button"}
+          {type="sprite-button", style="tool_button_red", sprite="utility/trash", tooltip={"tl-gui.delete-tilegrid"}, handlers="edit.delete_button"}
         }},
         -- confirmation titlebar
-        {template="vertically_centered_flow", mods={visible=false}, children={
+        {template="vertically_centered_flow", elem_mods={visible=false}, children={
           {type="label", style="tl_invalid_bold_label", caption={"tl-gui.confirm-delete"}},
           {template="pushers.horizontal"},
           {type="sprite-button", style="tool_button", sprite="utility/reset", handlers="edit.confirm_no_button"},
-          {type="sprite-button", style="red_icon_button", sprite="utility/trash", handlers="edit.confirm_yes_button"},
+          {type="sprite-button", style="tool_button_red", sprite="utility/trash", handlers="edit.confirm_yes_button"},
         }}
       }},
       -- origin
@@ -168,7 +168,7 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
           switch_state=type_to_switch_state[grid_type], handlers="edit.grid_type_switch", save_as="grid_type_switch"}
       }},
       -- divisor label
-      {type="flow", style_mods={horizontal_align="center", horizontally_stretchable=true}, children={
+      {template="horizontally_centered_flow", children={
         {type="label", style="caption_label", caption={"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}, save_as="divisor_label"},
       }},
       -- divisor slider and textfield

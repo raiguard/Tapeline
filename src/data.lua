@@ -111,7 +111,6 @@ local styles = data.raw["gui-style"].default
 
 styles.tl_slider_textfield = {
   type = "textbox_style",
-  parent = "short_number_textfield",
   width = 50,
   horizontal_align = "center",
   left_margin = 8
@@ -119,19 +118,10 @@ styles.tl_slider_textfield = {
 
 styles.tl_invalid_slider_textfield = {
   type = "textbox_style",
-  parent = "tl_slider_textfield",
-  default_background = {
-    base = {position = {248,0}, corner_size=8, tint=warning_red_color},
-    shadow = textbox_dirt
-  },
-  active_background = {
-    base = {position={265,0}, corner_size=8, tint=warning_red_color},
-    shadow = textbox_dirt
-  },
-  disabled_background = {
-    base = {position = {282,0}, corner_size=8, tint=warning_red_color},
-    shadow = textbox_dirt
-  }
+  parent = "invalid_value_textfield",
+  width = 50,
+  horizontal_align = "center",
+  left_margin = 8
 }
 
 styles.tl_invalid_bold_label = {

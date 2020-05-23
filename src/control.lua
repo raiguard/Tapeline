@@ -18,7 +18,7 @@ gui.add_templates{
     horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
     vertical = {type="empty-widget", style_mods={vertically_stretchable=true}}
   },
-  window = {type="frame", style_mods={width=252}, direction="vertical", save_as="window"},
+  window = {type="frame", style="standalone_inner_frame_in_outer_frame", style_mods={width=252}, direction="vertical", save_as="window"},
   horizontally_centered_flow = {type="flow", style_mods={horizontal_align="center", horizontally_stretchable=true}, direction="vertical"},
   vertically_centered_flow = {type="flow", style_mods={vertical_align="center"}, direction="horizontal"}
 }

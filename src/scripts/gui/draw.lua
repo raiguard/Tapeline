@@ -6,7 +6,7 @@ local util = require("scripts.util")
 type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
 type_index_to_name = {"increment", "split"}
-type_to_clamps = {{4,13}, {2,11}}
+type_to_clamps = {{4, 13}, {2, 11}}
 
 gui.add_handlers{
   draw = {
@@ -72,14 +72,15 @@ function draw_gui.create(parent, player_index, default_settings)
           state=default_settings.cardinals_only, handlers="draw.cardinals_checkbox", save_as="cardinals_checkbox"}
       }},
       -- grid type switch
-      {type="flow", style_mods={vertical_align="center"}, direction="horizontal", children={
+      {template="vertically_centered_flow", children={
         {type="label", caption={"tl-gui.grid-type"}},
         {template="pushers.horizontal"},
         {type="switch", left_label_caption={"tl-gui.gridtype-increment"}, right_label_caption={"tl-gui.gridtype-split"},
           switch_state=type_to_switch_state[grid_type], handlers="draw.grid_type_switch", save_as="grid_type_switch"}
       }},
+      -- TODO make templates - requires recursive template support in flib
       -- divisor label
-      {type="flow", style_mods={horizontal_align="center", horizontally_stretchable=true}, children={
+      {template="horizontally_centered_flow", children={
         {type="label", style="caption_label", caption={"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}, save_as="divisor_label"},
       }},
       -- divisor slider and textfield

@@ -56,9 +56,11 @@ gui.add_handlers{
 function select_gui.create(parent, player_index)
   return gui.build(parent, {
     {template="window", children={
-      {type="label", style="caption_label", caption={"tl-gui.click-on-tilegrid"}, save_as="label"},
-      {type="list-box", items={}, handlers="select.selection_listbox", save_as="selection_listbox"},
-      {template="vertically_centered_flow", mods={visible=false}, save_as="dialog_flow", children={
+      {type="flow", style_mods={bottom_margin=-8, padding=0, horizontal_align="center", horizontally_stretchable=true}, save_as="label_flow", children={
+        {type="label", style="caption_label", caption={"tl-gui.click-on-tilegrid"}, save_as="label"},
+      }},
+      {type="list-box", style_mods={top_margin=4}, items={}, handlers="select.selection_listbox", save_as="selection_listbox"},
+      {type="flow", style_mods={top_margin=8}, elem_mods={visible=false}, save_as="dialog_flow", children={
         {type="button", style="back_button", caption={"gui.cancel"}, handlers="select.back_button"},
         {template="pushers.horizontal"},
         {type="button", style="confirm_button", caption={"gui.confirm"}, handlers="select.confirm_button"}
@@ -84,8 +86,9 @@ function select_gui.populate_listbox(player_index, tilegrids)
   elems.dialog_flow.visible = true
   -- add data to global table
   gui_data.tilegrids = tilegrids
-  -- update label caption
+  -- update label
   elems.label.caption = {"tl-gui.select-tilegrid"}
+  elems.label_flow.style.bottom_margin = 0
   -- attach a highlight box to the first grid on the list
   attach_highlight_box(gui_data, player_index, registry[tilegrids[1]].area)
 end
