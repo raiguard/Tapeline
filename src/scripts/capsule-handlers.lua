@@ -11,7 +11,7 @@ local math_floor = math.floor
 local table_insert = table.insert
 
 function capsule_handlers.draw_on_tick(e)
-  local cur_tick = e.tick
+  local cur_tick = game.ticks_played
   local end_wait = global.end_wait
   local drawing = global.tilegrids.drawing
   local perishing = global.tilegrids.perishing
@@ -65,7 +65,7 @@ function capsule_handlers.draw(e)
   if data then
     local drawing = global.tilegrids.drawing[e.player_index]
     local prev_tile = drawing.last_capsule_pos
-    drawing.last_capsule_tick = game.tick
+    drawing.last_capsule_tick = game.ticks_played
     -- if cardinals only, adjust thrown position
     if data.settings.cardinals_only then
       local origin = data.area.origin
@@ -178,7 +178,7 @@ function capsule_handlers.adjust(e)
       player_table.last_capsule_tile = cur_tile
     end
   end
-  player_table.last_capsule_tick = game.tick
+  player_table.last_capsule_tick = game.ticks_played
 end
 
 return capsule_handlers
