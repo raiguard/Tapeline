@@ -7,7 +7,6 @@ local tilegrid = require("scripts.tilegrid")
 
 local table_remove = table.remove
 
-
 type_to_switch_state = {"left", "right"}
 switch_state_to_type_index = {left=1, right=2}
 type_index_to_name = {"increment", "split"}
