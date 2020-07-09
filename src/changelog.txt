@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.3
 Date: ????
-  Changes:
+  Bugfixes:
+    - Fixed that it was possible to hold the edit capsule while editing by using the hotkey, causing a crash when trying to use it
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.2
 Date: 2020-06-24
