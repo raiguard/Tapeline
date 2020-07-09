@@ -84,6 +84,16 @@ event.on_player_cursor_stack_changed(function(e)
   if stack and stack.valid_for_read and stack.name == "tl-edit-capsule" then
     -- because sometimes it doesn't work properly?
     if player_gui.select then return end
+    -- if the player is currently selecting or editing, don't let them hold the capsule
+    if player_table.flags.selecting_tilegrid then
+      player.clean_cursor()
+      player.print{"tl.finish-selection-first"}
+      return
+    elseif player_table.tilegrids.editing ~= false then
+      player.clean_cursor()
+      player.print{"tl.finish-editing-first"}
+      return
+    end
     local elems = select_gui.create(mod_gui.get_frame_flow(player), player.index)
     player_gui.select = {elems=elems}
   elseif player_gui.select and not player_table.flags.selecting_tilegrid then
