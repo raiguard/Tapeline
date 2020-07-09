@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.3
 Date: ????
+  Changes:
+    - on_tick event is conditionally registered again - the mod no longer uses performance when not in use
   Bugfixes:
     - Fixed that it was possible to hold the edit capsule while editing by using the hotkey, causing a crash when trying to use it
 ---------------------------------------------------------------------------------------------------

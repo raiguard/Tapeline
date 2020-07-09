@@ -13,6 +13,7 @@ local tilegrid = require("scripts.tilegrid")
 
 local string_sub = string.sub
 
+-- common GUI templates
 gui.add_templates{
   pushers = {
     horizontal = {type="empty-widget", style_mods={horizontally_stretchable=true}},
@@ -25,6 +26,7 @@ gui.add_templates{
 
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
+-- on_tick handler is located in scripts.capsule-handlers
 
 -- BOOTSTRAP
 
@@ -36,10 +38,14 @@ event.on_init(function()
     player_data.init(i)
   end
 
+  capsule_handlers.update_on_tick()
+
   gui.build_lookup_tables()
 end)
 
 event.on_load(function()
+  capsule_handlers.update_on_tick()
+
   gui.build_lookup_tables()
 end)
 
@@ -188,10 +194,4 @@ event.on_runtime_mod_setting_changed(function(e)
       end
     end
   end
-end)
-
--- TICK
-
-event.on_tick(function(e)
-  capsule_handlers.draw_on_tick(e)
 end)

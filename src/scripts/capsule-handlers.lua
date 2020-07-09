@@ -1,5 +1,6 @@
 local capsule_handlers = {}
 
+local event = require("__flib__.event")
 local mod_gui = require("mod-gui")
 
 local edit_gui = require("scripts.gui.edit")
@@ -10,17 +11,20 @@ local math_abs = math.abs
 local math_floor = math.floor
 local table_insert = table.insert
 
-function capsule_handlers.draw_on_tick(e)
+-- this function is conditionally registered as the on_tick handler
+function capsule_handlers.on_tick()
   local cur_tick = game.ticks_played
   local end_wait = global.end_wait
   local drawing = global.tilegrids.drawing
   local perishing = global.tilegrids.perishing
-  for i,t in pairs(drawing) do
-    if t.last_capsule_tick + end_wait < cur_tick then
+
+  for i, tbl in pairs(drawing) do
+    if tbl.last_capsule_tick + end_wait < cur_tick then
       -- finish up tilegrid
       local player_table = global.players[i]
       local visual_settings = player_table.settings.visual
       local data = player_table.tilegrids.drawing
+
       -- if the grid is 1x1, just delete it
       if data.area.width == 1 and data.area.height == 1 then
         tilegrid.destroy(data)
@@ -38,6 +42,7 @@ function capsule_handlers.draw_on_tick(e)
           -- add to editable table
           table_insert(player_table.tilegrids.registry, table.deepcopy(data))
         end
+
         -- log selection dimensions
         if visual_settings.log_selection_area then
           local area = data.area
@@ -48,12 +53,23 @@ function capsule_handlers.draw_on_tick(e)
       drawing[i] = nil
     end
   end
+
   local pt = perishing[cur_tick]
   if pt then
     for i=1,#pt do
       tilegrid.destroy(pt[i])
     end
     perishing[cur_tick] = nil
+  end
+
+  -- deregister handler if drawing and perishing tables are empty
+  if table_size(drawing) == 0 and table_size(perishing) == 0 then event.on_tick(nil) end
+end
+
+-- register the draw_on_tick handler if it is needed
+function capsule_handlers.update_on_tick()
+  if table_size(global.tilegrids.drawing) > 0 or table_size(global.tilegrids.perishing) > 0 then
+    event.on_tick(capsule_handlers.on_tick)
   end
 end
 
@@ -84,6 +100,9 @@ function capsule_handlers.draw(e)
   else
     -- create new tilegrid
     tilegrid.construct(cur_tile, e.player_index, game.get_player(e.player_index).surface.index, player_table.settings.visual)
+
+    -- update on_tick
+    capsule_handlers.update_on_tick()
   end
 end
 
