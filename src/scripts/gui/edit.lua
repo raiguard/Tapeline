@@ -155,13 +155,13 @@ function edit_gui.create(parent, player_index, settings, hot_corner)
       }},
       -- origin
       {template="vertically_centered_flow", children={
-        {type="label", caption={"", {"tl-gui.origin"}, " [img=info]"}, tooltip={"tl-gui.origin-tooltip"}},
+        {type="label", style="bold_label", caption={"", {"tl-gui.origin"}, " [img=info]"}, tooltip={"tl-gui.origin-tooltip"}},
         {template="pushers.horizontal"},
         {type="drop-down", items=origin_localized_items, selected_index=corner_to_index[util.area.opposite_corner(hot_corner)], handlers="edit.origin_dropdown"}
       }},
       -- grid type switch
       {type="flow", style_mods={vertical_align="center"}, direction="horizontal", children={
-        {type="label", caption={"tl-gui.grid-type"}},
+        {type="label", style="bold_label", caption={"tl-gui.grid-type"}},
         {template="pushers.horizontal"},
         {type="switch", left_label_caption={"tl-gui.gridtype-increment"}, right_label_caption={"tl-gui.gridtype-split"},
           switch_state=type_to_switch_state[grid_type], handlers="edit.grid_type_switch", save_as="grid_type_switch"}

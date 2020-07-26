@@ -3,6 +3,8 @@ Version: 1.1.4
 Date: ????
   Features:
     - Added French translation by Dae
+  Changes:
+    - Slightly changed GUI layout to better accommodate different locales
   Bugfixes:
     - Fixed a potential crash if a GUI handler was removed between versions
     - Fixed that the window frames would not stretch if the content was wider than default

@@ -64,16 +64,15 @@ function draw_gui.create(parent, player_index, default_settings)
   local data = gui.build(parent, {
     {template="window", name="tl_draw_window", children={
       -- checkboxes
-      {type="flow", direction="horizontal", children={
+      {type="flow", direction="vertical", children={
         {type="checkbox", caption={"", {"tl-gui.auto-clear"}, " [img=info]"}, tooltip={"tl-gui.auto-clear-tooltip"}, state=default_settings.auto_clear,
           handlers="draw.auto_clear_checkbox", save_as="auto_clear_checkbox"},
-        {template="pushers.horizontal"},
         {type="checkbox", caption={"", {"tl-gui.cardinals-only"}, " [img=info]"}, tooltip={"tl-gui.cardinals-only-tooltip"},
           state=default_settings.cardinals_only, handlers="draw.cardinals_checkbox", save_as="cardinals_checkbox"}
       }},
       -- grid type switch
-      {template="vertically_centered_flow", children={
-        {type="label", caption={"tl-gui.grid-type"}},
+      {type="flow", style_mods={vertical_align="center", top_margin=2}, children={
+        {type="label", style="bold_label", caption={"tl-gui.grid-type"}},
         {template="pushers.horizontal"},
         {type="switch", left_label_caption={"tl-gui.gridtype-increment"}, right_label_caption={"tl-gui.gridtype-split"},
           switch_state=type_to_switch_state[grid_type], handlers="draw.grid_type_switch", save_as="grid_type_switch"}
