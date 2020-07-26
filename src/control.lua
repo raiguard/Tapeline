@@ -50,7 +50,9 @@ event.on_load(function()
 end)
 
 event.on_configuration_changed(function(e)
-  migration.on_config_changed(e, migrations)
+  if migration.on_config_changed(e, migrations) then
+    gui.check_filter_validity()
+  end
 end)
 
 -- CAPSULES
