@@ -1,8 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: ????
+  Features:
+    - Added French translation by Dae
   Bugfixes:
     - Fixed a potential crash if a GUI handler was removed between versions
+    - Fixed that the window frames would not stretch if the content was wider than default
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.3
 Date: 2020-07-09
