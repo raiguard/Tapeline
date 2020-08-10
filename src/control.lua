@@ -197,3 +197,15 @@ event.on_runtime_mod_setting_changed(function(e)
     end
   end
 end)
+
+-- SHORTCUT
+
+-- this is a temporary workaround to a base game bug - see https://forums.factorio.com/87777
+event.on_lua_shortcut(function(e)
+  if e.prototype_name == "tl-get-draw-capsule" then
+    local player = game.get_player(e.player_index)
+    if player.clean_cursor() then
+      player.cursor_stack.set_stack{name="tl-draw-capsule", count=1}
+    end
+  end
+end)

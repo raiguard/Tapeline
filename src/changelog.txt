@@ -1,7 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.5
 Date: ????
-  Changes:
+  Bugfixes:
+    - Fixed shortcut not giving the item (temporary workaround until a bug in the base game gets fixed)
+    - Fixed a bunch of accidental global variables
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.4
 Date: 2020-07-26
