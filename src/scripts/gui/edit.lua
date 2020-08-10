@@ -7,24 +7,24 @@ local tilegrid = require("scripts.tilegrid")
 
 local table_remove = table.remove
 
-type_to_switch_state = {"left", "right"}
-switch_state_to_type_index = {left=1, right=2}
-type_index_to_name = {"increment", "split"}
-type_to_clamps = {{4, 13}, {2, 11}}
+local type_to_switch_state = {"left", "right"}
+local switch_state_to_type_index = {left=1, right=2}
+local type_index_to_name = {"increment", "split"}
+local type_to_clamps = {{4, 13}, {2, 11}}
 
-origin_localized_items = {
+local origin_localized_items = {
   {"tl-gui.origin-left_top"},
   {"tl-gui.origin-right_top"},
   {"tl-gui.origin-left_bottom"},
   {"tl-gui.origin-right_bottom"}
 }
-corner_to_index = {
+local corner_to_index = {
   left_top = 1,
   right_top = 2,
   left_bottom = 3,
   right_bottom = 4
 }
-index_to_corner = {"left_top", "right_top", "left_bottom", "right_bottom"}
+local index_to_corner = {"left_top", "right_top", "left_bottom", "right_bottom"}
 
 local function get_settings_table(player_index)
   local tilegrids = global.players[player_index].tilegrids

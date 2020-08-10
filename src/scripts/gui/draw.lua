@@ -3,10 +3,10 @@ local draw_gui = {}
 local gui = require("__flib__.gui")
 local util = require("scripts.util")
 
-type_to_switch_state = {"left", "right"}
-switch_state_to_type_index = {left=1, right=2}
-type_index_to_name = {"increment", "split"}
-type_to_clamps = {{4, 13}, {2, 11}}
+local type_to_switch_state = {"left", "right"}
+local switch_state_to_type_index = {left=1, right=2}
+local type_index_to_name = {"increment", "split"}
+local type_to_clamps = {{4, 13}, {2, 11}}
 
 gui.add_handlers{
   draw = {
