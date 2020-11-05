@@ -106,6 +106,7 @@ return {
       end
       new_global.players[i] = data
     end
+    global = new_global
   end,
   ["1.0.4"] = function()
     -- remove GUI data from global, it's no longer needed
