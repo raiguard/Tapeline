@@ -68,7 +68,10 @@ end
 
 -- register the draw_on_tick handler if it is needed
 function capsule_handlers.update_on_tick()
-  if table_size(global.tilegrids.drawing) > 0 or table_size(global.tilegrids.perishing) > 0 then
+  if
+    global.tilegrids.drawing
+    and (table_size(global.tilegrids.drawing) > 0 or table_size(global.tilegrids.perishing) > 0)
+  then
     event.on_tick(capsule_handlers.on_tick)
   end
 end
