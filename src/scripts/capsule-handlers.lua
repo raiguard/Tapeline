@@ -155,7 +155,7 @@ function capsule_handlers.edit(e)
     select_gui.populate_listbox(e.player_index, clicked_on)
     player_table.flags.selecting_tilegrid = true
   end
-  player.clean_cursor()
+  player.clear_cursor()
 end
 
 function capsule_handlers.adjust(e)

@@ -68,11 +68,11 @@ event.on_player_cursor_stack_changed(function(e)
     if player_gui.draw then return end
     -- if the player is currently selecting or editing, don't let them hold the capsule
     if player_table.flags.selecting_tilegrid then
-      player.clean_cursor()
+      player.clear_cursor()
       player.print{"tl.finish-selection-first"}
       return
     elseif player_table.tilegrids.editing ~= false then
-      player.clean_cursor()
+      player.clear_cursor()
       player.print{"tl.finish-editing-first"}
       return
     end
@@ -94,11 +94,11 @@ event.on_player_cursor_stack_changed(function(e)
     if player_gui.select then return end
     -- if the player is currently selecting or editing, don't let them hold the capsule
     if player_table.flags.selecting_tilegrid then
-      player.clean_cursor()
+      player.clear_cursor()
       player.print{"tl.finish-selection-first"}
       return
     elseif player_table.tilegrids.editing ~= false then
-      player.clean_cursor()
+      player.clear_cursor()
       player.print{"tl.finish-editing-first"}
       return
     end
@@ -194,18 +194,6 @@ event.on_runtime_mod_setting_changed(function(e)
       for i=1,#registry do
         tilegrid.refresh(registry[i], e.player_index, visual_settings)
       end
-    end
-  end
-end)
-
--- SHORTCUT
-
--- this is a temporary workaround to a base game bug - see https://forums.factorio.com/87777
-event.on_lua_shortcut(function(e)
-  if e.prototype_name == "tl-get-draw-capsule" then
-    local player = game.get_player(e.player_index)
-    if player.clean_cursor() then
-      player.cursor_stack.set_stack{name="tl-draw-capsule", count=1}
     end
   end
 end)

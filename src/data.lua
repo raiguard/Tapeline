@@ -23,7 +23,7 @@ local function capsule(name, icon, cooldown)
     },
     subgroup = "capsule",
     order = "zz",
-    flags = {"hidden", "only-in-cursor", "not-stackable"},
+    flags = {"hidden", "only-in-cursor", "not-stackable", "spawnable"},
     radius_color = {a=0},
     stack_size = 1,
     capsule_action = {
@@ -63,15 +63,15 @@ data:extend{
     type = "custom-input",
     name = "tl-get-draw-capsule",
     key_sequence = "ALT + M",
-    action = "create-blueprint-item",
-    item_to_create = "tl-draw-capsule"
+    action = "spawn-item",
+    item_to_spawn = "tl-draw-capsule"
   },
   {
     type = "custom-input",
     name = "tl-get-edit-capsule",
     key_sequence = "",
-    action = "create-blueprint-item",
-    item_to_create = "tl-edit-capsule"
+    action = "spawn-item",
+    item_to_spawn = "tl-edit-capsule"
   },
   {
     type = "custom-input",
@@ -91,9 +91,8 @@ data:extend{
     name = "tl-get-draw-capsule",
     order = "a[alt-mode]-b[copy]",
     associated_control_input = "tl-get-draw-capsule",
-    action = "lua",
-    -- action = "create-blueprint-item",
-    -- item_to_create = "tl-draw-capsule",
+    action = "spawn-item",
+    item_to_spawn = "tl-draw-capsule",
     icon = shortcut_icon("x32.png", 32),
     small_icon = shortcut_icon("x24.png", 24),
     disabled_icon = shortcut_icon("x32-white.png", 32),

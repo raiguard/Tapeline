@@ -83,7 +83,7 @@ end
 
 function util.textfield.set_last_valid_value(element, last_value)
   if element.text ~= last_value then
-    element.text = last_value
+    element.text = tostring(last_value)
     element.style = "tl_slider_textfield"
   end
   return element.text

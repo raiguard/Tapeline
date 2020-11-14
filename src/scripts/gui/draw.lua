@@ -37,7 +37,7 @@ gui.add_handlers{
         if e.element.slider_value == tonumber(gui_data.last_divisor_value) then return end
         gui_data.last_divisor_value = e.element.slider_value
         player_table.settings[divisor_name] = e.element.slider_value
-        gui_data.elems.divisor_textfield.text = e.element.slider_value
+        gui_data.elems.divisor_textfield.text = tostring(e.element.slider_value)
       end
     },
     divisor_textfield = {
@@ -104,7 +104,7 @@ function draw_gui.update(player_index)
   elems.divisor_label.caption = {"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}
   elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
   elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type].."_divisor"]
-  elems.divisor_textfield.text = settings[type_index_to_name[grid_type].."_divisor"]
+  elems.divisor_textfield.text = tostring(settings[type_index_to_name[grid_type].."_divisor"])
 end
 
 function draw_gui.destroy(window, player_index)

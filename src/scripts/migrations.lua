@@ -41,7 +41,7 @@ return {
           player_table.mod_gui = nil
           -- if the player is currently holding a tapeline capsule, destroy it
           if p.cursor_stack and p.cursor_stack.valid_for_read and p.cursor_stack.name == "tapeline-capsule" then
-              p.clean_cursor()
+              p.clear_cursor()
           end
         end
       end

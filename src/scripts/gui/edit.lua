@@ -62,7 +62,7 @@ gui.add_handlers{
         local player = game.get_player(e.player_index)
         local stack = player.cursor_stack
         if stack and stack.valid_for_read and stack.name == "tapeline-adjust" then
-          player.clean_cursor()
+          player.clear_cursor()
         end
       end
     },
@@ -99,7 +99,7 @@ gui.add_handlers{
         local textfield = gui_data.elems.divisor_textfield
         local divisor_name = type_index_to_name[data.settings.grid_type].."_divisor"
         data.settings[divisor_name] = e.element.slider_value
-        textfield.text = e.element.slider_value
+        textfield.text = tostring(e.element.slider_value)
         tilegrid.refresh(data, e.player_index, player_table.settings.visual)
       end
     },
@@ -125,7 +125,7 @@ gui.add_handlers{
     reposition_button = {
       on_gui_click = function(e)
         local player = game.get_player(e.player_index)
-        player.clean_cursor()
+        player.clear_cursor()
         player.cursor_stack.set_stack{name="tl-adjust-capsule"}
       end
     }
@@ -195,7 +195,7 @@ function edit_gui.update(player_index, settings)
   elems.divisor_label.caption = {"tl-gui."..type_index_to_name[grid_type].."-divisor-label"}
   elems.divisor_slider.set_slider_minimum_maximum(type_to_clamps[grid_type][1], type_to_clamps[grid_type][2])
   elems.divisor_slider.slider_value = settings[type_index_to_name[grid_type].."_divisor"]
-  elems.divisor_textfield.text = settings[type_index_to_name[grid_type].."_divisor"]
+  elems.divisor_textfield.text = tostring(settings[type_index_to_name[grid_type].."_divisor"])
 end
 
 function edit_gui.destroy(window, player)
@@ -204,7 +204,7 @@ function edit_gui.destroy(window, player)
   -- remove capsule from hand if it's there
   local stack = player.cursor_stack
   if stack and stack.valid_for_read and stack.name == "tl-adjust-capsule" then
-    player.clean_cursor()
+    player.clear_cursor()
   end
 end
 
