@@ -12,6 +12,9 @@ data:extend{
       filename = data_util.empty_image,
       width = 8,
       height = 8
+    },
+    build_sound = {
+      filename = "__core__/sound/silence-1sec.ogg"
     }
   }
 }
