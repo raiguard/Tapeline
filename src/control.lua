@@ -95,9 +95,8 @@ event.register(
 
 event.on_player_created(function(e)
   local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
   player_data.init(e.player_index)
-  player_data.refresh(player, player_table)
+  player_data.refresh(player, global.players[e.player_index])
 end)
 
 event.on_player_removed(function(e)
