@@ -17,6 +17,7 @@ data:extend{
     place_result = "tl-dummy-entity",
     stack_size = 1,
     flags = {"not-stackable", "hidden", "only-in-cursor", "spawnable"},
-    draw_label_for_cursor_render = true
+    draw_label_for_cursor_render = true,
+    mouse_cursor = "tl-draw-cursor"
   }
 }
