@@ -3,6 +3,7 @@ local migration = require("__flib__.migration")
 
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
+local tape = require("scripts.tape")
 
 -- -----------------------------------------------------------------------------
 -- FUNCTIONS
@@ -51,6 +52,7 @@ end)
 
 event.on_built_entity(
   function(e)
+    local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     -- set flag to re-populate the cursor
     player_table.flags.placed_entity = true
@@ -59,25 +61,15 @@ event.on_built_entity(
     player_table.last_entity = e.created_entity
 
     if player_table.flags.drawing then
-      -- TODO: update tape
+      tape.update(player, player_table, e.created_entity.position)
     else
       player_table.flags.drawing = true
-      -- TODO: create tape
+      tape.create(player, player_table, e.created_entity.position, e.created_entity.surface)
     end
-
-    rendering.draw_circle{
-      color = {r = 1, g = 1, b = 0, a = 0.75},
-      radius = 0.25,
-      filled = true,
-      target = e.created_entity.position,
-      surface = e.created_entity.surface,
-      time_to_live = 60,
-      players = {e.player_index},
-      draw_on_ground = true
-    }
   end,
   {
     {filter = "name", name = "tl-dummy-entity"},
+    {filter = "ghost_name", name = "tl-dummy-entity"}
   }
 )
 

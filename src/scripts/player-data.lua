@@ -6,7 +6,11 @@ function player_data.init(player_index)
       drawing = false,
       placed_entity = false
     },
-    last_entity = nil
+    last_entity = nil,
+    tapes = {
+      drawing = nil,
+      next_index = 1
+    }
   }
 end
 
