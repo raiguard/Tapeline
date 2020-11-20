@@ -1,3 +1,4 @@
+local area = require("lib.area")
 local event = require("__flib__.event")
 local migration = require("__flib__.migration")
 
@@ -84,9 +85,8 @@ event.register(
     local player_table = global.players[e.player_index]
     if player_table.flags.drawing then
       player_table.flags.drawing = false
-      log("Drag finished!")
       destroy_last_entity(player_table)
-      -- TODO: complete draw
+      tape.complete_draw(player, player_table)
     end
   end
 )
@@ -112,11 +112,12 @@ event.on_player_cursor_stack_changed(function(e)
     if player_table.flags.placed_entity then
       player_table.flags.placed_entity = false
       player.cursor_stack.set_stack{name = "tl-draw-tool", count = 1}
+      local TapeArea = area.new(player_table.tapes.drawing.Area)
+      player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
     else
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
-      log("Drag finished!")
-      -- TODO: complete draw
+      tape.complete_draw(player, player_table)
     end
   end
 end)
