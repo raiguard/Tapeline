@@ -2,9 +2,13 @@ local area = require("lib.area")
 local table = require("__flib__.table")
 
 local draw_rectangle = rendering.draw_rectangle
-local set_time_to_live = rendering.set_time_to_live
+local draw_text = rendering.draw_text
 local set_left_top = rendering.set_left_top
 local set_right_bottom = rendering.set_right_bottom
+local set_target = rendering.set_target
+local set_text = rendering.set_text
+local set_time_to_live = rendering.set_time_to_live
+local set_visible = rendering.set_visible
 
 local tape = {}
 
@@ -15,10 +19,10 @@ local opposite_corners = {
   right_bottom = "left_top"
 }
 
-local function create_objects(player_index, Area)
+local function create_objects(player_index, Area, settings)
   return {
     background = draw_rectangle{
-      color = {a = 0.75},
+      color = settings.tape_background_color,
       filled = true,
       left_top = Area.left_top,
       right_bottom = Area.right_bottom,
@@ -27,7 +31,7 @@ local function create_objects(player_index, Area)
       draw_on_ground = true
     },
     border = draw_rectangle{
-      color = {r = 0.8, g = 0.8, b = 0.8},
+      color = settings.tape_border_color,
       width = 1.5,
       filled = false,
       left_top = Area.left_top,
@@ -35,18 +39,62 @@ local function create_objects(player_index, Area)
       surface = Area.surface,
       players = {player_index},
       draw_on_ground = true
+    },
+    labels = {
+      x = draw_text{
+        text = tostring(Area.width),
+        surface = Area.surface,
+        target = {x = Area:center().x, y = Area.left_top.y - 0.85},
+        color = settings.tape_label_color,
+        scale = 1.5,
+        alignment = "center",
+        visible = false,
+        players = {player_index}
+      },
+      y = draw_text{
+        text = tostring(Area.width),
+        surface = Area.surface,
+        target = {x = Area.left_top.x - 0.85, y = Area:center().y},
+        color = settings.tape_label_color,
+        scale = 1.5,
+        orientation = 0.75,
+        alignment = "center",
+        visible = false,
+        players = {player_index}
+      }
     }
   }
 end
 
 local function update_objects(tape_data)
-  local background = tape_data.objects.background
-  set_left_top(background, tape_data.Area.left_top)
-  set_right_bottom(background, tape_data.Area.right_bottom)
+  local Area = tape_data.Area
+  local objects = tape_data.objects
 
-  local border = tape_data.objects.border
-  set_left_top(border, tape_data.Area.left_top)
-  set_right_bottom(border, tape_data.Area.right_bottom)
+  local background = objects.background
+  set_left_top(background, Area.left_top)
+  set_right_bottom(background, Area.right_bottom)
+
+  local border = objects.border
+  set_left_top(border, Area.left_top)
+  set_right_bottom(border, Area.right_bottom)
+
+  local x_label = objects.labels.x
+  set_text(x_label, tostring(Area:width()))
+  set_target(x_label, {x = Area:center().x, y = Area.left_top.y - 0.85})
+  if Area:width() > 1 then
+    set_visible(x_label, true)
+  else
+    set_visible(x_label, false)
+  end
+
+  local y_label = objects.labels.y
+  set_text(y_label, tostring(Area:height()))
+  set_target(y_label, {x = Area.left_top.x - 0.85, y = Area:center().y})
+  if Area:height() > 1 then
+    set_visible(y_label, true)
+  else
+    set_visible(y_label, false)
+  end
 end
 
 function tape.create(player, player_table, origin, surface)
@@ -55,7 +103,7 @@ function tape.create(player, player_table, origin, surface)
   TapeArea.origin = origin
   local tape_data = {
     Area = TapeArea,
-    objects = create_objects(player.index, TapeArea),
+    objects = create_objects(player.index, TapeArea, player_table.settings),
     origin_corner = "left_top"
   }
   player_table.tapes.drawing = tape_data
@@ -92,8 +140,12 @@ end
 function tape.complete_draw(_, player_table)
   local tape_data = player_table.tapes.drawing
   if player_table.settings.auto_clear then
-    set_time_to_live(tape_data.objects.background, player_table.settings.tape_clear_delay * 60)
-    set_time_to_live(tape_data.objects.border, player_table.settings.tape_clear_delay * 60)
+    local objects = tape_data.objects
+    local time_to_live = player_table.settings.tape_clear_delay * 60
+    set_time_to_live(objects.background, time_to_live)
+    set_time_to_live(objects.border, time_to_live)
+    set_time_to_live(objects.labels.x, time_to_live)
+    set_time_to_live(objects.labels.y, time_to_live)
     player_table.tapes.drawing = nil
   end
 end
