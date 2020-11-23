@@ -17,19 +17,19 @@ local opposite_corners = {
 
 local function create_objects(player_index, Area)
   return {
-    border = draw_rectangle{
-      color = {r = 0.8, g = 0.8, b = 0.8},
-      width = 1.5,
-      filled = false,
+    background = draw_rectangle{
+      color = {a = 0.75},
+      filled = true,
       left_top = Area.left_top,
       right_bottom = Area.right_bottom,
       surface = Area.surface,
       players = {player_index},
       draw_on_ground = true
     },
-    background = draw_rectangle{
-      color = {a = 0.75},
-      filled = true,
+    border = draw_rectangle{
+      color = {r = 0.8, g = 0.8, b = 0.8},
+      width = 1.5,
+      filled = false,
       left_top = Area.left_top,
       right_bottom = Area.right_bottom,
       surface = Area.surface,
