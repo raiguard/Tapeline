@@ -43,11 +43,11 @@ function area_lib.ceil(self)
 end
 
 function area_lib.width(self)
-  return self.right_bottom.x - self.left_top.x
+  return math.abs(self.right_bottom.x - self.left_top.x)
 end
 
 function area_lib.height(self)
-  return self.right_bottom.y - self.left_top.y
+  return math.abs(self.right_bottom.y - self.left_top.y)
 end
 
 function area_lib.from_position(position)
@@ -102,13 +102,21 @@ function area_lib.expand(self, amount)
   return self
 end
 
+function area_lib.center(self)
+  return {
+    x = self.left_top.x + (area_lib.width(self) / 2),
+    y = self.left_top.y + (area_lib.height(self) / 2)
+  }
+end
+
 local area_class_mt = {
   __index = {}
 }
 local excluded_funcs = {
   width = true,
   height = true,
-  iterate = true
+  iterate = true,
+  center = true
 }
 
 -- don't call the area_lib functions directly - use a helper function to return a new Area class if using one
