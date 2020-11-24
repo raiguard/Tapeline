@@ -14,7 +14,7 @@ data:extend{
   {
     type = "custom-input",
     name = "tl-delete-tape",
-    key_sequence = "CONTROL + mouse-button-1",
+    key_sequence = "SHIFT + mouse-button-2",
     order = "c"
   }
 }
