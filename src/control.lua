@@ -42,11 +42,19 @@ end)
 
 -- CUSTOM INPUT
 
-event.register("tl-get-draw-tool", function(e)
+event.register("tl-get-tool", function(e)
   local player = game.get_player(e.player_index)
   if player.clear_cursor() then
-    player.cursor_stack.set_stack{name = "tl-draw-tool", count = 1}
+    player.cursor_stack.set_stack{name = "tl-tool", count = 1}
   end
+end)
+
+event.register("tl-edit-tape", function(e)
+  game.print("edit!")
+end)
+
+event.register("tl-delete-tape", function(e)
+  game.print("delete!")
 end)
 
 -- ENTITY
@@ -111,7 +119,7 @@ event.on_player_cursor_stack_changed(function(e)
   if player_table.flags.drawing and is_empty then
     if player_table.flags.placed_entity then
       player_table.flags.placed_entity = false
-      player.cursor_stack.set_stack{name = "tl-draw-tool", count = 1}
+      player.cursor_stack.set_stack{name = "tl-tool", count = 1}
       local TapeArea = area.new(player_table.tapes.drawing.Area)
       player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
     else

@@ -1,11 +1,11 @@
 data:extend{
   {
     type = "shortcut",
-    name = "tl-get-draw-tool",
+    name = "tl-get-tool",
     order = "a[alt-mode]-b[copy]",
-    associated_control_input = "tl-get-draw-tool",
+    associated_control_input = "tl-get-tool",
     action = "spawn-item",
-    item_to_spawn = "tl-draw-tool",
+    item_to_spawn = "tl-tool",
     icon = {
       filename = "__Tapeline__/graphics/shortcut/shortcut-x32.png",
       y = 0,
