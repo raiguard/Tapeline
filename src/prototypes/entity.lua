@@ -16,5 +16,9 @@ data:extend{
     build_sound = {
       filename = "__core__/sound/silence-1sec.ogg"
     }
+  },
+  {
+    type = "highlight-box",
+    name = "tl-highlight-box"
   }
 }

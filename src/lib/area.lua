@@ -125,6 +125,13 @@ function area_lib.distance_to_nearest_edge(self, position)
   return math.min(x_distance, y_distance)
 end
 
+function area_lib.strip(self)
+  return {
+    left_top = self.left_top,
+    right_bottom = self.right_bottom
+  }
+end
+
 local area_class_mt = {
   __index = {}
 }

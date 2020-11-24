@@ -108,7 +108,7 @@ local function update_objects(tape_data)
   end
 end
 
-function tape.create(player, player_table, origin, surface)
+function tape.start_draw(player, player_table, origin, surface)
   local TapeArea = area.new(area.from_position(origin)):ceil()
   TapeArea.surface = surface
   TapeArea.origin = origin
@@ -119,9 +119,10 @@ function tape.create(player, player_table, origin, surface)
     origin_corner = "left_top"
   }
   player_table.tapes.drawing = tape_data
+  player_table.flags.drawing = true
 end
 
-function tape.update(player, player_table, new_position)
+function tape.update_draw(player, player_table, new_position)
   local tape_data = player_table.tapes.drawing
   local TapeArea = area.new(tape_data.Area) -- have to re-load the area in case of save/load
   local origin = TapeArea.origin
@@ -136,7 +137,6 @@ function tape.update(player, player_table, new_position)
     -- if the new position is the same as the last, don't actually do anything
     local last_position = tape_data.last_position
     if new_position.x == last_position.x and new_position.y == last_position.y then
-      log("early returning")
       return
     end
   end
@@ -158,11 +158,13 @@ function tape.update(player, player_table, new_position)
   update_objects(tape_data)
 end
 
-function tape.complete_draw(_, player_table)
+function tape.complete_draw(player_table)
   local tapes = player_table.tapes
   local tape_data = tapes.drawing
   local TapeArea = tape_data.Area
   local objects = tape_data.objects
+
+  player_table.flags.drawing = false
 
   -- immediately destroy the tape if it is 1x1
   if TapeArea:height() == 1 and TapeArea:width() == 1 then
@@ -179,11 +181,42 @@ function tape.complete_draw(_, player_table)
   tapes.drawing = nil
 end
 
-function tape.delete(tapes, tape_index)
+function tape.delete(player_table, tape_index)
+  local tapes = player_table.tapes
   local tape_data = tapes[tape_index]
   apply_to_all_objects(tape_data.objects, destroy)
-  -- TODO: exit editing mode if they're in it
+  if player_table.flags.adjusting then
+    tape.exit_adjust_mode(player_table)
+  end
   table.remove(tapes, tape_index)
+end
+
+function tape.enter_adjust_mode(player, player_table, tape_index)
+  local tape_data = player_table.tapes[tape_index]
+  local TapeArea = tape_data.Area
+
+  local surface = TapeArea.surface
+  tape_data.highlight_box = surface.create_entity{
+    name = "tl-highlight-box",
+    position = TapeArea:center(),
+    bounding_box = TapeArea:strip():expand(0.3),
+    cursor_box_type = "electricity",
+    render_player_index = player.index,
+    blink_interval = 30
+  }
+
+  player_table.flags.adjusting = true
+  player_table.tapes.adjusting = tape_data
+end
+
+function tape.exit_adjust_mode(player_table)
+  local tape_data = player_table.tapes.adjusting
+  tape_data.highlight_box.destroy()
+  player_table.flags.adjusting = false
+  player_table.tapes.adjusting = nil
+end
+
+function tape.adjust(player, player_table, new_position, surface)
 end
 
 return tape

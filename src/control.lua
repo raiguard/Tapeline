@@ -68,14 +68,17 @@ event.register("tl-get-tool", function(e)
   end
 end)
 
-event.register("tl-edit-tape", function(e)
+event.register("tl-adjust-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
   local tapes = player_table.tapes
-  local tape_to_edit = select_tape(tapes, e.cursor_position, player.surface)
-  if tape_to_edit then
-    game.print("edit tape #"..tape_to_edit)
+  local tape_to_adjust = select_tape(tapes, e.cursor_position, player.surface)
+  if tape_to_adjust then
+    if player_table.flags.adjusting then
+      tape.exit_adjust_mode(player_table)
+    end
+    tape.enter_adjust_mode(player, player_table, tape_to_adjust)
   end
 end)
 
@@ -86,7 +89,7 @@ event.register("tl-delete-tape", function(e)
   local tapes = player_table.tapes
   local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
   if tape_to_delete then
-    tape.delete(tapes, tape_to_delete)
+    tape.delete(player_table, tape_to_delete)
   end
 end)
 
@@ -103,10 +106,11 @@ event.on_built_entity(
     player_table.last_entity = e.created_entity
 
     if player_table.flags.drawing then
-      tape.update(player, player_table, e.created_entity.position)
+      tape.update_draw(player, player_table, e.created_entity.position)
+    elseif player_table.flags.adjusting then
+      tape.adjust(player, player_table, e.created_entity.position, e.created_entity.surface)
     else
-      player_table.flags.drawing = true
-      tape.create(player, player_table, e.created_entity.position, e.created_entity.surface)
+      tape.start_draw(player, player_table, e.created_entity.position, e.created_entity.surface)
     end
   end,
   {
@@ -127,7 +131,7 @@ event.register(
     if player_table.flags.drawing then
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
-      tape.complete_draw(player, player_table)
+      tape.complete_draw(player_table)
     end
   end
 )
@@ -144,21 +148,27 @@ event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
 
+
 event.on_player_cursor_stack_changed(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   local cursor_stack = player.cursor_stack
   local is_empty = not cursor_stack or not cursor_stack.valid_for_read
-  if player_table.flags.drawing and is_empty then
-    if player_table.flags.placed_entity then
+  if player_table.flags.placed_entity then
+    if is_empty then
       player_table.flags.placed_entity = false
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
-      local TapeArea = area.new(player_table.tapes.drawing.Area)
-      player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
-    else
-      player_table.flags.drawing = false
-      destroy_last_entity(player_table)
-      tape.complete_draw(player, player_table)
+      if player_table.flags.drawing then
+        local TapeArea = area.new(player_table.tapes.drawing.Area)
+        player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
+      end
+    end
+  elseif is_empty or cursor_stack.name ~= "tl-tool" then
+    if player_table.flags.adjusting then
+      tape.exit_adjust_mode(player_table)
+    elseif player_table.flags.drawing then
+      tape.complete_draw(player_table)
     end
   end
+
 end)

@@ -5,6 +5,7 @@ local player_data = {}
 function player_data.init(player_index)
   global.players[player_index] = {
     flags = {
+      adjusting = false,
       drawing = false,
       placed_entity = false
     },
@@ -14,6 +15,7 @@ function player_data.init(player_index)
       cardinals_only = false
     },
     tapes = {
+      adjusting = nil,
       drawing = nil
     }
   }
