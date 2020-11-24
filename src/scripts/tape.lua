@@ -179,4 +179,11 @@ function tape.complete_draw(_, player_table)
   tapes.drawing = nil
 end
 
+function tape.delete(tapes, tape_index)
+  local tape_data = tapes[tape_index]
+  apply_to_all_objects(tape_data.objects, destroy)
+  -- TODO: exit editing mode if they're in it
+  table.remove(tapes, tape_index)
+end
+
 return tape

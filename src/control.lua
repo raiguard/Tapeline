@@ -86,7 +86,7 @@ event.register("tl-delete-tape", function(e)
   local tapes = player_table.tapes
   local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
   if tape_to_delete then
-    game.print("delete tape #"..tape_to_delete)
+    tape.delete(tapes, tape_to_delete)
   end
 end)
 
