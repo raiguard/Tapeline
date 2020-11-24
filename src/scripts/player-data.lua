@@ -10,12 +10,11 @@ function player_data.init(player_index)
     },
     last_entity = nil,
     settings = {
-      auto_clear = true,
-      cardinals_only = true
+      auto_clear = false,
+      cardinals_only = false
     },
     tapes = {
-      drawing = nil,
-      next_index = 1
+      drawing = nil
     }
   }
 end

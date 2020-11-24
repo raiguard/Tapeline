@@ -109,6 +109,22 @@ function area_lib.center(self)
   }
 end
 
+function area_lib.contains(self, position)
+  return (
+    self.left_top.x <= position.x
+    and self.right_bottom.x >= position.x
+    and self.left_top.y <= position.y
+    and self.right_bottom.y >= position.y
+  )
+end
+
+function area_lib.distance_to_nearest_edge(self, position)
+  local x_distance = math.min(math.abs(self.left_top.x - position.x), math.abs(self.right_bottom.x - position.x))
+  local y_distance = math.min(math.abs(self.left_top.y - position.y), math.abs(self.right_bottom.y - position.y))
+
+  return math.min(x_distance, y_distance)
+end
+
 local area_class_mt = {
   __index = {}
 }
@@ -116,7 +132,9 @@ local excluded_funcs = {
   width = true,
   height = true,
   iterate = true,
-  center = true
+  center = true,
+  contains = true,
+  distance_to_nearest_edge = true
 }
 
 -- don't call the area_lib functions directly - use a helper function to return a new Area class if using one

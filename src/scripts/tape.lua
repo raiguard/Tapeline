@@ -1,6 +1,7 @@
 local area = require("lib.area")
 local table = require("__flib__.table")
 
+local destroy = rendering.destroy
 local draw_rectangle = rendering.draw_rectangle
 local draw_text = rendering.draw_text
 local set_left_top = rendering.set_left_top
@@ -18,6 +19,16 @@ local opposite_corners = {
   right_top = "left_bottom",
   right_bottom = "left_top"
 }
+
+local function apply_to_all_objects(objects, func, ...)
+  for _, v in pairs(objects) do
+    if type(v) == "table" then
+      apply_to_all_objects(v, func, ...)
+    else
+      func(v, ...)
+    end
+  end
+end
 
 local function create_objects(player_index, Area, settings)
   return {
@@ -103,6 +114,7 @@ function tape.create(player, player_table, origin, surface)
   TapeArea.origin = origin
   local tape_data = {
     Area = TapeArea,
+    last_position = origin,
     objects = create_objects(player.index, TapeArea, player_table.settings),
     origin_corner = "left_top"
   }
@@ -120,7 +132,16 @@ function tape.update(player, player_table, new_position)
     else
       new_position.x = math.floor(origin.x)
     end
+
+    -- if the new position is the same as the last, don't actually do anything
+    local last_position = tape_data.last_position
+    if new_position.x == last_position.x and new_position.y == last_position.y then
+      log("early returning")
+      return
+    end
   end
+
+  tape_data.last_position = new_position
 
   -- update area corners
   local x_less = new_position.x < origin.x
@@ -138,16 +159,24 @@ function tape.update(player, player_table, new_position)
 end
 
 function tape.complete_draw(_, player_table)
-  local tape_data = player_table.tapes.drawing
-  if player_table.settings.auto_clear then
-    local objects = tape_data.objects
-    local time_to_live = player_table.settings.tape_clear_delay * 60
-    set_time_to_live(objects.background, time_to_live)
-    set_time_to_live(objects.border, time_to_live)
-    set_time_to_live(objects.labels.x, time_to_live)
-    set_time_to_live(objects.labels.y, time_to_live)
-    player_table.tapes.drawing = nil
+  local tapes = player_table.tapes
+  local tape_data = tapes.drawing
+  local TapeArea = tape_data.Area
+  local objects = tape_data.objects
+
+  -- immediately destroy the tape if it is 1x1
+  if TapeArea:height() == 1 and TapeArea:width() == 1 then
+    apply_to_all_objects(objects, destroy)
+    tapes.drawing = nil
+    return
   end
+
+  if player_table.settings.auto_clear then
+    apply_to_all_objects(objects, set_time_to_live, player_table.settings.tape_clear_delay * 60)
+  else
+    tapes[#tapes+1] = tape_data
+  end
+  tapes.drawing = nil
 end
 
 return tape

@@ -17,6 +17,28 @@ local function destroy_last_entity(player_table)
   end
 end
 
+-- thanks to Rseding:
+-- https://discordapp.com/channels/139677590393716737/306402592265732098/780898889955934208
+local function select_tape(tapes, cursor_position, surface)
+  local nearest
+  local nearest_distance
+  for i, tape_data in ipairs(tapes) do
+    local TapeArea = area.new(tape_data.Area)
+    if TapeArea.surface == surface and TapeArea:contains(cursor_position) then
+      local distance = TapeArea:distance_to_nearest_edge(cursor_position)
+      if not nearest or distance < nearest_distance then
+        nearest = i
+        nearest_distance = distance
+        if nearest_distance == 0 then
+          break
+        end
+      end
+    end
+  end
+
+  return nearest
+end
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
@@ -29,9 +51,6 @@ event.on_init(function()
     player_data.init(i)
     player_data.refresh(player, global.players[i])
   end
-end)
-
-event.on_load(function()
 end)
 
 event.on_configuration_changed(function(e)
@@ -50,11 +69,25 @@ event.register("tl-get-tool", function(e)
 end)
 
 event.register("tl-edit-tape", function(e)
-  game.print("edit!")
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  local tapes = player_table.tapes
+  local tape_to_edit = select_tape(tapes, e.cursor_position, player.surface)
+  if tape_to_edit then
+    game.print("edit tape #"..tape_to_edit)
+  end
 end)
 
 event.register("tl-delete-tape", function(e)
-  game.print("delete!")
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+
+  local tapes = player_table.tapes
+  local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
+  if tape_to_delete then
+    game.print("delete tape #"..tape_to_delete)
+  end
 end)
 
 -- ENTITY
