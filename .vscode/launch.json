@@ -6,7 +6,7 @@
       "type": "factoriomod",
       "request": "launch",
       "name": "Debug",
-      "factorioPath": "${env:factorioSourceRelease}",
+      "factorioPath": "${env:factorioTestbench1}",
       "hookMode": "debug",
       "hookControl": ["Tapeline", "Sandbox"],
       "factorioArgs": ["--load-scenario", "EditorExtensions/testing"]
@@ -15,7 +15,7 @@
       "type": "factoriomod",
       "request": "launch",
       "name": "Debug (data)",
-      "factorioPath": "${env:factorioSourceRelease}",
+      "factorioPath": "${env:factorioTestbench1}",
       "hookMode": "debug",
       "hookControl": ["Tapeline", "Sandbox"],
       "hookData": true,
@@ -26,7 +26,7 @@
       "type": "factoriomod",
       "request": "launch",
       "name": "Profile",
-      "factorioPath": "${env:factorioSourceRelease}",
+      "factorioPath": "${env:factorioTestbench1}",
       "hookMode": "profile",
       "hookControl": ["Tapeline", "Sandbox"]
     }
