@@ -11,23 +11,22 @@ function player_data.init(player_index)
       shift_placed_entity = false
     },
     last_entity = nil,
-    settings = {
-      dynamic = {
-        tape_mode = "increment",
-        increment_divisor = 5,
-        split_divisor = 4
-      }
-    },
+    visual_settings = nil,
     tapes = {
       editing = nil,
       drawing = nil
+    },
+    tape_settings = {
+      mode = "increment",
+      increment_divisor = 5,
+      split_divisor = 4
     }
   }
 end
 
-function player_data.update_settings(player, player_table)
+function player_data.update_visual_settings(player, player_table)
   local player_settings = player.mod_settings
-  local settings = player_table.settings
+  local settings = {}
   for internal, prototype in pairs(constants.setting_names) do
     if string.find(internal, "color") then
       settings[internal] = (
@@ -37,11 +36,11 @@ function player_data.update_settings(player, player_table)
       settings[internal] = player_settings[prototype].value
     end
   end
-  player_table.settings = settings
+  player_table.visual_settings = settings
 end
 
 function player_data.refresh(player, player_table)
-  player_data.update_settings(player, player_table)
+  player_data.update_visual_settings(player, player_table)
 end
 
 return player_data

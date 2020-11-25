@@ -26,7 +26,7 @@ local function select_tape(tapes, cursor_position, surface)
   local nearest_distance
   for i, tape_data in ipairs(tapes) do
     local TapeArea = area.load(tape_data.Area)
-    if TapeArea.surface == surface and TapeArea:contains(cursor_position) then
+    if tape_data.surface == surface and TapeArea:contains(cursor_position) then
       local distance = TapeArea:distance_to_nearest_edge(cursor_position)
       if not nearest or distance < nearest_distance then
         nearest = i
@@ -89,8 +89,11 @@ event.register("tl-edit-tape", function(e)
     if tape_to_edit then
       if player_table.flags.editing then
         tape.exit_edit_mode(player_table)
+        player.cursor_stack.label = ""
       end
       tape.enter_edit_mode(player, player_table, tape_to_edit)
+      local settings = player_table.tapes.editing.settings
+      set_cursor_label(player, settings.mode, settings[settings.mode.."_divisor"])
     end
   end
 end)
@@ -104,6 +107,7 @@ event.register("tl-delete-tape", function(e)
     local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
     if tape_to_delete then
       tape.delete(player_table, tape_to_delete)
+      player.cursor_stack.label = ""
     end
   end
 end)
@@ -117,17 +121,23 @@ event.register(
     local player = game.get_player(e.player_index)
     if holding_tl_tool(player) then
       local player_table = global.players[e.player_index]
-      local mode = player_table.settings.dynamic.tape_mode
+      local settings
+      if player_table.flags.editing then
+        settings = player_table.tapes.editing.settings
+      else
+        settings = player_table.tape_settings
+      end
+      local mode = settings.mode
       local key = mode.."_divisor"
       local delta = string.find(e.input_name, "increase") and 1 or -1
-      local new_value = player_table.settings.dynamic[key] + delta
-      if new_value >= constants.divisor_minimums[mode] then
-        player_table.settings.dynamic[key] = new_value
-        set_cursor_label(player, mode, new_value)
+      local new_divisor = settings[key] + delta
+      if new_divisor >= constants.divisor_minimums[mode] then
+        settings[key] = new_divisor
+        set_cursor_label(player, mode, new_divisor)
         if player_table.flags.drawing then
           tape.update_draw(player, player_table)
         elseif player_table.flags.editing then
-          -- TODO: update grid
+          tape.edit_settings(player_table, mode, new_divisor)
         end
       else
         player.create_local_flying_text{
@@ -147,19 +157,25 @@ event.register(
   },
   function(e)
     local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
     if holding_tl_tool(player) then
-      local mode = player_table.settings.dynamic.tape_mode
-      local new_mode = next(constants.modes, mode)
+      local player_table = global.players[e.player_index]
+      local settings
+      if player_table.flags.editing then
+        settings = player_table.tapes.editing.settings
+      else
+        settings = player_table.tape_settings
+      end
+      local new_mode = next(constants.modes, settings.mode)
       if not new_mode then
         new_mode = next(constants.modes)
       end
-      player_table.settings.dynamic.tape_mode = new_mode
-      set_cursor_label(player, new_mode, player_table.settings.dynamic[new_mode.."_divisor"])
+      settings.mode = new_mode
+      local divisor = settings[new_mode.."_divisor"]
+      set_cursor_label(player, new_mode, divisor)
       if player_table.flags.drawing then
         tape.update_draw(player, player_table)
       elseif player_table.flags.editing then
-        -- TODO: update grid
+        tape.edit_settings(player_table, new_mode, divisor)
       end
     end
   end
