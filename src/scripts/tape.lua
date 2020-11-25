@@ -109,7 +109,7 @@ local function update_objects(tape_data)
 end
 
 function tape.start_draw(player, player_table, origin, surface)
-  local TapeArea = area.new(area.from_position(origin)):ceil()
+  local TapeArea = area.load(area.from_position(origin)):ceil()
   TapeArea.surface = surface
   TapeArea.origin = origin
   local tape_data = {
@@ -124,7 +124,7 @@ end
 
 function tape.update_draw(player, player_table, new_position)
   local tape_data = player_table.tapes.drawing
-  local TapeArea = area.new(tape_data.Area) -- have to re-load the area in case of save/load
+  local TapeArea = area.load(tape_data.Area) -- have to re-load the area in case of save/load
   local origin = TapeArea.origin
 
   if player_table.settings.cardinals_only then
@@ -193,13 +193,13 @@ end
 
 function tape.enter_adjust_mode(player, player_table, tape_index)
   local tape_data = player_table.tapes[tape_index]
-  local TapeArea = tape_data.Area
+  local TapeArea = area.load(tape_data.Area)
 
   local surface = TapeArea.surface
   tape_data.highlight_box = surface.create_entity{
     name = "tl-highlight-box",
     position = TapeArea:center(),
-    bounding_box = TapeArea:strip():expand(0.3),
+    bounding_box = area.expand(TapeArea:strip(), 0.3),
     cursor_box_type = "electricity",
     render_player_index = player.index,
     blink_interval = 30
@@ -217,6 +217,8 @@ function tape.exit_adjust_mode(player_table)
 end
 
 function tape.adjust(player, player_table, new_position, surface)
+  local tape_data = player_table.tapes.adjusting
+  local TapeArea = area.load(tape_data.Area)
 end
 
 return tape

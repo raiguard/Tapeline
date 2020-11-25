@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local area_lib = {}
 
 function area_lib.expand_to_contain(self, area)
@@ -127,41 +129,19 @@ end
 
 function area_lib.strip(self)
   return {
-    left_top = self.left_top,
-    right_bottom = self.right_bottom
+    left_top = {
+      x = self.left_top.x,
+      y = self.left_top.y
+    },
+    right_bottom = {
+      x = self.right_bottom.x,
+      y = self.right_bottom.y
+    }
   }
 end
 
-local area_class_mt = {
-  __index = {}
-}
-local excluded_funcs = {
-  width = true,
-  height = true,
-  iterate = true,
-  center = true,
-  contains = true,
-  distance_to_nearest_edge = true
-}
-
--- don't call the area_lib functions directly - use a helper function to return a new Area class if using one
-for name, func in pairs(area_lib) do
-  if not excluded_funcs[name] then
-    area_class_mt.__index[name] = function(self, ...)
-      return setmetatable(func(self, ...), area_class_mt)
-    end
-  else
-    area_class_mt.__index[name] = func
-  end
-end
-
-local default_area = {
-  left_top = {x = 0, y = 0},
-  right_bottom = {x = 0, y = 0}
-}
-
-function area_lib.new(area)
-  return setmetatable(area or default_area, area_class_mt)
+function area_lib.load(area)
+  return setmetatable(area, {__index = area_lib})
 end
 
 return area_lib

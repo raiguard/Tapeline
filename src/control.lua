@@ -23,7 +23,7 @@ local function select_tape(tapes, cursor_position, surface)
   local nearest
   local nearest_distance
   for i, tape_data in ipairs(tapes) do
-    local TapeArea = area.new(tape_data.Area)
+    local TapeArea = area.load(tape_data.Area)
     if TapeArea.surface == surface and TapeArea:contains(cursor_position) then
       local distance = TapeArea:distance_to_nearest_edge(cursor_position)
       if not nearest or distance < nearest_distance then
@@ -72,13 +72,16 @@ event.register("tl-adjust-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  local tapes = player_table.tapes
-  local tape_to_adjust = select_tape(tapes, e.cursor_position, player.surface)
-  if tape_to_adjust then
-    if player_table.flags.adjusting then
-      tape.exit_adjust_mode(player_table)
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" then
+    local tapes = player_table.tapes
+    local tape_to_adjust = select_tape(tapes, e.cursor_position, player.surface)
+    if tape_to_adjust then
+      if player_table.flags.adjusting then
+        tape.exit_adjust_mode(player_table)
+      end
+      tape.enter_adjust_mode(player, player_table, tape_to_adjust)
     end
-    tape.enter_adjust_mode(player, player_table, tape_to_adjust)
   end
 end)
 
@@ -86,10 +89,13 @@ event.register("tl-delete-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  local tapes = player_table.tapes
-  local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
-  if tape_to_delete then
-    tape.delete(player_table, tape_to_delete)
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" then
+    local tapes = player_table.tapes
+    local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
+    if tape_to_delete then
+      tape.delete(player_table, tape_to_delete)
+    end
   end
 end)
 
@@ -159,7 +165,7 @@ event.on_player_cursor_stack_changed(function(e)
       player_table.flags.placed_entity = false
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
       if player_table.flags.drawing then
-        local TapeArea = area.new(player_table.tapes.drawing.Area)
+        local TapeArea = area.load(player_table.tapes.drawing.Area)
         player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
       end
     end
