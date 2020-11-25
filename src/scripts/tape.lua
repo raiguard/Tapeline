@@ -138,24 +138,27 @@ end
 
 function tape.update_draw(player, player_table, new_position)
   local tape_data = player_table.tapes.drawing
-  local TapeArea = area.load(tape_data.Area) -- have to re-load the area in case of save/load
+  local TapeArea = area.load(tape_data.Area)
   local origin = TapeArea.origin
 
-  if not player_table.flags.shift_placed_entity then
-    if math.abs(new_position.x - origin.x) >= math.abs(new_position.y - origin.y) then
-      new_position.y = math.floor(origin.y)
-    else
-      new_position.x = math.floor(origin.x)
-    end
+  if new_position then
+    if not player_table.flags.shift_placed_entity then
+      if math.abs(new_position.x - origin.x) >= math.abs(new_position.y - origin.y) then
+        new_position.y = math.floor(origin.y)
+      else
+        new_position.x = math.floor(origin.x)
+      end
 
-    -- if the new position is the same as the last, don't actually do anything
-    local last_position = tape_data.last_position
-    if new_position.x == last_position.x and new_position.y == last_position.y then
-      return
+      -- if the new position is the same as the last, don't actually do anything
+      local last_position = tape_data.last_position
+      if new_position.x == last_position.x and new_position.y == last_position.y then
+        return
+      end
     end
+    tape_data.last_position = new_position
+  else
+    new_position = tape_data.last_position
   end
-
-  tape_data.last_position = new_position
 
   -- update area corners
   local x_less = new_position.x < origin.x

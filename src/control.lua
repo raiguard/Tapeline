@@ -124,6 +124,11 @@ event.register(
       if new_value >= constants.divisor_minimums[mode] then
         player_table.settings[key] = new_value
         set_cursor_label(player, mode, new_value)
+        if player_table.flags.drawing then
+          tape.update_draw(player, player_table)
+        elseif player_table.flags.editing then
+          -- TODO: update grid
+        end
       else
         player.create_local_flying_text{
           text = {"tl-message.minimal-value-is", constants.divisor_minimums[mode]},
@@ -151,6 +156,11 @@ event.register(
       end
       player_table.settings.tape_mode = new_mode
       set_cursor_label(player, new_mode, player_table.settings[new_mode.."_divisor"])
+      if player_table.flags.drawing then
+        tape.update_draw(player, player_table)
+      elseif player_table.flags.editing then
+        -- TODO: update grid
+      end
     end
   end
 )
