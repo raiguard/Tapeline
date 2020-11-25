@@ -12,9 +12,11 @@ function player_data.init(player_index)
     },
     last_entity = nil,
     settings = {
-      tape_mode = "increment",
-      increment_divisor = 5,
-      split_divisor = 4
+      dynamic = {
+        tape_mode = "increment",
+        increment_divisor = 5,
+        split_divisor = 4
+      }
     },
     tapes = {
       editing = nil,

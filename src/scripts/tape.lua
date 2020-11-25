@@ -75,7 +75,7 @@ local function create_objects(player_index, Area, settings)
       }
     },
     temp_settings_label = draw_text{
-      text = settings.tape_mode.." mode | Divisor: "..settings[settings.tape_mode.."_divisor"],
+      text = settings.dynamic.tape_mode.." mode | Divisor: "..settings.dynamic[settings.dynamic.tape_mode.."_divisor"],
       surface = Area.surface,
       target = Area.origin,
       color = {r = 1, g = 1, b = 1},
@@ -118,7 +118,7 @@ local function update_objects(tape_data, settings)
 
   set_text(
     objects.temp_settings_label,
-    settings.tape_mode.." mode | Divisor: "..settings[settings.tape_mode.."_divisor"]
+    settings.dynamic.tape_mode.." mode | Divisor: "..settings.dynamic[settings.dynamic.tape_mode.."_divisor"]
   )
 end
 

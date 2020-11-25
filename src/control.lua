@@ -117,12 +117,12 @@ event.register(
     local player = game.get_player(e.player_index)
     if holding_tl_tool(player) then
       local player_table = global.players[e.player_index]
-      local mode = player_table.settings.tape_mode
+      local mode = player_table.settings.dynamic.tape_mode
       local key = mode.."_divisor"
       local delta = string.find(e.input_name, "increase") and 1 or -1
-      local new_value = player_table.settings[key] + delta
+      local new_value = player_table.settings.dynamic[key] + delta
       if new_value >= constants.divisor_minimums[mode] then
-        player_table.settings[key] = new_value
+        player_table.settings.dynamic[key] = new_value
         set_cursor_label(player, mode, new_value)
         if player_table.flags.drawing then
           tape.update_draw(player, player_table)
@@ -149,13 +149,13 @@ event.register(
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     if holding_tl_tool(player) then
-      local mode = player_table.settings.tape_mode
+      local mode = player_table.settings.dynamic.tape_mode
       local new_mode = next(constants.modes, mode)
       if not new_mode then
         new_mode = next(constants.modes)
       end
-      player_table.settings.tape_mode = new_mode
-      set_cursor_label(player, new_mode, player_table.settings[new_mode.."_divisor"])
+      player_table.settings.dynamic.tape_mode = new_mode
+      set_cursor_label(player, new_mode, player_table.settings.dynamic[new_mode.."_divisor"])
       if player_table.flags.drawing then
         tape.update_draw(player, player_table)
       elseif player_table.flags.editing then
@@ -164,7 +164,6 @@ event.register(
     end
   end
 )
-
 
 -- ENTITY
 
