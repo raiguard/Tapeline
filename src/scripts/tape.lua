@@ -73,11 +73,20 @@ local function create_objects(player_index, Area, settings)
         visible = false,
         players = {player_index}
       }
+    },
+    temp_settings_label = draw_text{
+      text = settings.tape_mode.." mode | Divisor: "..settings[settings.tape_mode.."_divisor"],
+      surface = Area.surface,
+      target = Area.origin,
+      color = {r = 1, g = 1, b = 1},
+      scale = 1,
+      alignment = "left",
+      players = {player_index}
     }
   }
 end
 
-local function update_objects(tape_data)
+local function update_objects(tape_data, settings)
   local Area = tape_data.Area
   local objects = tape_data.objects
 
@@ -106,6 +115,11 @@ local function update_objects(tape_data)
   else
     set_visible(y_label, false)
   end
+
+  set_text(
+    objects.temp_settings_label,
+    settings.tape_mode.." mode | Divisor: "..settings[settings.tape_mode.."_divisor"]
+  )
 end
 
 function tape.start_draw(player, player_table, origin, surface)
@@ -155,7 +169,7 @@ function tape.update_draw(player, player_table, new_position)
     y = math.ceil(y_less and origin.y or new_position.y)
   }
 
-  update_objects(tape_data)
+  update_objects(tape_data, player_table.settings)
 end
 
 function tape.complete_draw(player_table, auto_clear)
