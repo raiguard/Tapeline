@@ -15,7 +15,8 @@ data:extend{
     },
     build_sound = {
       filename = "__core__/sound/silence-1sec.ogg"
-    }
+    },
+    created_smoke = {smoke_name = "tl-empty-smoke"}
   },
   {
     type = "highlight-box",
