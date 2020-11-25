@@ -78,7 +78,7 @@ local function create_objects(player_index, tape_data, tape_settings, visual_set
     temp_settings_label = draw_text{
       text = tape_settings.mode.." mode | Divisor: "..tape_settings[tape_settings.mode.."_divisor"],
       surface = tape_data.surface,
-      target = TapeArea.origin,
+      target = tape_data.origin,
       color = {r = 1, g = 1, b = 1},
       scale = 1,
       alignment = "left",
@@ -117,6 +117,7 @@ local function update_objects(tape_data, tape_settings, visual_settings)
     set_visible(y_label, false)
   end
 
+  set_target(objects.temp_settings_label, tape_data.origin)
   set_text(
     objects.temp_settings_label,
     tape_settings.mode.." mode | Divisor: "..tape_settings[tape_settings.mode.."_divisor"]
@@ -125,10 +126,10 @@ end
 
 function tape.start_draw(player, player_table, origin, surface)
   local TapeArea = area.load(area.from_position(origin)):ceil()
-  TapeArea.origin = origin
   local tape_data = {
     Area = TapeArea,
     last_position = origin,
+    origin = origin,
     origin_corner = "left_top",
     surface = surface
   }
@@ -140,7 +141,7 @@ end
 function tape.update_draw(player, player_table, new_position)
   local tape_data = player_table.tapes.drawing
   local TapeArea = area.load(tape_data.Area)
-  local origin = TapeArea.origin
+  local origin = tape_data.origin
 
   if new_position then
     if not player_table.flags.shift_placed_entity then
@@ -191,6 +192,8 @@ function tape.complete_draw(player_table, auto_clear)
     return
   end
 
+  tape_data.last_position = nil
+
   if auto_clear then
     apply_to_all_objects(objects, set_time_to_live, player_table.visual_settings.tape_clear_delay * 60)
   else
@@ -232,6 +235,7 @@ end
 function tape.exit_edit_mode(player_table)
   local tape_data = player_table.tapes.editing
   tape_data.highlight_box.destroy()
+  tape_data.last_position = nil
   player_table.flags.editing = false
   player_table.tapes.editing = nil
 end
@@ -247,6 +251,41 @@ end
 function tape.move(player, player_table, new_position, surface)
   local tape_data = player_table.tapes.editing
   local TapeArea = area.load(tape_data.Area)
+
+  local last_position = tape_data.last_position
+  if last_position then
+    -- TODO: make a position lib for this?
+    -- calculate delta
+    local delta = {
+      x = new_position.x - last_position.x,
+      y = new_position.y - last_position.y
+    }
+    -- move area and origin
+    TapeArea:move(delta)
+    tape_data.origin = {
+      x = tape_data.origin.x + delta.x,
+      y = tape_data.origin.y + delta.y
+    }
+    -- update render objects
+    update_objects(tape_data, tape_data.settings, player_table.visual_settings)
+    -- update highlight box
+    tape_data.highlight_box.destroy()
+    tape_data.highlight_box = surface.create_entity{
+      name = "tl-highlight-box",
+      position = TapeArea:center(),
+      bounding_box = area.expand(TapeArea:strip(), 0.3),
+      cursor_box_type = "electricity",
+      render_player_index = player.index,
+      blink_interval = 30
+    }
+    tape_data.last_position = new_position
+  elseif TapeArea:contains(new_position) then
+    tape_data.last_position = new_position
+  end
+end
+
+function tape.complete_move(player_table)
+  player_table.tapes.editing.last_position = nil
 end
 
 return tape

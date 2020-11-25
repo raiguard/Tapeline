@@ -237,6 +237,9 @@ event.register(
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
       tape.complete_draw(player_table, e.name == defines.events.on_player_selected_area)
+    elseif player_table.flags.editing then
+      destroy_last_entity(player_table)
+      tape.complete_move(player_table)
     end
   end
 )
@@ -266,6 +269,9 @@ event.on_player_cursor_stack_changed(function(e)
       if player_table.flags.drawing then
         local TapeArea = area.load(player_table.tapes.drawing.Area)
         player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
+      elseif player_table.flags.editing then
+        local settings = player_table.tapes.editing.settings
+        set_cursor_label(player, settings.mode, settings[settings.mode.."_divisor"])
       end
     end
   elseif is_empty or cursor_stack.name ~= "tl-tool" then

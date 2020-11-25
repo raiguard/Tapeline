@@ -57,6 +57,15 @@ function area_lib.from_position(position)
   }
 end
 
+function area_lib.move(self, delta)
+  self.left_top.x = self.left_top.x + delta.x
+  self.left_top.y = self.left_top.y + delta.y
+  self.right_bottom.x = self.right_bottom.x + delta.x
+  self.right_bottom.y = self.right_bottom.y + delta.y
+
+  return self
+end
+
 -- iterate positions in the area from top-left to bottom-right
 function area_lib.iterate(self, step)
   step = step or 1
