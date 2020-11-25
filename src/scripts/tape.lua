@@ -127,7 +127,7 @@ function tape.update_draw(player, player_table, new_position)
   local TapeArea = area.load(tape_data.Area) -- have to re-load the area in case of save/load
   local origin = TapeArea.origin
 
-  if player_table.settings.cardinals_only then
+  if not player_table.flags.shift_placed_entity then
     if math.abs(new_position.x - origin.x) >= math.abs(new_position.y - origin.y) then
       new_position.y = math.floor(origin.y)
     else
@@ -158,7 +158,7 @@ function tape.update_draw(player, player_table, new_position)
   update_objects(tape_data)
 end
 
-function tape.complete_draw(player_table)
+function tape.complete_draw(player_table, auto_clear)
   local tapes = player_table.tapes
   local tape_data = tapes.drawing
   local TapeArea = tape_data.Area
@@ -173,7 +173,7 @@ function tape.complete_draw(player_table)
     return
   end
 
-  if player_table.settings.auto_clear then
+  if auto_clear then
     apply_to_all_objects(objects, set_time_to_live, player_table.settings.tape_clear_delay * 60)
   else
     tapes[#tapes+1] = tape_data

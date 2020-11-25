@@ -103,20 +103,26 @@ end)
 
 event.on_built_entity(
   function(e)
+    local entity = e.created_entity
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     -- set flag to re-populate the cursor
     player_table.flags.placed_entity = true
     -- destroy last entity and store the new one
     destroy_last_entity(player_table)
-    player_table.last_entity = e.created_entity
+    if entity.name == "entity-ghost" then
+      -- instantly revive the entity if it is a ghost
+      local _
+      _, entity = entity.silent_revive()
+    end
+    player_table.last_entity = entity
 
     if player_table.flags.drawing then
-      tape.update_draw(player, player_table, e.created_entity.position)
+      tape.update_draw(player, player_table, entity.position)
     elseif player_table.flags.adjusting then
-      tape.adjust(player, player_table, e.created_entity.position, e.created_entity.surface)
+      tape.adjust(player, player_table, entity.position, entity.surface)
     else
-      tape.start_draw(player, player_table, e.created_entity.position, e.created_entity.surface)
+      tape.start_draw(player, player_table, entity.position, entity.surface)
     end
   end,
   {
@@ -124,6 +130,15 @@ event.on_built_entity(
     {filter = "ghost_name", name = "tl-dummy-entity"}
   }
 )
+
+event.on_pre_build(function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" and e.shift_build then
+    player_table.flags.shift_placed_entity = true
+  end
+end)
 
 -- SELECTION TOOL
 
@@ -137,7 +152,7 @@ event.register(
     if player_table.flags.drawing then
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
-      tape.complete_draw(player_table)
+      tape.complete_draw(player_table, e.name == defines.events.on_player_selected_area)
     end
   end
 )
@@ -163,6 +178,7 @@ event.on_player_cursor_stack_changed(function(e)
   if player_table.flags.placed_entity then
     if is_empty then
       player_table.flags.placed_entity = false
+      player_table.flags.shift_placed_entity = false
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
       if player_table.flags.drawing then
         local TapeArea = area.load(player_table.tapes.drawing.Area)

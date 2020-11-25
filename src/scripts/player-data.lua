@@ -7,13 +7,11 @@ function player_data.init(player_index)
     flags = {
       adjusting = false,
       drawing = false,
-      placed_entity = false
+      placed_entity = false,
+      shift_placed_entity = false
     },
     last_entity = nil,
-    settings = {
-      auto_clear = false,
-      cardinals_only = false
-    },
+    settings = {},
     tapes = {
       adjusting = nil,
       drawing = nil
