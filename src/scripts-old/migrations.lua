@@ -1,4 +1,5 @@
 local gui = require("__flib__.gui")
+local mod_gui = require("mod-gui")
 
 return {
   ["0.6.0"] = function()
