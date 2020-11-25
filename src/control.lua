@@ -68,19 +68,19 @@ event.register("tl-get-tool", function(e)
   end
 end)
 
-event.register("tl-adjust-tape", function(e)
+event.register("tl-edit-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
   local cursor_stack = player.cursor_stack
   if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" then
     local tapes = player_table.tapes
-    local tape_to_adjust = select_tape(tapes, e.cursor_position, player.surface)
-    if tape_to_adjust then
-      if player_table.flags.adjusting then
-        tape.exit_adjust_mode(player_table)
+    local tape_to_edit = select_tape(tapes, e.cursor_position, player.surface)
+    if tape_to_edit then
+      if player_table.flags.editing then
+        tape.exit_edit_mode(player_table)
       end
-      tape.enter_adjust_mode(player, player_table, tape_to_adjust)
+      tape.enter_edit_mode(player, player_table, tape_to_edit)
     end
   end
 end)
@@ -119,8 +119,8 @@ event.on_built_entity(
 
     if player_table.flags.drawing then
       tape.update_draw(player, player_table, entity.position)
-    elseif player_table.flags.adjusting then
-      tape.adjust(player, player_table, entity.position, entity.surface)
+    elseif player_table.flags.editing then
+      tape.move(player, player_table, entity.position, entity.surface)
     else
       tape.start_draw(player, player_table, entity.position, entity.surface)
     end
@@ -169,7 +169,7 @@ event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
 
-
+-- TODO: this isn't fired when holding shift since the item isn't consumed
 event.on_player_cursor_stack_changed(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -186,8 +186,8 @@ event.on_player_cursor_stack_changed(function(e)
       end
     end
   elseif is_empty or cursor_stack.name ~= "tl-tool" then
-    if player_table.flags.adjusting then
-      tape.exit_adjust_mode(player_table)
+    if player_table.flags.editing then
+      tape.exit_edit_mode(player_table)
     elseif player_table.flags.drawing then
       tape.complete_draw(player_table)
     end

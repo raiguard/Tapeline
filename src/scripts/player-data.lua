@@ -5,7 +5,7 @@ local player_data = {}
 function player_data.init(player_index)
   global.players[player_index] = {
     flags = {
-      adjusting = false,
+      editing = false,
       drawing = false,
       placed_entity = false,
       shift_placed_entity = false
@@ -13,7 +13,7 @@ function player_data.init(player_index)
     last_entity = nil,
     settings = {},
     tapes = {
-      adjusting = nil,
+      editing = nil,
       drawing = nil
     }
   }

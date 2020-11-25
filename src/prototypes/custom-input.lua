@@ -7,7 +7,7 @@ data:extend{
   },
   {
     type = "custom-input",
-    name = "tl-adjust-tape",
+    name = "tl-edit-tape",
     key_sequence = "mouse-button-2",
     order = "b"
   },

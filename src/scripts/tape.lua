@@ -185,13 +185,13 @@ function tape.delete(player_table, tape_index)
   local tapes = player_table.tapes
   local tape_data = tapes[tape_index]
   apply_to_all_objects(tape_data.objects, destroy)
-  if player_table.flags.adjusting then
-    tape.exit_adjust_mode(player_table)
+  if player_table.flags.editing then
+    tape.exit_edit_mode(player_table)
   end
   table.remove(tapes, tape_index)
 end
 
-function tape.enter_adjust_mode(player, player_table, tape_index)
+function tape.enter_edit_mode(player, player_table, tape_index)
   local tape_data = player_table.tapes[tape_index]
   local TapeArea = area.load(tape_data.Area)
 
@@ -205,19 +205,19 @@ function tape.enter_adjust_mode(player, player_table, tape_index)
     blink_interval = 30
   }
 
-  player_table.flags.adjusting = true
-  player_table.tapes.adjusting = tape_data
+  player_table.flags.editing = true
+  player_table.tapes.editing = tape_data
 end
 
-function tape.exit_adjust_mode(player_table)
-  local tape_data = player_table.tapes.adjusting
+function tape.exit_edit_mode(player_table)
+  local tape_data = player_table.tapes.editing
   tape_data.highlight_box.destroy()
-  player_table.flags.adjusting = false
-  player_table.tapes.adjusting = nil
+  player_table.flags.editing = false
+  player_table.tapes.editing = nil
 end
 
-function tape.adjust(player, player_table, new_position, surface)
-  local tape_data = player_table.tapes.adjusting
+function tape.move(player, player_table, new_position, surface)
+  local tape_data = player_table.tapes.editing
   local TapeArea = area.load(tape_data.Area)
 end
 
