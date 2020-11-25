@@ -16,5 +16,29 @@ data:extend{
     name = "tl-delete-tape",
     key_sequence = "SHIFT + mouse-button-2",
     order = "c"
+  },
+  {
+    type = "custom-input",
+    name = "tl-increase-divisor",
+    key_sequence = "SHIFT + mouse-wheel-up",
+    order = "d"
+  },
+  {
+    type = "custom-input",
+    name = "tl-decrease-divisor",
+    key_sequence = "SHIFT + mouse-wheel-down",
+    order = "e"
+  },
+  {
+    type = "custom-input",
+    name = "tl-next-mode",
+    key_sequence = "CONTROL + mouse-wheel-up",
+    order = "f"
+  },
+  {
+    type = "custom-input",
+    name = "tl-previous-mode",
+    key_sequence = "CONTROL + mouse-wheel-down",
+    order = "g"
   }
 }
