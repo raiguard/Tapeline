@@ -17,8 +17,8 @@ function player_data.init(player_index)
       drawing = nil
     },
     tape_settings = {
-      mode = "increment",
-      increment_divisor = 5,
+      mode = "subgrid",
+      subgrid_divisor = 5,
       split_divisor = 4
     }
   }

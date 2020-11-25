@@ -11,18 +11,18 @@ constants.default_colors = {
 }
 
 constants.divisor_minimums = {
-  increment = 3,
+  subgrid = 3,
   split = 2
 }
 
 constants.modes = {
-  increment = "increment",
+  subgrid = "subgrid",
   split = "split"
 }
 
 -- TEMPORARY - item labels don't support localised strings
 constants.mode_labels = {
-  increment = "Increment",
+  subgrid = "Subgrid",
   split = "Split"
 }
 
