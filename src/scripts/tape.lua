@@ -54,7 +54,7 @@ local function create_objects(player_index, tape_data, tape_settings, visual_set
     },
     labels = {
       x = draw_text{
-        text = tostring(TapeArea.width),
+        text = tostring(TapeArea:width()),
         surface = tape_data.surface,
         target = {x = TapeArea:center().x, y = TapeArea.left_top.y - 0.85},
         color = visual_settings.tape_label_color,
@@ -64,7 +64,7 @@ local function create_objects(player_index, tape_data, tape_settings, visual_set
         players = {player_index}
       },
       y = draw_text{
-        text = tostring(TapeArea.width),
+        text = tostring(TapeArea:height()),
         surface = tape_data.surface,
         target = {x = TapeArea.left_top.x - 0.85, y = TapeArea:center().y},
         color = visual_settings.tape_label_color,
@@ -99,19 +99,23 @@ local function update_objects(tape_data, tape_settings, visual_settings)
   set_left_top(border, TapeArea.left_top)
   set_right_bottom(border, TapeArea.right_bottom)
 
+  local center = TapeArea:center()
+  local height = TapeArea:height()
+  local width = TapeArea:width()
+
   local x_label = objects.labels.x
-  set_text(x_label, tostring(TapeArea:width()))
-  set_target(x_label, {x = TapeArea:center().x, y = TapeArea.left_top.y - 0.85})
-  if TapeArea:width() > 1 then
+  set_text(x_label, tostring(width))
+  set_target(x_label, {x = center.x, y = TapeArea.left_top.y - 0.85})
+  if width > 1 then
     set_visible(x_label, true)
   else
     set_visible(x_label, false)
   end
 
   local y_label = objects.labels.y
-  set_text(y_label, tostring(TapeArea:height()))
-  set_target(y_label, {x = TapeArea.left_top.x - 0.85, y = TapeArea:center().y})
-  if TapeArea:height() > 1 then
+  set_text(y_label, tostring(height))
+  set_target(y_label, {x = TapeArea.left_top.x - 0.85, y = center.y})
+  if height > 1 then
     set_visible(y_label, true)
   else
     set_visible(y_label, false)
@@ -214,19 +218,22 @@ function tape.delete(player_table, tape_index)
   table.remove(tapes, tape_index)
 end
 
-function tape.enter_edit_mode(player, player_table, tape_index)
-  local tape_data = player_table.tapes[tape_index]
-  local TapeArea = area.load(tape_data.Area)
-
-  local surface = tape_data.surface
-  tape_data.highlight_box = surface.create_entity{
+local function create_highlight_box(player_index, TapeArea, surface)
+  return surface.create_entity{
     name = "tl-highlight-box",
     position = TapeArea:center(),
     bounding_box = area.expand(TapeArea:strip(), 0.3),
     cursor_box_type = "electricity",
-    render_player_index = player.index,
+    render_player_index = player_index,
     blink_interval = 30
   }
+end
+
+function tape.enter_edit_mode(player, player_table, tape_index)
+  local tape_data = player_table.tapes[tape_index]
+  local TapeArea = area.load(tape_data.Area)
+
+  tape_data.highlight_box = create_highlight_box(player.index, TapeArea, tape_data.surface)
 
   player_table.flags.editing = true
   player_table.tapes.editing = tape_data
@@ -270,14 +277,7 @@ function tape.move(player, player_table, new_position, surface)
     update_objects(tape_data, tape_data.settings, player_table.visual_settings)
     -- update highlight box
     tape_data.highlight_box.destroy()
-    tape_data.highlight_box = surface.create_entity{
-      name = "tl-highlight-box",
-      position = TapeArea:center(),
-      bounding_box = area.expand(TapeArea:strip(), 0.3),
-      cursor_box_type = "electricity",
-      render_player_index = player.index,
-      blink_interval = 30
-    }
+    tape_data.highlight_box = create_highlight_box(player.index, TapeArea, tape_data.surface)
     tape_data.last_position = new_position
   elseif TapeArea:contains(new_position) then
     tape_data.last_position = new_position
