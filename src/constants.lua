@@ -10,6 +10,22 @@ constants.default_colors = {
   tape_line_color_4 = "{\"r\": 0.8, \"g\": 0.8, \"b\": 0.3}"
 }
 
+constants.divisor_minimums = {
+  increment = 3,
+  split = 2
+}
+
+constants.modes = {
+  increment = "increment",
+  split = "split"
+}
+
+-- TEMPORARY - item labels don't support localised strings
+constants.mode_labels = {
+  increment = "Increment",
+  split = "Split"
+}
+
 constants.setting_names = {
   log_selection_area = "tl-log-selection-area",
   draw_tape_on_ground = "tl-draw-tape-on-ground",

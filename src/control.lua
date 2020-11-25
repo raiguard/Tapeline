@@ -2,6 +2,8 @@ local area = require("lib.area")
 local event = require("__flib__.event")
 local migration = require("__flib__.migration")
 
+local constants = require("constants")
+
 local global_data = require("scripts.global-data")
 local player_data = require("scripts.player-data")
 local tape = require("scripts.tape")
@@ -39,6 +41,15 @@ local function select_tape(tapes, cursor_position, surface)
   return nearest
 end
 
+local function holding_tl_tool(player)
+  local cursor_stack = player.cursor_stack
+  return cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool"
+end
+
+local function set_cursor_label(player, mode, divisor)
+  player.cursor_stack.label = constants.mode_labels[mode].." mode | Divisor: "..divisor
+end
+
 -- -----------------------------------------------------------------------------
 -- EVENT HANDLERS
 
@@ -72,8 +83,7 @@ event.register("tl-edit-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" then
+  if holding_tl_tool(player) then
     local tapes = player_table.tapes
     local tape_to_edit = select_tape(tapes, e.cursor_position, player.surface)
     if tape_to_edit then
@@ -89,8 +99,7 @@ event.register("tl-delete-tape", function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
 
-  local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" then
+  if holding_tl_tool(player) then
     local tapes = player_table.tapes
     local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
     if tape_to_delete then
@@ -98,6 +107,54 @@ event.register("tl-delete-tape", function(e)
     end
   end
 end)
+
+event.register(
+  {
+    "tl-increase-divisor",
+    "tl-decrease-divisor"
+  },
+  function(e)
+    local player = game.get_player(e.player_index)
+    if holding_tl_tool(player) then
+      local player_table = global.players[e.player_index]
+      local mode = player_table.settings.tape_mode
+      local key = mode.."_divisor"
+      local delta = string.find(e.input_name, "increase") and 1 or -1
+      local new_value = player_table.settings[key] + delta
+      if new_value >= constants.divisor_minimums[mode] then
+        player_table.settings[key] = new_value
+        set_cursor_label(player, mode, new_value)
+      else
+        player.create_local_flying_text{
+          text = {"tl-message.minimal-value-is", constants.divisor_minimums[mode]},
+          create_at_cursor = true
+        }
+        player.play_sound{path = "utility/cannot_build", volume_modifier = 0.75}
+      end
+    end
+  end
+)
+
+event.register(
+  {
+    "tl-next-mode",
+    "tl-previous-mode"
+  },
+  function(e)
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    if holding_tl_tool(player) then
+      local mode = player_table.settings.tape_mode
+      local new_mode = next(constants.modes, mode)
+      if not new_mode then
+        new_mode = next(constants.modes)
+      end
+      player_table.settings.tape_mode = new_mode
+      set_cursor_label(player, new_mode, player_table.settings[new_mode.."_divisor"])
+    end
+  end
+)
+
 
 -- ENTITY
 
@@ -114,6 +171,9 @@ event.on_built_entity(
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
+      -- clear the cursor to trigger the label updating
+      -- TODO: do it better than this!
+      player.clear_cursor()
     end
     player_table.last_entity = entity
 
@@ -134,8 +194,7 @@ event.on_built_entity(
 event.on_pre_build(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
-  local cursor_stack = player.cursor_stack
-  if cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool" and e.shift_build then
+  if holding_tl_tool(player) and e.shift_build then
     player_table.flags.shift_placed_entity = true
   end
 end)
@@ -169,7 +228,6 @@ event.on_player_removed(function(e)
   global.players[e.player_index] = nil
 end)
 
--- TODO: this isn't fired when holding shift since the item isn't consumed
 event.on_player_cursor_stack_changed(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
@@ -188,9 +246,9 @@ event.on_player_cursor_stack_changed(function(e)
   elseif is_empty or cursor_stack.name ~= "tl-tool" then
     if player_table.flags.editing then
       tape.exit_edit_mode(player_table)
+      player.cursor_stack.set_stack{name = "tl-tool", count = 1}
     elseif player_table.flags.drawing then
       tape.complete_draw(player_table)
     end
   end
-
 end)

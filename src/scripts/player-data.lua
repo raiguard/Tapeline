@@ -11,7 +11,11 @@ function player_data.init(player_index)
       shift_placed_entity = false
     },
     last_entity = nil,
-    settings = {},
+    settings = {
+      tape_mode = "increment",
+      increment_divisor = 5,
+      split_divisor = 4
+    },
     tapes = {
       editing = nil,
       drawing = nil
