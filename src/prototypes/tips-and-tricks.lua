@@ -29,5 +29,19 @@ data:extend{
       count = 30
     },
     image = "__Tapeline__/graphics/tips-and-tricks/freeform.png"
+  },
+  {
+    type = "tips-and-tricks-item",
+    name = "tl-modes",
+    category = "tapeline",
+    order = "c",
+    indent = 1,
+    dependencies = {"tl-freeform"},
+    trigger = {
+      type = "build-entity",
+      entity = "tl-dummy-entity",
+      count = 200
+    },
+    image = "__Tapeline__/graphics/tips-and-tricks/modes.png"
   }
 }
