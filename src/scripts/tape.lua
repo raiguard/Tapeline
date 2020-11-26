@@ -200,11 +200,11 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     update_grid(4, subgrid_size^3)
   elseif mode == "split" then
     local num_splits = tape_settings.split_divisor
-      update_lines("x", 2, width / num_splits)
-      update_lines("y", 2, height / num_splits)
-      update_lines("x", 3, width / 2)
-      update_lines("y", 3, height / 2)
-      delete_grid(4)
+    update_lines("x", 2, width / num_splits)
+    update_lines("y", 2, height / num_splits)
+    update_lines("x", 3, width / 2)
+    update_lines("y", 3, height / 2)
+    delete_grid(4)
   end
 
   bring_to_front(border)
