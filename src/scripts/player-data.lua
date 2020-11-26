@@ -1,50 +1,65 @@
+local constants = require("constants")
+
 local player_data = {}
 
-local string_gsub = string.gsub
-local string_sub = string.sub
+-- from the core lualib
+local function color_from_hex(hex)  -- supports 'rrggbb', 'rgb', 'rrggbbaa', 'rgba', 'ww', 'w'
+  local function h(i,j)
+    return j and tonumber("0x"..hex:sub(i, j)) / 255 or tonumber("0x"..hex:sub(i, i)) / 15
+  end
+
+  hex = hex:gsub("#","")
+  return #hex == 6 and {r = h(1, 2), g = h(3, 4), b = h(5, 6)}
+    or #hex == 3 and {r = h(1), g = h(2), b = h(3)}
+    or #hex == 8 and {r = h(1, 2), g = h(3, 4), b = h(5, 6), a = h(7, 8)}
+    or #hex == 4 and {r = h(1), g = h(2), b = h(3), a = h(4)}
+    or #hex == 2 and {r = h(1, 2), g = h(1, 2), b = h(1, 2)}
+    or #hex == 1 and {r = h(1), g = h(1), b = h(1)}
+    or {r = 1, g = 1, b = 1}
+end
+
 
 function player_data.init(player_index)
   global.players[player_index] = {
     flags = {
-      adjusting_tilegrid = false,
-      adjustment_tutorial_shown = false,
-      capsule_tutorial_shown = false,
-      selecting_tilegrid = false
-    },
-    gui = {},
-    last_capsule_tick = 0,
-    last_capsule_tile = nil, -- doesn't have an initial value, but here for reference
-    settings = {
-      auto_clear = true,
-      cardinals_only = true,
-      grid_type = 1,
-      increment_divisor = 5,
-      split_divisor = 4,
-      visual = {}
-    },
-    tilegrids = {
-      drawing = false,
       editing = false,
-      registry = {}
+      drawing = false,
+      placed_entity = false,
+      shift_placed_entity = false
+    },
+    last_entity = nil,
+    visual_settings = nil,
+    tapes = {
+      editing = nil,
+      drawing = nil
+    },
+    tape_settings = {
+      mode = "subgrid",
+      subgrid_divisor = 5,
+      split_divisor = 4
     }
   }
-  player_data.refresh(game.get_player(player_index), global.players[player_index])
 end
 
-function player_data.update_settings(player, player_table)
-  local t = player_table.settings.visual
-  local s = player.mod_settings
-  for k,vt in pairs(s) do
-    if string_sub(k, 1, 3) == 'tl-' then
-      k = string_gsub(k, "^tl%-", "")
-      -- use load() to convert table strings to actual tables
-      t[string_gsub(k, "%-", "_")] = load("return "..tostring(vt.value))()
-    end
+function player_data.update_visual_setting(player, settings_table, prototype, internal)
+  local value = player.mod_settings[prototype].value
+  if string.find(internal, "color") then
+    settings_table[internal] = color_from_hex(value)
+  else
+    settings_table[internal] = value
   end
 end
 
+function player_data.update_visual_settings(player, player_table)
+  local settings = {}
+  for prototype, internal in pairs(constants.setting_names) do
+    player_data.update_visual_setting(player, settings, prototype, internal)
+  end
+  player_table.visual_settings = settings
+end
+
 function player_data.refresh(player, player_table)
-  player_data.update_settings(player, player_table)
+  player_data.update_visual_settings(player, player_table)
 end
 
 return player_data
