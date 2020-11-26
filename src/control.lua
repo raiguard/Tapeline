@@ -84,7 +84,10 @@ end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, {}) then
-
+    for i, player_table in pairs(global.players) do
+      local player = game.get_player(i)
+      player_data.refresh(player, player_table)
+    end
   end
 end)
 
@@ -126,7 +129,7 @@ event.register("tl-delete-tape", function(e)
     local tape_to_delete = select_tape(tapes, e.cursor_position, player.surface)
     if tape_to_delete then
       tape.delete(player_table, tape_to_delete)
-      player.cursor_stack.label = ""
+      set_cursor_label(player, player_table)
     end
   end
 end)
@@ -298,6 +301,21 @@ event.on_player_cursor_stack_changed(function(e)
       -- TODO: properly detect whether or not to auto-clear
       tape.complete_draw(player, player_table, true)
       set_cursor_label(player, player_table)
+    end
+  end
+end)
+
+-- SETTINGS
+
+event.on_runtime_mod_setting_changed(function(e)
+  local internal = constants.setting_names[e.setting]
+  if internal then
+    local player = game.get_player(e.player_index)
+    local player_table = global.players[e.player_index]
+    local visual_settings = player_table.visual_settings
+    player_data.update_visual_setting(player, visual_settings, e.setting, internal)
+    for _, tape_data in ipairs(player_table.tapes) do
+      tape.update_visual_settings(tape_data, visual_settings)
     end
   end
 end)

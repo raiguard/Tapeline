@@ -6,6 +6,8 @@ local destroy = rendering.destroy
 local draw_line = rendering.draw_line
 local draw_rectangle = rendering.draw_rectangle
 local draw_text = rendering.draw_text
+local set_color = rendering.set_color
+local set_draw_on_ground = rendering.set_draw_on_ground
 local set_from = rendering.set_from
 local set_left_top = rendering.set_left_top
 local set_right_bottom = rendering.set_right_bottom
@@ -14,6 +16,7 @@ local set_text = rendering.set_text
 local set_time_to_live = rendering.set_time_to_live
 local set_to = rendering.set_to
 local set_visible = rendering.set_visible
+local set_width = rendering.set_width
 
 local tape = {}
 
@@ -380,6 +383,37 @@ end
 
 function tape.complete_move(player_table)
   player_table.tapes.editing.last_position = nil
+end
+
+function tape.update_visual_settings(tape_data, settings)
+  local TapeArea = area.load(tape_data.Area)
+  local objects = tape_data.objects
+
+  local line_width = settings.tape_line_width
+  local draw_on_ground = settings.draw_tape_on_ground
+
+  local background = objects.background
+  set_color(background, settings.tape_background_color)
+  set_draw_on_ground(background, draw_on_ground)
+
+  local border = objects.border
+  set_color(border, settings.tape_border_color)
+  set_draw_on_ground(border, draw_on_ground)
+  set_width(border, line_width)
+
+  set_color(objects.labels.x, settings.tape_label_color)
+  set_color(objects.labels.y, settings.tape_label_color)
+
+  -- GRID LINES
+
+  local lines = objects.lines
+  apply_to_all_objects(lines, set_draw_on_ground, draw_on_ground)
+  apply_to_all_objects(lines, set_width, line_width)
+
+  apply_to_all_objects(lines[1], set_color, settings.tape_line_color_1)
+  apply_to_all_objects(lines[2], set_color, settings.tape_line_color_2)
+  apply_to_all_objects(lines[3], set_color, settings.tape_line_color_3)
+  apply_to_all_objects(lines[4], set_color, settings.tape_line_color_4)
 end
 
 return tape

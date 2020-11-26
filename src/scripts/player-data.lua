@@ -24,17 +24,20 @@ function player_data.init(player_index)
   }
 end
 
+function player_data.update_visual_setting(player, settings_table, prototype, internal)
+  if string.find(internal, "color") then
+    settings_table[internal] = (
+      game.json_to_table(player.mod_settings[prototype].value) or game.json_to_table(constants.default_colors[internal])
+    )
+  else
+    settings_table[internal] = player.mod_settings[prototype].value
+  end
+end
+
 function player_data.update_visual_settings(player, player_table)
-  local player_settings = player.mod_settings
   local settings = {}
-  for internal, prototype in pairs(constants.setting_names) do
-    if string.find(internal, "color") then
-      settings[internal] = (
-        game.json_to_table(player_settings[prototype].value) or game.json_to_table(constants.default_colors[internal])
-      )
-    else
-      settings[internal] = player_settings[prototype].value
-    end
+  for prototype, internal in pairs(constants.setting_names) do
+    player_data.update_visual_setting(player, settings, prototype, internal)
   end
   player_table.visual_settings = settings
 end
