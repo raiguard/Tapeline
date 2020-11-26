@@ -11,24 +11,18 @@ data:extend{
     order = "a",
     is_title = true,
     dependencies = {"introduction"},
-    trigger = {
-      type = "dependencies-met"
-    },
+    trigger = {type = "dependencies-met"},
     image = "__Tapeline__/graphics/tips-and-tricks/introduction.png"
   },
   {
     type = "tips-and-tricks-item",
-    name = "tl-freeform",
+    name = "tl-persistent",
     category = "tapeline",
     order = "b",
     indent = 1,
     dependencies = {"tl-introduction"},
-    trigger = {
-      type = "build-entity",
-      entity = "tl-dummy-entity",
-      count = 30
-    },
-    image = "__Tapeline__/graphics/tips-and-tricks/freeform.png"
+    trigger = {type = "dependencies-met"},
+    image = "__Tapeline__/graphics/tips-and-tricks/persistent.png"
   },
   {
     type = "tips-and-tricks-item",
@@ -36,12 +30,28 @@ data:extend{
     category = "tapeline",
     order = "c",
     indent = 1,
-    dependencies = {"tl-freeform"},
-    trigger = {
-      type = "build-entity",
-      entity = "tl-dummy-entity",
-      count = 200
-    },
+    dependencies = {"tl-introduction"},
+    trigger = {type = "dependencies-met"},
     image = "__Tapeline__/graphics/tips-and-tricks/modes.png"
+  },
+  {
+    type = "tips-and-tricks-item",
+    name = "tl-divisors",
+    category = "tapeline",
+    order = "d",
+    indent = 1,
+    dependencies = {"tl-introduction"},
+    trigger = {type = "dependencies-met"},
+    image = "__Tapeline__/graphics/tips-and-tricks/divisors.png"
+  },
+  {
+    type = "tips-and-tricks-item",
+    name = "tl-edit",
+    category = "tapeline",
+    order = "e",
+    indent = 1,
+    dependencies = {"tl-introduction"},
+    trigger = {type = "dependencies-met"},
+    image = "__Tapeline__/graphics/tips-and-tricks/edit.png"
   }
 }
