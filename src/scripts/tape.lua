@@ -307,6 +307,14 @@ function tape.complete_draw(player, player_table, auto_clear)
   tapes.drawing = nil
 end
 
+function tape.cancel_draw(player_table)
+  player_table.flags.drawing = false
+
+  local tape_data = player_table.tapes.drawing
+  apply_to_all_objects(tape_data.objects, destroy)
+  player_table.tapes.drawing = nil
+end
+
 function tape.delete(player_table, tape_index)
   local tapes = player_table.tapes
   local tape_data = tapes[tape_index]

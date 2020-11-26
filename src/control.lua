@@ -294,9 +294,7 @@ event.on_player_cursor_stack_changed(function(e)
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
       set_cursor_label(player, player_table)
     elseif player_table.flags.drawing then
-      -- TODO: properly detect whether or not to auto-clear
-      tape.complete_draw(player, player_table, true)
-      set_cursor_label(player, player_table)
+      tape.cancel_draw(player_table)
     end
   end
 end)
