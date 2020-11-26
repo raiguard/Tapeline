@@ -37,7 +37,7 @@ local function apply_to_all_objects(objects, func, ...)
   end
 end
 
-local function create_objects(player_index, tape_data, tape_settings, visual_settings)
+local function create_objects(player_index, tape_data, visual_settings)
   local TapeArea = tape_data.Area
   return {
     background = draw_rectangle{
@@ -219,7 +219,7 @@ function tape.start_draw(player, player_table, origin, surface)
     origin_corner = "left_top",
     surface = surface
   }
-  tape_data.objects = create_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
+  tape_data.objects = create_objects(player.index, tape_data, player_table.visual_settings)
   player_table.tapes.drawing = tape_data
   player_table.flags.drawing = true
 end

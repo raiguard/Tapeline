@@ -1,5 +1,3 @@
-local table = require("__flib__.table")
-
 local area_lib = {}
 
 function area_lib.expand_to_contain(self, area)
