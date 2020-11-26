@@ -1,7 +1,21 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: ????
+  Features:
+    - Added tips and tricks for the mod
+    - Tapes may now be drawn, edited, and deleted from the map view
   Changes:
+    - Completely rewrote the mod from scratch
+    - Consolidated draw, edit, and delete functionality into one item
+    - Changed how tape settings are edited:
+      - Drawing normally will always auto-clear and be restricted to cardinal directions
+      - Holding shift while drawing will enable freeform drawing and disable auto-clear
+      - Shift + scrolling will change the subgrid size or number of splits
+      - Ctrl + scrolling will cycle between subgrid and split modes
+      - Right-clicking a tape will enter edit mode, where dragging will move the tape and scrolling works as above
+      - Shift + right-clicking a tape will delete it
+    - Changed color setting format to Hex
+    - Removed all GUIs
 ---------------------------------------------------------------------------------------------------
 Version: 1.1.7
 Date: 2020-11-23
