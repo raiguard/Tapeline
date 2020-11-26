@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.0
-Date: ????
+Date: 2020-11-26
   Features:
     - Added tips and tricks for the mod
     - Tapes may now be drawn, edited, and deleted from the map view
