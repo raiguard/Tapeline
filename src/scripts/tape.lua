@@ -215,6 +215,7 @@ function tape.start_draw(player, player_table, origin, surface)
   local tape_data = {
     Area = TapeArea,
     last_position = origin,
+    last_update_tick = game.ticks_played,
     origin = origin,
     origin_corner = "left_top",
     surface = surface
@@ -247,6 +248,8 @@ function tape.update_draw(player, player_table, new_position)
   else
     new_position = tape_data.last_position
   end
+
+  tape_data.last_update_tick = game.ticks_played
 
   -- update area corners
   local x_less = new_position.x < origin.x
@@ -370,6 +373,8 @@ function tape.move(player, player_table, new_position, surface)
       x = tape_data.origin.x + delta.x,
       y = tape_data.origin.y + delta.y
     }
+    -- update last updated tick
+    tape_data.last_update_tick = game.ticks_played
     -- update render objects
     update_objects(player.index, tape_data, tape_data.settings, player_table.visual_settings)
     -- update highlight box
@@ -386,7 +391,6 @@ function tape.complete_move(player_table)
 end
 
 function tape.update_visual_settings(tape_data, settings)
-  local TapeArea = area.load(tape_data.Area)
   local objects = tape_data.objects
 
   local line_width = settings.tape_line_width

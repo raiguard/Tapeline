@@ -19,26 +19,21 @@ local function destroy_last_entity(player_table)
   end
 end
 
--- thanks to Rseding:
--- https://discordapp.com/channels/139677590393716737/306402592265732098/780898889955934208
+-- select the topmost tape
 local function select_tape(tapes, cursor_position, surface)
-  local nearest
-  local nearest_distance
+  local topmost_tape
+  local most_recent_update_time = 0
   for i, tape_data in ipairs(tapes) do
     local TapeArea = area.load(tape_data.Area)
     if tape_data.surface == surface and TapeArea:contains(cursor_position) then
-      local distance = TapeArea:distance_to_nearest_edge(cursor_position)
-      if not nearest or distance < nearest_distance then
-        nearest = i
-        nearest_distance = distance
-        if nearest_distance == 0 then
-          break
-        end
+      if tape_data.last_update_tick > most_recent_update_time then
+        most_recent_update_time = tape_data.last_update_tick
+        topmost_tape = i
       end
     end
   end
 
-  return nearest
+  return topmost_tape
 end
 
 local function holding_tl_tool(player)
