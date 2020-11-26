@@ -25,9 +25,7 @@ function player_data.init(player_index)
       editing = false,
       drawing = false,
       holding_tool = false,
-      increased_build_distance = false,
-      placed_entity = false,
-      shift_placed_entity = false
+      increased_build_distance = false
     },
     last_entity = nil,
     visual_settings = nil,

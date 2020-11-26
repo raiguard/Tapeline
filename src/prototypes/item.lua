@@ -18,8 +18,8 @@ data:extend{
     selection_cursor_box_type = "not-allowed",
     alt_selection_cursor_box_type = "not-allowed",
     place_result = "tl-dummy-entity",
-    stack_size = 1,
-    flags = {"not-stackable", "hidden", "only-in-cursor", "spawnable"},
+    stack_size = 100,
+    flags = {"hidden", "only-in-cursor", "spawnable"},
     draw_label_for_cursor_render = true,
     mouse_cursor = "tl-tool-cursor"
   }

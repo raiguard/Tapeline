@@ -225,13 +225,13 @@ function tape.start_draw(player, player_table, origin, surface)
   player_table.flags.drawing = true
 end
 
-function tape.update_draw(player, player_table, new_position)
+function tape.update_draw(player, player_table, new_position, is_ghost)
   local tape_data = player_table.tapes.drawing
   local TapeArea = area.load(tape_data.Area)
   local origin = tape_data.origin
 
   if new_position then
-    if not player_table.flags.shift_placed_entity then
+    if not is_ghost then
       if math.abs(new_position.x - origin.x) >= math.abs(new_position.y - origin.y) then
         new_position.y = math.floor(origin.y)
       else

@@ -92,7 +92,7 @@ end)
 event.register("tl-get-tool", function(e)
   local player = game.get_player(e.player_index)
   if player.clear_cursor() then
-    player.cursor_stack.set_stack{name = "tl-tool", count = 1}
+    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
   end
 end)
 
@@ -209,43 +209,38 @@ end)
 
 event.on_built_entity(
   function(e)
-    local entity = e.created_entity
     local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
-    -- set flag to re-populate the cursor
-    player_table.flags.placed_entity = true
+    local entity = e.created_entity
+    local is_ghost = entity.name == "entity-ghost"
+
     -- destroy last entity and store the new one
     destroy_last_entity(player_table)
-    if entity.name == "entity-ghost" then
+    if is_ghost then
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
-      -- clear cursor to update label and reset flags
-      player.clear_cursor()
     end
     player_table.last_entity = entity
 
+    -- update tape
     if player_table.flags.drawing then
-      tape.update_draw(player, player_table, entity.position)
+      tape.update_draw(player, player_table, entity.position, is_ghost)
     elseif player_table.flags.editing then
       tape.move(player, player_table, entity.position, entity.surface)
     else
       tape.start_draw(player, player_table, entity.position, entity.surface)
     end
+
+    -- update the cursor
+    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
+    set_cursor_label(player, player_table)
   end,
   {
     {filter = "name", name = "tl-dummy-entity"},
     {filter = "ghost_name", name = "tl-dummy-entity"}
   }
 )
-
-event.on_pre_build(function(e)
-  local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
-  if holding_tl_tool(player) and e.shift_build then
-    player_table.flags.shift_placed_entity = true
-  end
-end)
 
 -- SELECTION TOOL
 
@@ -286,31 +281,28 @@ event.on_player_cursor_stack_changed(function(e)
   local player_table = global.players[e.player_index]
   local cursor_stack = player.cursor_stack
   local is_empty = not cursor_stack or not cursor_stack.valid_for_read
-  if player_table.flags.placed_entity then
-    if is_empty then
-      player_table.flags.placed_entity = false
-      player_table.flags.shift_placed_entity = false
-      player.cursor_stack.set_stack{name = "tl-tool", count = 1}
-      set_cursor_label(player, player_table)
-    end
-  elseif is_empty or cursor_stack.name ~= "tl-tool" then
-    player_table.flags.holding_tool = false
-    if player_table.flags.editing then
-      tape.exit_edit_mode(player_table)
-      player.cursor_stack.set_stack{name = "tl-tool", count = 1}
-      set_cursor_label(player, player_table)
-    else
-      if player_table.flags.drawing then
-        tape.cancel_draw(player_table)
-      end
-      if player_table.flags.increased_build_distance then
-        -- decrease build distance
-        player_table.flags.increased_build_distance = false
-        player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
+  if player_table.flags.holding_tool then
+    if is_empty or cursor_stack.name ~= "tl-tool" then
+      player_table.flags.holding_tool = false
+      destroy_last_entity(player_table)
+      if player_table.flags.editing then
+        tape.exit_edit_mode(player_table)
+        player.cursor_stack.set_stack{name = "tl-tool", count = 100}
+        set_cursor_label(player, player_table)
+      else
+        if player_table.flags.drawing then
+          tape.cancel_draw(player_table)
+        end
+        if player_table.flags.increased_build_distance then
+          -- decrease build distance
+          player_table.flags.increased_build_distance = false
+          player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
+        end
       end
     end
-  elseif not player_table.flags.holding_tool then
+  elseif holding_tl_tool(player) then
     player_table.flags.holding_tool = true
+    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
     set_cursor_label(player, player_table)
     if player.controller_type == defines.controllers.character then
       -- increase build distance
