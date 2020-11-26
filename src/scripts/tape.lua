@@ -122,11 +122,17 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     set_visible(y_label, false)
   end
 
-  local function delete_grid(grid_index)
-    apply_to_all_objects(objects.lines[grid_index], destroy)
-    objects.lines[grid_index] = {x = {}, y = {}}
+  local function delete_lines(axis, grid_index)
+    apply_to_all_objects(objects.lines[grid_index][axis], destroy)
+    objects.lines[grid_index][axis] = {}
   end
 
+  local function delete_grid(grid_index)
+    delete_lines("x", grid_index)
+    delete_lines("y", grid_index)
+  end
+
+  -- TODO: optimize to not touch lines that don't need updating
   local function update_lines(axis, grid_index, grid_step)
     local lines = objects.lines[grid_index][axis]
 
@@ -135,6 +141,7 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     local finish = TapeArea[opposite_corners[tape_data.origin_corner]][axis]
 
     local i = 0
+
     for pos = start, finish, start < finish and grid_step or -grid_step do
       local from, to
       if axis == "x" then
@@ -186,10 +193,26 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     update_grid(4, subgrid_size^3)
   elseif mode == "split" then
     local num_splits = tape_settings.split_divisor
-    update_lines("x", 2, width / num_splits)
-    update_lines("y", 2, height / num_splits)
-    update_lines("x", 3, width / 2)
-    update_lines("y", 3, height / 2)
+    if width > 4 then
+      update_lines("x", 2, width / num_splits)
+    else
+      delete_lines("x", 2)
+    end
+    if height > 4 then
+      update_lines("y", 2, height / num_splits)
+    else
+      delete_lines("y", 2)
+    end
+    if width > 2 then
+      update_lines("x", 3, width / 2)
+    else
+      delete_lines("x", 3)
+    end
+    if height > 2 then
+      update_lines("y", 3, height / 2)
+    else
+      delete_lines("y", 3)
+    end
     delete_grid(4)
   end
 
@@ -257,7 +280,7 @@ function tape.update_draw(player, player_table, new_position)
   update_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
 end
 
-function tape.complete_draw(player_index, player_table, auto_clear)
+function tape.complete_draw(player, player_table, auto_clear)
   local tapes = player_table.tapes
   local tape_data = tapes.drawing
   local TapeArea = tape_data.Area
@@ -277,11 +300,15 @@ function tape.complete_draw(player_index, player_table, auto_clear)
   if auto_clear then
     apply_to_all_objects(objects, set_time_to_live, player_table.visual_settings.tape_clear_delay * 60)
     -- update to fix draw order
-    update_objects(player_index, tape_data, player_table.tape_settings, player_table.visual_settings)
+    update_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
   else
     -- copy settings into tape so they can be changed later
     tape_data.settings = table.deep_copy(player_table.tape_settings)
     tapes[#tapes+1] = tape_data
+  end
+
+  if player_table.visual_settings.log_selection_area then
+    player.print(TapeArea:width().."x"..TapeArea:height())
   end
   tapes.drawing = nil
 end

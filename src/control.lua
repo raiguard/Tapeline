@@ -46,8 +46,26 @@ local function holding_tl_tool(player)
   return cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool"
 end
 
-local function set_cursor_label(player, mode, divisor)
-  player.cursor_stack.label = constants.mode_labels[mode].." mode | "..constants.divisor_labels[mode].." "..divisor
+local function set_cursor_label(player, player_table)
+  local settings, TapeArea
+  if player_table.flags.drawing then
+    settings = player_table.tape_settings
+    TapeArea = area.load(player_table.tapes.drawing.Area)
+  elseif player_table.flags.editing then
+    local tape_data = player_table.tapes.editing
+    settings = tape_data.settings
+    TapeArea = area.load(tape_data.Area)
+  else
+    settings = player_table.tape_settings
+  end
+
+  player.cursor_stack.label = (
+    (TapeArea and (TapeArea:width().."x"..TapeArea:height().." | ") or "")
+    ..constants.mode_labels[settings.mode]
+    .." mode | "
+    ..constants.divisor_labels[settings.mode]
+    .." "..settings[settings.mode.."_divisor"]
+  )
 end
 
 -- -----------------------------------------------------------------------------
@@ -74,8 +92,10 @@ end)
 
 event.register("tl-get-tool", function(e)
   local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
   if player.clear_cursor() then
     player.cursor_stack.set_stack{name = "tl-tool", count = 1}
+    set_cursor_label(player, player_table)
   end
 end)
 
@@ -89,11 +109,10 @@ event.register("tl-edit-tape", function(e)
     if tape_to_edit then
       if player_table.flags.editing then
         tape.exit_edit_mode(player_table)
-        player.cursor_stack.label = ""
+        set_cursor_label(player, player_table)
       end
       tape.enter_edit_mode(player, player_table, tape_to_edit)
-      local settings = player_table.tapes.editing.settings
-      set_cursor_label(player, settings.mode, settings[settings.mode.."_divisor"])
+      set_cursor_label(player, player_table)
     end
   end
 end)
@@ -133,7 +152,7 @@ event.register(
       local new_divisor = settings[key] + delta
       if new_divisor >= constants.divisor_minimums[mode] then
         settings[key] = new_divisor
-        set_cursor_label(player, mode, new_divisor)
+        set_cursor_label(player, player_table)
         if player_table.flags.drawing then
           tape.update_draw(player, player_table)
         elseif player_table.flags.editing then
@@ -171,7 +190,7 @@ event.register(
       end
       settings.mode = new_mode
       local divisor = settings[new_mode.."_divisor"]
-      set_cursor_label(player, new_mode, divisor)
+      set_cursor_label(player, player_table)
       if player_table.flags.drawing then
         tape.update_draw(player, player_table)
       elseif player_table.flags.editing then
@@ -232,11 +251,13 @@ event.register(
     defines.events.on_player_alt_selected_area
   },
   function(e)
+    local player = game.get_player(e.player_index)
     local player_table = global.players[e.player_index]
     if player_table.flags.drawing then
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
-      tape.complete_draw(e.player_index, player_table, e.name == defines.events.on_player_selected_area)
+      tape.complete_draw(player, player_table, e.name == defines.events.on_player_selected_area)
+      set_cursor_label(player, player_table)
     elseif player_table.flags.editing then
       destroy_last_entity(player_table)
       tape.complete_move(player_table)
@@ -266,21 +287,17 @@ event.on_player_cursor_stack_changed(function(e)
       player_table.flags.placed_entity = false
       player_table.flags.shift_placed_entity = false
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
-      if player_table.flags.drawing then
-        local TapeArea = area.load(player_table.tapes.drawing.Area)
-        player.cursor_stack.label = TapeArea:width()..", "..TapeArea:height()
-      elseif player_table.flags.editing then
-        local settings = player_table.tapes.editing.settings
-        set_cursor_label(player, settings.mode, settings[settings.mode.."_divisor"])
-      end
+      set_cursor_label(player, player_table)
     end
   elseif is_empty or cursor_stack.name ~= "tl-tool" then
     if player_table.flags.editing then
       tape.exit_edit_mode(player_table)
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
+      set_cursor_label(player, player_table)
     elseif player_table.flags.drawing then
       -- TODO: properly detect whether or not to auto-clear
-      tape.complete_draw(e.player_index, player_table, true)
+      tape.complete_draw(player, player_table, true)
+      set_cursor_label(player, player_table)
     end
   end
 end)
