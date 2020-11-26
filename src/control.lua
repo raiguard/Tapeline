@@ -309,9 +309,7 @@ event.on_player_cursor_stack_changed(function(e)
         player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
       end
     end
-  elseif
-    not player_table.flags.holding_tool
-  then
+  elseif not player_table.flags.holding_tool then
     player_table.flags.holding_tool = true
     set_cursor_label(player, player_table)
     if player.controller_type == defines.controllers.character then
