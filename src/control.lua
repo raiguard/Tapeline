@@ -197,6 +197,14 @@ event.register(
   end
 )
 
+event.register("tl-clear-cursor", function(e)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.drawing or player_table.flags.editing then
+    local player = game.get_player(e.player_index)
+    player.clear_cursor()
+  end
+end)
+
 -- ENTITY
 
 event.on_built_entity(
@@ -212,9 +220,8 @@ event.on_built_entity(
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
-      -- clear the cursor to trigger the label updating
-      -- TODO: do it better than this!
-      player.clear_cursor()
+      -- update label
+      set_cursor_label(player, player_table)
     end
     player_table.last_entity = entity
 

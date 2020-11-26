@@ -40,5 +40,11 @@ data:extend{
     name = "tl-previous-mode",
     key_sequence = "CONTROL + mouse-wheel-down",
     order = "g"
+  },
+  {
+    type = "custom-input",
+    name = "tl-clear-cursor",
+    key_sequence = "",
+    linked_game_control = "clear-cursor"
   }
 }
