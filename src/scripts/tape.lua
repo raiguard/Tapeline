@@ -122,6 +122,8 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     set_visible(y_label, false)
   end
 
+  -- GRID LINES
+
   local function delete_lines(axis, grid_index)
     apply_to_all_objects(objects.lines[grid_index][axis], destroy)
     objects.lines[grid_index][axis] = {}
@@ -142,32 +144,34 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
 
     local i = 0
 
-    for pos = start, finish, start < finish and grid_step or -grid_step do
-      local from, to
-      if axis == "x" then
-        from = {x = pos, y = TapeArea.left_top.y}
-        to = {x = pos, y = TapeArea.right_bottom.y}
-      else
-        from = {x = TapeArea.left_top.x, y = pos}
-        to = {x = TapeArea.right_bottom.x, y = pos}
-      end
+    if (axis == "x" and width or height) > 1 then
+      for pos = start, finish, start < finish and grid_step or -grid_step do
+        local from, to
+        if axis == "x" then
+          from = {x = pos, y = TapeArea.left_top.y}
+          to = {x = pos, y = TapeArea.right_bottom.y}
+        else
+          from = {x = TapeArea.left_top.x, y = pos}
+          to = {x = TapeArea.right_bottom.x, y = pos}
+        end
 
-      i = i + 1
-      local line = lines[i]
-      if line then
-        set_from(line, from)
-        set_to(line, to)
-        bring_to_front(line)
-      else
-        lines[i] = draw_line{
-          color = visual_settings["tape_line_color_"..grid_index],
-          width = visual_settings.tape_line_width,
-          from = from,
-          to = to,
-          surface = tape_data.surface,
-          players = {player_index},
-          draw_on_ground = visual_settings.draw_tape_on_ground
-        }
+        i = i + 1
+        local line = lines[i]
+        if line then
+          set_from(line, from)
+          set_to(line, to)
+          bring_to_front(line)
+        else
+          lines[i] = draw_line{
+            color = visual_settings["tape_line_color_"..grid_index],
+            width = visual_settings.tape_line_width,
+            from = from,
+            to = to,
+            surface = tape_data.surface,
+            players = {player_index},
+            draw_on_ground = visual_settings.draw_tape_on_ground
+          }
+        end
       end
     end
 
@@ -193,27 +197,11 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
     update_grid(4, subgrid_size^3)
   elseif mode == "split" then
     local num_splits = tape_settings.split_divisor
-    if width > 4 then
       update_lines("x", 2, width / num_splits)
-    else
-      delete_lines("x", 2)
-    end
-    if height > 4 then
       update_lines("y", 2, height / num_splits)
-    else
-      delete_lines("y", 2)
-    end
-    if width > 2 then
       update_lines("x", 3, width / 2)
-    else
-      delete_lines("x", 3)
-    end
-    if height > 2 then
       update_lines("y", 3, height / 2)
-    else
-      delete_lines("y", 3)
-    end
-    delete_grid(4)
+      delete_grid(4)
   end
 
   bring_to_front(border)
@@ -362,11 +350,12 @@ end
 
 function tape.move(player, player_table, new_position, surface)
   local tape_data = player_table.tapes.editing
+  if surface ~= tape_data.surface then return end
+
   local TapeArea = area.load(tape_data.Area)
 
   local last_position = tape_data.last_position
   if last_position then
-    -- TODO: make a position lib for this?
     -- calculate delta
     local delta = {
       x = new_position.x - last_position.x,
