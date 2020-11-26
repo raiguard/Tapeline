@@ -5,6 +5,7 @@ local migration = require("__flib__.migration")
 local constants = require("constants")
 
 local global_data = require("scripts.global-data")
+local migrations = require("scripts.migrations")
 local player_data = require("scripts.player-data")
 local tape = require("scripts.tape")
 
@@ -78,7 +79,7 @@ event.on_init(function()
 end)
 
 event.on_configuration_changed(function(e)
-  if migration.on_config_changed(e, {}) then
+  if migration.on_config_changed(e, migrations) then
     for i, player_table in pairs(global.players) do
       local player = game.get_player(i)
       player_data.refresh(player, player_table)
