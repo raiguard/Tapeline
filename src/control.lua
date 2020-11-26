@@ -91,10 +91,8 @@ end)
 
 event.register("tl-get-tool", function(e)
   local player = game.get_player(e.player_index)
-  local player_table = global.players[e.player_index]
   if player.clear_cursor() then
     player.cursor_stack.set_stack{name = "tl-tool", count = 1}
-    set_cursor_label(player, player_table)
   end
 end)
 
@@ -289,6 +287,7 @@ event.on_player_cursor_stack_changed(function(e)
       set_cursor_label(player, player_table)
     end
   elseif is_empty or cursor_stack.name ~= "tl-tool" then
+    player_table.flags.holding_tool = false
     if player_table.flags.editing then
       tape.exit_edit_mode(player_table)
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
@@ -304,12 +303,15 @@ event.on_player_cursor_stack_changed(function(e)
       end
     end
   elseif
-    not player_table.flags.increased_build_distance
-    and player.controller_type == defines.controllers.character
+    not player_table.flags.holding_tool
   then
-    -- increase build distance
-    player_table.flags.increased_build_distance = true
-    player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
+    player_table.flags.holding_tool = true
+    set_cursor_label(player, player_table)
+    if player.controller_type == defines.controllers.character then
+      -- increase build distance
+      player_table.flags.increased_build_distance = true
+      player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
+    end
   end
 end)
 
