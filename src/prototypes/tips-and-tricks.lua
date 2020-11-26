@@ -25,7 +25,8 @@ data:extend{
     dependencies = {"tl-introduction"},
     trigger = {
       type = "build-entity",
-      entity = "tl-dummy-entity"
+      entity = "tl-dummy-entity",
+      count = 30
     },
     image = "__Tapeline__/graphics/tips-and-tricks/freeform.png"
   }
