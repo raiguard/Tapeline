@@ -1,14 +1,18 @@
 local area = require("lib.area")
 local table = require("__flib__.table")
 
+local bring_to_front = rendering.bring_to_front
 local destroy = rendering.destroy
+local draw_line = rendering.draw_line
 local draw_rectangle = rendering.draw_rectangle
 local draw_text = rendering.draw_text
+local set_from = rendering.set_from
 local set_left_top = rendering.set_left_top
 local set_right_bottom = rendering.set_right_bottom
 local set_target = rendering.set_target
 local set_text = rendering.set_text
 local set_time_to_live = rendering.set_time_to_live
+local set_to = rendering.set_to
 local set_visible = rendering.set_visible
 
 local tape = {}
@@ -40,17 +44,17 @@ local function create_objects(player_index, tape_data, tape_settings, visual_set
       right_bottom = TapeArea.right_bottom,
       surface = tape_data.surface,
       players = {player_index},
-      draw_on_ground = true
+      draw_on_ground = visual_settings.draw_tape_on_ground
     },
     border = draw_rectangle{
       color = visual_settings.tape_border_color,
-      width = 1.5,
+      width = visual_settings.tape_line_width,
       filled = false,
       left_top = TapeArea.left_top,
       right_bottom = TapeArea.right_bottom,
       surface = tape_data.surface,
       players = {player_index},
-      draw_on_ground = true
+      draw_on_ground = visual_settings.draw_tape_on_ground
     },
     labels = {
       x = draw_text{
@@ -75,19 +79,16 @@ local function create_objects(player_index, tape_data, tape_settings, visual_set
         players = {player_index}
       }
     },
-    temp_settings_label = draw_text{
-      text = tape_settings.mode.." mode | Divisor: "..tape_settings[tape_settings.mode.."_divisor"],
-      surface = tape_data.surface,
-      target = tape_data.origin,
-      color = {r = 1, g = 1, b = 1},
-      scale = 1,
-      alignment = "left",
-      players = {player_index}
+    lines = {
+      {x = {}, y = {}},
+      {x = {}, y = {}},
+      {x = {}, y = {}},
+      {x = {}, y = {}}
     }
   }
 end
 
-local function update_objects(tape_data, tape_settings, visual_settings)
+local function update_objects(player_index, tape_data, tape_settings, visual_settings)
   local TapeArea = tape_data.Area
   local objects = tape_data.objects
 
@@ -121,15 +122,82 @@ local function update_objects(tape_data, tape_settings, visual_settings)
     set_visible(y_label, false)
   end
 
-  set_target(objects.temp_settings_label, tape_data.origin)
-  set_text(
-    objects.temp_settings_label,
-    tape_settings.mode.." mode | Divisor: "..tape_settings[tape_settings.mode.."_divisor"]
-  )
+  local function delete_grid(grid_index)
+    apply_to_all_objects(objects.lines[grid_index], destroy)
+    objects.lines[grid_index] = {x = {}, y = {}}
+  end
+
+  local function update_lines(axis, grid_index, grid_step)
+    local lines = objects.lines[grid_index][axis]
+
+    -- iterate from the origin corner outwards
+    local start = TapeArea[tape_data.origin_corner][axis]
+    local finish = TapeArea[opposite_corners[tape_data.origin_corner]][axis]
+
+    local i = 0
+    for pos = start, finish, start < finish and grid_step or -grid_step do
+      local from, to
+      if axis == "x" then
+        from = {x = pos, y = TapeArea.left_top.y}
+        to = {x = pos, y = TapeArea.right_bottom.y}
+      else
+        from = {x = TapeArea.left_top.x, y = pos}
+        to = {x = TapeArea.right_bottom.x, y = pos}
+      end
+
+      i = i + 1
+      local line = lines[i]
+      if line then
+        set_from(line, from)
+        set_to(line, to)
+        bring_to_front(line)
+      else
+        lines[i] = draw_line{
+          color = visual_settings["tape_line_color_"..grid_index],
+          width = visual_settings.tape_line_width,
+          from = from,
+          to = to,
+          surface = tape_data.surface,
+          players = {player_index},
+          draw_on_ground = visual_settings.draw_tape_on_ground
+        }
+      end
+    end
+
+    for j = i + 1, #lines do
+      destroy(lines[j])
+      lines[j] = nil
+    end
+  end
+
+  local function update_grid(grid_index, grid_step)
+    update_lines("x", grid_index, grid_step)
+    update_lines("y", grid_index, grid_step)
+  end
+
+  -- base grid
+  update_grid(1, 1)
+
+  local mode = tape_settings.mode
+  if mode == "subgrid" then
+    local subgrid_size = tape_settings.subgrid_divisor
+    update_grid(2, subgrid_size)
+    update_grid(3, subgrid_size^2)
+    update_grid(4, subgrid_size^3)
+  elseif mode == "split" then
+    local num_splits = tape_settings.split_divisor
+    update_lines("x", 2, width / num_splits)
+    update_lines("y", 2, height / num_splits)
+    update_lines("x", 3, width / 2)
+    update_lines("y", 3, height / 2)
+    delete_grid(4)
+  end
+
+  bring_to_front(border)
 end
 
 function tape.start_draw(player, player_table, origin, surface)
-  local TapeArea = area.load(area.from_position(origin)):ceil()
+  local TapeArea = area.load(area.from_position(origin)):ceil():corners()
   local tape_data = {
     Area = TapeArea,
     last_position = origin,
@@ -177,11 +245,19 @@ function tape.update_draw(player, player_table, new_position)
     x = math.ceil(x_less and origin.x or new_position.x),
     y = math.ceil(y_less and origin.y or new_position.y)
   }
+  TapeArea:corners()
+  -- update origin corner
+  local new_origin_corner = (
+    (x_less and "right" or "left")
+    .."_"
+    ..(y_less and "bottom" or "top")
+  )
+  tape_data.origin_corner = new_origin_corner
 
-  update_objects(tape_data, player_table.tape_settings, player_table.visual_settings)
+  update_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
 end
 
-function tape.complete_draw(player_table, auto_clear)
+function tape.complete_draw(player_index, player_table, auto_clear)
   local tapes = player_table.tapes
   local tape_data = tapes.drawing
   local TapeArea = tape_data.Area
@@ -200,6 +276,8 @@ function tape.complete_draw(player_table, auto_clear)
 
   if auto_clear then
     apply_to_all_objects(objects, set_time_to_live, player_table.visual_settings.tape_clear_delay * 60)
+    -- update to fix draw order
+    update_objects(player_index, tape_data, player_table.tape_settings, player_table.visual_settings)
   else
     -- copy settings into tape so they can be changed later
     tape_data.settings = table.deep_copy(player_table.tape_settings)
@@ -247,12 +325,12 @@ function tape.exit_edit_mode(player_table)
   player_table.tapes.editing = nil
 end
 
-function tape.edit_settings(player_table, mode, divisor)
+function tape.edit_settings(player_index, player_table, mode, divisor)
   local tape_data = player_table.tapes.editing
   tape_data.settings.mode = mode
   tape_data.settings[mode.."_divisor"] = divisor
 
-  update_objects(tape_data, tape_data.settings, player_table.visual_settings)
+  update_objects(player_index, tape_data, tape_data.settings, player_table.visual_settings)
 end
 
 function tape.move(player, player_table, new_position, surface)
@@ -268,13 +346,13 @@ function tape.move(player, player_table, new_position, surface)
       y = new_position.y - last_position.y
     }
     -- move area and origin
-    TapeArea:move(delta)
+    TapeArea:move(delta):corners()
     tape_data.origin = {
       x = tape_data.origin.x + delta.x,
       y = tape_data.origin.y + delta.y
     }
     -- update render objects
-    update_objects(tape_data, tape_data.settings, player_table.visual_settings)
+    update_objects(player.index, tape_data, tape_data.settings, player_table.visual_settings)
     -- update highlight box
     tape_data.highlight_box.destroy()
     tape_data.highlight_box = create_highlight_box(player.index, TapeArea, tape_data.surface)

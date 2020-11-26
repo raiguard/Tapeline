@@ -47,7 +47,7 @@ local function holding_tl_tool(player)
 end
 
 local function set_cursor_label(player, mode, divisor)
-  player.cursor_stack.label = constants.mode_labels[mode].." mode | Divisor: "..divisor
+  player.cursor_stack.label = constants.mode_labels[mode].." mode | "..constants.divisor_labels[mode].." "..divisor
 end
 
 -- -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ event.register(
         if player_table.flags.drawing then
           tape.update_draw(player, player_table)
         elseif player_table.flags.editing then
-          tape.edit_settings(player_table, mode, new_divisor)
+          tape.edit_settings(e.player_index, player_table, mode, new_divisor)
         end
       else
         player.create_local_flying_text{
@@ -175,7 +175,7 @@ event.register(
       if player_table.flags.drawing then
         tape.update_draw(player, player_table)
       elseif player_table.flags.editing then
-        tape.edit_settings(player_table, new_mode, divisor)
+        tape.edit_settings(e.player_index, player_table, new_mode, divisor)
       end
     end
   end
@@ -236,7 +236,7 @@ event.register(
     if player_table.flags.drawing then
       player_table.flags.drawing = false
       destroy_last_entity(player_table)
-      tape.complete_draw(player_table, e.name == defines.events.on_player_selected_area)
+      tape.complete_draw(e.player_index, player_table, e.name == defines.events.on_player_selected_area)
     elseif player_table.flags.editing then
       destroy_last_entity(player_table)
       tape.complete_move(player_table)
@@ -279,7 +279,8 @@ event.on_player_cursor_stack_changed(function(e)
       tape.exit_edit_mode(player_table)
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
     elseif player_table.flags.drawing then
-      tape.complete_draw(player_table)
+      -- TODO: properly detect whether or not to auto-clear
+      tape.complete_draw(e.player_index, player_table, true)
     end
   end
 end)

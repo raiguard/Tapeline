@@ -10,6 +10,11 @@ constants.default_colors = {
   tape_line_color_4 = "{\"r\": 0.8, \"g\": 0.8, \"b\": 0.3}"
 }
 
+constants.divisor_labels = {
+  subgrid = "Grid size:",
+  split = "# of splits:"
+}
+
 constants.divisor_minimums = {
   subgrid = 3,
   split = 2
@@ -36,7 +41,8 @@ constants.setting_names = {
   tape_label_color = "tl-tape-label-color",
   tape_line_color_1 = "tl-tape-line-color-1",
   tape_line_color_2 = "tl-tape-line-color-2",
-  tape_line_color_3 = "tl-tape-line-color-3"
+  tape_line_color_3 = "tl-tape-line-color-3",
+  tape_line_color_4 = "tl-tape-line-color-4"
 }
 
 return constants

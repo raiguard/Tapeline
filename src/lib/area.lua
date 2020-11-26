@@ -1,3 +1,5 @@
+local table = require("__flib__.table")
+
 local area_lib = {}
 
 function area_lib.expand_to_contain(self, area)
@@ -62,6 +64,19 @@ function area_lib.move(self, delta)
   self.left_top.y = self.left_top.y + delta.y
   self.right_bottom.x = self.right_bottom.x + delta.x
   self.right_bottom.y = self.right_bottom.y + delta.y
+
+  return self
+end
+
+function area_lib.corners(self)
+  self.left_bottom = {
+    x = self.left_top.x,
+    y = self.right_bottom.y
+  }
+  self.right_top = {
+    x = self.right_bottom.x,
+    y = self.left_top.y
+  }
 
   return self
 end
