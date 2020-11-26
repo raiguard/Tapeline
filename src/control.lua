@@ -220,8 +220,8 @@ event.on_built_entity(
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
-      -- update label
-      set_cursor_label(player, player_table)
+      -- clear cursor to update label and reset flags
+      player.clear_cursor()
     end
     player_table.last_entity = entity
 
