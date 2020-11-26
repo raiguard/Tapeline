@@ -293,9 +293,33 @@ event.on_player_cursor_stack_changed(function(e)
       tape.exit_edit_mode(player_table)
       player.cursor_stack.set_stack{name = "tl-tool", count = 1}
       set_cursor_label(player, player_table)
-    elseif player_table.flags.drawing then
-      tape.cancel_draw(player_table)
+    else
+      if player_table.flags.drawing then
+        tape.cancel_draw(player_table)
+      end
+      if player_table.flags.increased_build_distance then
+        -- decrease build distance
+        player_table.flags.increased_build_distance = false
+        player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
+      end
     end
+  elseif
+    not player_table.flags.increased_build_distance
+    and player.controller_type == defines.controllers.character
+  then
+    -- increase build distance
+    player_table.flags.increased_build_distance = true
+    player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
+  end
+end)
+
+event.on_pre_player_toggled_map_editor(function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.increased_build_distance then
+    -- decrease build distance
+    player_table.flags.increased_build_distance = false
+    player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
   end
 end)
 
