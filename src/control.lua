@@ -319,9 +319,12 @@ event.on_pre_player_toggled_map_editor(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
   if player_table.flags.increased_build_distance then
-    -- decrease build distance
     player_table.flags.increased_build_distance = false
-    player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
+    local build_distance = player.character_build_distance_bonus
+    if build_distance >= 1000000 then
+      -- decrease build distance
+      player.character_build_distance_bonus = build_distance - 1000000
+    end
   end
 end)
 
