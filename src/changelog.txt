@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.1
-Date: ????
+Date: 2020-11-29
   Bugfixes:
     - Fixed a crash when other mods or scenarios override the increased build distance required to make drawing tapes work
 ---------------------------------------------------------------------------------------------------
