@@ -294,9 +294,12 @@ event.on_player_cursor_stack_changed(function(e)
           tape.cancel_draw(player_table)
         end
         if player_table.flags.increased_build_distance then
-          -- decrease build distance
           player_table.flags.increased_build_distance = false
-          player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
+          local build_distance = player.character_build_distance_bonus
+          if build_distance >= 1000000 then
+            -- decrease build distance
+            player.character_build_distance_bonus = build_distance - 1000000
+          end
         end
       end
     end
