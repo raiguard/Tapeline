@@ -16,7 +16,7 @@ constants.divisor_labels = {
 }
 
 constants.divisor_minimums = {
-  subgrid = 3,
+  subgrid = 2,
   split = 2
 }
 
