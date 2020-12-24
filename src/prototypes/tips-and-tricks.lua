@@ -10,7 +10,6 @@ data:extend{
     category = "tapeline",
     order = "a",
     is_title = true,
-    dependencies = {"introduction"},
     trigger = {type = "dependencies-met"},
     image = "__Tapeline__/graphics/tips-and-tricks/introduction.png"
   },
