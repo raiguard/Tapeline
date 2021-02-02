@@ -307,7 +307,7 @@ event.on_player_cursor_stack_changed(function(e)
     player_table.flags.holding_tool = true
     player.cursor_stack.set_stack{name = "tl-tool", count = 100}
     set_cursor_label(player, player_table)
-    if player.controller_type == defines.controllers.character then
+    if player.controller_type == defines.controllers.character and not player_table.flags.increased_build_distance then
       -- increase build distance
       player_table.flags.increased_build_distance = true
       player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
