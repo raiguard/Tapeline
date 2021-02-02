@@ -19,7 +19,7 @@ return {
     for _, player in pairs(game.players) do
       local build_distance = player.character_build_distance_bonus
       if build_distance >= 1000000 then
-        build_distance = build_distance - (math.floor(build_distance / 1000000) * 1000000)
+        player.character_build_distance_bonus = build_distance - (math.floor(build_distance / 1000000) * 1000000)
       end
     end
   end
