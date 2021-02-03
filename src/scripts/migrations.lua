@@ -17,9 +17,11 @@ return {
   ["2.0.3"] = function()
     -- reset all players' build distance bonuses
     for _, player in pairs(game.players) do
-      local build_distance = player.character_build_distance_bonus
-      if build_distance >= 1000000 then
-        player.character_build_distance_bonus = build_distance - (math.floor(build_distance / 1000000) * 1000000)
+      if player.character then
+        local build_distance = player.character_build_distance_bonus
+        if build_distance >= 1000000 then
+          player.character_build_distance_bonus = build_distance - (math.floor(build_distance / 1000000) * 1000000)
+        end
       end
     end
   end
