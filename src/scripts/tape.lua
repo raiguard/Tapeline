@@ -1,4 +1,4 @@
-local area = require("lib.area")
+local area = require("__flib__.area")
 local table = require("__flib__.table")
 
 local bring_to_front = rendering.bring_to_front
@@ -389,7 +389,7 @@ function tape.move(player, player_table, new_position, surface)
     tape_data.highlight_box.destroy()
     tape_data.highlight_box = create_highlight_box(player.index, TapeArea, tape_data.surface)
     tape_data.last_position = new_position
-  elseif TapeArea:contains(new_position) then
+  elseif TapeArea:contains_position(new_position) then
     tape_data.last_position = new_position
   end
 end

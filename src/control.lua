@@ -1,4 +1,4 @@
-local area = require("lib.area")
+local area = require("__flib__.area")
 local event = require("__flib__.event")
 local migration = require("__flib__.migration")
 
@@ -26,7 +26,7 @@ local function select_tape(tapes, cursor_position, surface)
   local most_recent_update_time = 0
   for i, tape_data in ipairs(tapes) do
     local TapeArea = area.load(tape_data.Area)
-    if tape_data.surface == surface and TapeArea:contains(cursor_position) then
+    if tape_data.surface == surface and TapeArea:contains_position(cursor_position) then
       if tape_data.last_update_tick > most_recent_update_time then
         most_recent_update_time = tape_data.last_update_tick
         topmost_tape = i
