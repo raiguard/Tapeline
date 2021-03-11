@@ -214,16 +214,15 @@ event.on_built_entity(
     local entity = e.created_entity
     local is_ghost = entity.name == "entity-ghost"
 
-    -- destroy last entity and store the new one
     destroy_last_entity(player_table)
+
     if is_ghost then
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
-    else
-      -- make the entity invincible to prevent attacks
-      entity.destructible = false
     end
+    -- make the entity invincible to prevent attacks
+    entity.destructible = false
     player_table.last_entity = entity
 
     -- update tape
