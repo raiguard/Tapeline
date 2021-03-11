@@ -220,6 +220,9 @@ event.on_built_entity(
       -- instantly revive the entity if it is a ghost
       local _
       _, entity = entity.silent_revive()
+    else
+      -- make the entity invincible to prevent attacks
+      entity.destructible = false
     end
     player_table.last_entity = entity
 
