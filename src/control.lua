@@ -270,6 +270,9 @@ end)
 event.on_player_cursor_stack_changed(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
+  if not player_table then
+    return
+  end
   local cursor_stack = player.cursor_stack
   local is_empty = not cursor_stack or not cursor_stack.valid_for_read
   if player_table.flags.holding_tool then
@@ -309,6 +312,9 @@ end)
 event.on_pre_player_toggled_map_editor(function(e)
   local player = game.get_player(e.player_index)
   local player_table = global.players[e.player_index]
+  if not player_table then
+    return
+  end
   if player_table.flags.increased_build_distance then
     player_table.flags.increased_build_distance = false
     local build_distance = player.character_build_distance_bonus
