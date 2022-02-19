@@ -1,8 +1,8 @@
-data:extend{
+data:extend({
   {
     type = "tips-and-tricks-item-category",
     name = "tapeline",
-    order = "l-[tapeline]"
+    order = "l-[tapeline]",
   },
   {
     type = "tips-and-tricks-item",
@@ -10,8 +10,8 @@ data:extend{
     category = "tapeline",
     order = "a",
     is_title = true,
-    trigger = {type = "dependencies-met"},
-    image = "__Tapeline__/graphics/tips-and-tricks/introduction.png"
+    trigger = { type = "dependencies-met" },
+    image = "__Tapeline__/graphics/tips-and-tricks/introduction.png",
   },
   {
     type = "tips-and-tricks-item",
@@ -19,9 +19,9 @@ data:extend{
     category = "tapeline",
     order = "b",
     indent = 1,
-    dependencies = {"tl-introduction"},
-    trigger = {type = "dependencies-met"},
-    image = "__Tapeline__/graphics/tips-and-tricks/persistent.png"
+    dependencies = { "tl-introduction" },
+    trigger = { type = "dependencies-met" },
+    image = "__Tapeline__/graphics/tips-and-tricks/persistent.png",
   },
   {
     type = "tips-and-tricks-item",
@@ -29,9 +29,9 @@ data:extend{
     category = "tapeline",
     order = "c",
     indent = 1,
-    dependencies = {"tl-introduction"},
-    trigger = {type = "dependencies-met"},
-    image = "__Tapeline__/graphics/tips-and-tricks/modes.png"
+    dependencies = { "tl-introduction" },
+    trigger = { type = "dependencies-met" },
+    image = "__Tapeline__/graphics/tips-and-tricks/modes.png",
   },
   {
     type = "tips-and-tricks-item",
@@ -39,9 +39,9 @@ data:extend{
     category = "tapeline",
     order = "d",
     indent = 1,
-    dependencies = {"tl-introduction"},
-    trigger = {type = "dependencies-met"},
-    image = "__Tapeline__/graphics/tips-and-tricks/divisors.png"
+    dependencies = { "tl-introduction" },
+    trigger = { type = "dependencies-met" },
+    image = "__Tapeline__/graphics/tips-and-tricks/divisors.png",
   },
   {
     type = "tips-and-tricks-item",
@@ -49,8 +49,8 @@ data:extend{
     category = "tapeline",
     order = "e",
     indent = 1,
-    dependencies = {"tl-introduction"},
-    trigger = {type = "dependencies-met"},
-    image = "__Tapeline__/graphics/tips-and-tricks/edit.png"
-  }
-}
+    dependencies = { "tl-introduction" },
+    trigger = { type = "dependencies-met" },
+    image = "__Tapeline__/graphics/tips-and-tricks/edit.png",
+  },
+})

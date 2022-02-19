@@ -24,7 +24,7 @@ local opposite_corners = {
   left_top = "right_bottom",
   left_bottom = "right_top",
   right_top = "left_bottom",
-  right_bottom = "left_top"
+  right_bottom = "left_top",
 }
 
 local function apply_to_all_objects(objects, func, ...)
@@ -40,54 +40,54 @@ end
 local function create_objects(player_index, tape_data, visual_settings)
   local TapeArea = tape_data.Area
   return {
-    background = draw_rectangle{
+    background = draw_rectangle({
       color = visual_settings.tape_background_color,
       filled = true,
       left_top = TapeArea.left_top,
       right_bottom = TapeArea.right_bottom,
       surface = tape_data.surface,
-      players = {player_index},
-      draw_on_ground = visual_settings.draw_tape_on_ground
-    },
-    border = draw_rectangle{
+      players = { player_index },
+      draw_on_ground = visual_settings.draw_tape_on_ground,
+    }),
+    border = draw_rectangle({
       color = visual_settings.tape_border_color,
       width = visual_settings.tape_line_width,
       filled = false,
       left_top = TapeArea.left_top,
       right_bottom = TapeArea.right_bottom,
       surface = tape_data.surface,
-      players = {player_index},
-      draw_on_ground = visual_settings.draw_tape_on_ground
-    },
+      players = { player_index },
+      draw_on_ground = visual_settings.draw_tape_on_ground,
+    }),
     labels = {
-      x = draw_text{
+      x = draw_text({
         text = tostring(TapeArea:width()),
         surface = tape_data.surface,
-        target = {x = TapeArea:center().x, y = TapeArea.left_top.y - 0.85},
+        target = { x = TapeArea:center().x, y = TapeArea.left_top.y - 0.85 },
         color = visual_settings.tape_label_color,
         scale = 1.5,
         alignment = "center",
         visible = false,
-        players = {player_index}
-      },
-      y = draw_text{
+        players = { player_index },
+      }),
+      y = draw_text({
         text = tostring(TapeArea:height()),
         surface = tape_data.surface,
-        target = {x = TapeArea.left_top.x - 0.85, y = TapeArea:center().y},
+        target = { x = TapeArea.left_top.x - 0.85, y = TapeArea:center().y },
         color = visual_settings.tape_label_color,
         scale = 1.5,
         orientation = 0.75,
         alignment = "center",
         visible = false,
-        players = {player_index}
-      }
+        players = { player_index },
+      }),
     },
     lines = {
-      {x = {}, y = {}},
-      {x = {}, y = {}},
-      {x = {}, y = {}},
-      {x = {}, y = {}}
-    }
+      { x = {}, y = {} },
+      { x = {}, y = {} },
+      { x = {}, y = {} },
+      { x = {}, y = {} },
+    },
   }
 end
 
@@ -109,7 +109,7 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
 
   local x_label = objects.labels.x
   set_text(x_label, tostring(width))
-  set_target(x_label, {x = center.x, y = TapeArea.left_top.y - 0.85})
+  set_target(x_label, { x = center.x, y = TapeArea.left_top.y - 0.85 })
   if width > 1 then
     set_visible(x_label, true)
   else
@@ -118,7 +118,7 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
 
   local y_label = objects.labels.y
   set_text(y_label, tostring(height))
-  set_target(y_label, {x = TapeArea.left_top.x - 0.85, y = center.y})
+  set_target(y_label, { x = TapeArea.left_top.x - 0.85, y = center.y })
   if height > 1 then
     set_visible(y_label, true)
   else
@@ -151,11 +151,11 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
       for pos = start, finish, start < finish and grid_step or -grid_step do
         local from, to
         if axis == "x" then
-          from = {x = pos, y = TapeArea.left_top.y}
-          to = {x = pos, y = TapeArea.right_bottom.y}
+          from = { x = pos, y = TapeArea.left_top.y }
+          to = { x = pos, y = TapeArea.right_bottom.y }
         else
-          from = {x = TapeArea.left_top.x, y = pos}
-          to = {x = TapeArea.right_bottom.x, y = pos}
+          from = { x = TapeArea.left_top.x, y = pos }
+          to = { x = TapeArea.right_bottom.x, y = pos }
         end
 
         i = i + 1
@@ -165,15 +165,15 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
           set_to(line, to)
           bring_to_front(line)
         else
-          lines[i] = draw_line{
-            color = visual_settings["tape_line_color_"..grid_index],
+          lines[i] = draw_line({
+            color = visual_settings["tape_line_color_" .. grid_index],
             width = visual_settings.tape_line_width,
             from = from,
             to = to,
             surface = tape_data.surface,
-            players = {player_index},
-            draw_on_ground = visual_settings.draw_tape_on_ground
-          }
+            players = { player_index },
+            draw_on_ground = visual_settings.draw_tape_on_ground,
+          })
         end
       end
     end
@@ -196,8 +196,8 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
   if mode == "subgrid" then
     local subgrid_size = tape_settings.subgrid_divisor
     update_grid(2, subgrid_size)
-    update_grid(3, subgrid_size^2)
-    update_grid(4, subgrid_size^3)
+    update_grid(3, subgrid_size ^ 2)
+    update_grid(4, subgrid_size ^ 3)
   elseif mode == "split" then
     local num_splits = tape_settings.split_divisor
     update_lines("x", 2, width / num_splits)
@@ -218,7 +218,7 @@ function tape.start_draw(player, player_table, origin, surface)
     last_update_tick = game.ticks_played,
     origin = origin,
     origin_corner = "left_top",
-    surface = surface
+    surface = surface,
   }
   tape_data.objects = create_objects(player.index, tape_data, player_table.visual_settings)
   player_table.tapes.drawing = tape_data
@@ -256,19 +256,15 @@ function tape.update_draw(player, player_table, new_position, is_ghost)
   local y_less = new_position.y < origin.y
   TapeArea.left_top = {
     x = math.floor(x_less and new_position.x or origin.x),
-    y = math.floor(y_less and new_position.y or origin.y)
+    y = math.floor(y_less and new_position.y or origin.y),
   }
   TapeArea.right_bottom = {
     x = math.ceil(x_less and origin.x or new_position.x),
-    y = math.ceil(y_less and origin.y or new_position.y)
+    y = math.ceil(y_less and origin.y or new_position.y),
   }
   TapeArea:corners()
   -- update origin corner
-  local new_origin_corner = (
-    (x_less and "right" or "left")
-    .."_"
-    ..(y_less and "bottom" or "top")
-  )
+  local new_origin_corner = ((x_less and "right" or "left") .. "_" .. (y_less and "bottom" or "top"))
   tape_data.origin_corner = new_origin_corner
 
   update_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
@@ -298,11 +294,11 @@ function tape.complete_draw(player, player_table, auto_clear)
   else
     -- copy settings into tape so they can be changed later
     tape_data.settings = table.deep_copy(player_table.tape_settings)
-    tapes[#tapes+1] = tape_data
+    tapes[#tapes + 1] = tape_data
   end
 
   if player_table.visual_settings.log_selection_area then
-    player.print(TapeArea:width().."x"..TapeArea:height())
+    player.print(TapeArea:width() .. "x" .. TapeArea:height())
   end
   tapes.drawing = nil
 end
@@ -326,14 +322,14 @@ function tape.delete(player_table, tape_index)
 end
 
 local function create_highlight_box(player_index, TapeArea, surface)
-  return surface.create_entity{
+  return surface.create_entity({
     name = "tl-highlight-box",
     position = TapeArea:center(),
     bounding_box = area.expand(TapeArea:strip(), 0.3),
     cursor_box_type = "electricity",
     render_player_index = player_index,
-    blink_interval = 30
-  }
+    blink_interval = 30,
+  })
 end
 
 function tape.enter_edit_mode(player, player_table, tape_index)
@@ -357,14 +353,16 @@ end
 function tape.edit_settings(player_index, player_table, mode, divisor)
   local tape_data = player_table.tapes.editing
   tape_data.settings.mode = mode
-  tape_data.settings[mode.."_divisor"] = divisor
+  tape_data.settings[mode .. "_divisor"] = divisor
 
   update_objects(player_index, tape_data, tape_data.settings, player_table.visual_settings)
 end
 
 function tape.move(player, player_table, new_position, surface)
   local tape_data = player_table.tapes.editing
-  if surface ~= tape_data.surface then return end
+  if surface ~= tape_data.surface then
+    return
+  end
 
   local TapeArea = area.load(tape_data.Area)
 
@@ -373,13 +371,13 @@ function tape.move(player, player_table, new_position, surface)
     -- calculate delta
     local delta = {
       x = new_position.x - last_position.x,
-      y = new_position.y - last_position.y
+      y = new_position.y - last_position.y,
     }
     -- move area and origin
     TapeArea:move(delta):corners()
     tape_data.origin = {
       x = tape_data.origin.x + delta.x,
-      y = tape_data.origin.y + delta.y
+      y = tape_data.origin.y + delta.y,
     }
     -- update last updated tick
     tape_data.last_update_tick = game.ticks_played

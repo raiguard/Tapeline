@@ -7,28 +7,28 @@ constants.default_colors = {
   tape_line_color_1 = "#66",
   tape_line_color_2 = "#66cc66",
   tape_line_color_3 = "#cc6666",
-  tape_line_color_4 = "#cccc66"
+  tape_line_color_4 = "#cccc66",
 }
 
 constants.divisor_labels = {
   subgrid = "Grid size:",
-  split = "# of splits:"
+  split = "# of splits:",
 }
 
 constants.divisor_minimums = {
   subgrid = 2,
-  split = 2
+  split = 2,
 }
 
 constants.modes = {
   subgrid = "subgrid",
-  split = "split"
+  split = "split",
 }
 
 -- TEMPORARY - item labels don't support localised strings
 constants.mode_labels = {
   subgrid = "Subgrid",
-  split = "Split"
+  split = "Split",
 }
 
 constants.setting_names = {
@@ -42,7 +42,7 @@ constants.setting_names = {
   ["tl-tape-line-color-1"] = "tape_line_color_1",
   ["tl-tape-line-color-2"] = "tape_line_color_2",
   ["tl-tape-line-color-3"] = "tape_line_color_3",
-  ["tl-tape-line-color-4"] = "tape_line_color_4"
+  ["tl-tape-line-color-4"] = "tape_line_color_4",
 }
 
 return constants

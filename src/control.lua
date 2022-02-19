@@ -56,12 +56,13 @@ local function set_cursor_label(player, player_table)
   end
 
   player.cursor_stack.label = (
-    (TapeArea and (TapeArea:width().."x"..TapeArea:height().." | ") or "")
-    ..constants.mode_labels[settings.mode]
-    .." mode | "
-    ..constants.divisor_labels[settings.mode]
-    .." "..settings[settings.mode.."_divisor"]
-  )
+      (TapeArea and (TapeArea:width() .. "x" .. TapeArea:height() .. " | ") or "")
+      .. constants.mode_labels[settings.mode]
+      .. " mode | "
+      .. constants.divisor_labels[settings.mode]
+      .. " "
+      .. settings[settings.mode .. "_divisor"]
+    )
 end
 
 -- -----------------------------------------------------------------------------
@@ -92,7 +93,7 @@ end)
 event.register("tl-get-tool", function(e)
   local player = game.get_player(e.player_index)
   if player.clear_cursor() then
-    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
+    player.cursor_stack.set_stack({ name = "tl-tool", count = 100 })
   end
 end)
 
@@ -128,74 +129,68 @@ event.register("tl-delete-tape", function(e)
   end
 end)
 
-event.register(
-  {
-    "tl-increase-divisor",
-    "tl-decrease-divisor"
-  },
-  function(e)
-    local player = game.get_player(e.player_index)
-    if holding_tl_tool(player) then
-      local player_table = global.players[e.player_index]
-      local settings
-      if player_table.flags.editing then
-        settings = player_table.tapes.editing.settings
-      else
-        settings = player_table.tape_settings
-      end
-      local mode = settings.mode
-      local key = mode.."_divisor"
-      local delta = string.find(e.input_name, "increase") and 1 or -1
-      local new_divisor = settings[key] + delta
-      if new_divisor >= constants.divisor_minimums[mode] then
-        settings[key] = new_divisor
-        set_cursor_label(player, player_table)
-        if player_table.flags.drawing then
-          tape.update_draw(player, player_table)
-        elseif player_table.flags.editing then
-          tape.edit_settings(e.player_index, player_table, mode, new_divisor)
-        end
-      else
-        player.create_local_flying_text{
-          text = {"tl-message.minimal-value-is", constants.divisor_minimums[mode]},
-          create_at_cursor = true
-        }
-        player.play_sound{path = "utility/cannot_build", volume_modifier = 0.75}
-      end
+event.register({
+  "tl-increase-divisor",
+  "tl-decrease-divisor",
+}, function(e)
+  local player = game.get_player(e.player_index)
+  if holding_tl_tool(player) then
+    local player_table = global.players[e.player_index]
+    local settings
+    if player_table.flags.editing then
+      settings = player_table.tapes.editing.settings
+    else
+      settings = player_table.tape_settings
     end
-  end
-)
-
-event.register(
-  {
-    "tl-next-mode",
-    "tl-previous-mode"
-  },
-  function(e)
-    local player = game.get_player(e.player_index)
-    if holding_tl_tool(player) then
-      local player_table = global.players[e.player_index]
-      local settings
-      if player_table.flags.editing then
-        settings = player_table.tapes.editing.settings
-      else
-        settings = player_table.tape_settings
-      end
-      local new_mode = next(constants.modes, settings.mode)
-      if not new_mode then
-        new_mode = next(constants.modes)
-      end
-      settings.mode = new_mode
-      local divisor = settings[new_mode.."_divisor"]
+    local mode = settings.mode
+    local key = mode .. "_divisor"
+    local delta = string.find(e.input_name, "increase") and 1 or -1
+    local new_divisor = settings[key] + delta
+    if new_divisor >= constants.divisor_minimums[mode] then
+      settings[key] = new_divisor
       set_cursor_label(player, player_table)
       if player_table.flags.drawing then
         tape.update_draw(player, player_table)
       elseif player_table.flags.editing then
-        tape.edit_settings(e.player_index, player_table, new_mode, divisor)
+        tape.edit_settings(e.player_index, player_table, mode, new_divisor)
       end
+    else
+      player.create_local_flying_text({
+        text = { "tl-message.minimal-value-is", constants.divisor_minimums[mode] },
+        create_at_cursor = true,
+      })
+      player.play_sound({ path = "utility/cannot_build", volume_modifier = 0.75 })
     end
   end
-)
+end)
+
+event.register({
+  "tl-next-mode",
+  "tl-previous-mode",
+}, function(e)
+  local player = game.get_player(e.player_index)
+  if holding_tl_tool(player) then
+    local player_table = global.players[e.player_index]
+    local settings
+    if player_table.flags.editing then
+      settings = player_table.tapes.editing.settings
+    else
+      settings = player_table.tape_settings
+    end
+    local new_mode = next(constants.modes, settings.mode)
+    if not new_mode then
+      new_mode = next(constants.modes)
+    end
+    settings.mode = new_mode
+    local divisor = settings[new_mode .. "_divisor"]
+    set_cursor_label(player, player_table)
+    if player_table.flags.drawing then
+      tape.update_draw(player, player_table)
+    elseif player_table.flags.editing then
+      tape.edit_settings(e.player_index, player_table, new_mode, divisor)
+    end
+  end
+end)
 
 event.register("tl-clear-cursor", function(e)
   local player_table = global.players[e.player_index]
@@ -207,64 +202,58 @@ end)
 
 -- ENTITY
 
-event.on_built_entity(
-  function(e)
-    local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
-    local entity = e.created_entity
-    local is_ghost = entity.name == "entity-ghost"
+event.on_built_entity(function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  local entity = e.created_entity
+  local is_ghost = entity.name == "entity-ghost"
 
-    destroy_last_entity(player_table)
+  destroy_last_entity(player_table)
 
-    if is_ghost then
-      -- instantly revive the entity if it is a ghost
-      local _
-      _, entity = entity.silent_revive()
-    end
-    -- make the entity invincible to prevent attacks
-    entity.destructible = false
-    player_table.last_entity = entity
+  if is_ghost then
+    -- instantly revive the entity if it is a ghost
+    local _
+    _, entity = entity.silent_revive()
+  end
+  -- make the entity invincible to prevent attacks
+  entity.destructible = false
+  player_table.last_entity = entity
 
-    -- update tape
-    if player_table.flags.drawing then
-      tape.update_draw(player, player_table, entity.position, is_ghost)
-    elseif player_table.flags.editing then
-      tape.move(player, player_table, entity.position, entity.surface)
-    else
-      tape.start_draw(player, player_table, entity.position, entity.surface)
-    end
+  -- update tape
+  if player_table.flags.drawing then
+    tape.update_draw(player, player_table, entity.position, is_ghost)
+  elseif player_table.flags.editing then
+    tape.move(player, player_table, entity.position, entity.surface)
+  else
+    tape.start_draw(player, player_table, entity.position, entity.surface)
+  end
 
-    -- update the cursor
-    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
-    set_cursor_label(player, player_table)
-  end,
-  {
-    {filter = "name", name = "tl-dummy-entity"},
-    {filter = "ghost_name", name = "tl-dummy-entity"}
-  }
-)
+  -- update the cursor
+  player.cursor_stack.set_stack({ name = "tl-tool", count = 100 })
+  set_cursor_label(player, player_table)
+end, {
+  { filter = "name", name = "tl-dummy-entity" },
+  { filter = "ghost_name", name = "tl-dummy-entity" },
+})
 
 -- SELECTION TOOL
 
-event.register(
-  {
-    defines.events.on_player_selected_area,
-    defines.events.on_player_alt_selected_area
-  },
-  function(e)
-    local player = game.get_player(e.player_index)
-    local player_table = global.players[e.player_index]
-    if player_table.flags.drawing then
-      player_table.flags.drawing = false
-      destroy_last_entity(player_table)
-      tape.complete_draw(player, player_table, e.name == defines.events.on_player_selected_area)
-      set_cursor_label(player, player_table)
-    elseif player_table.flags.editing then
-      destroy_last_entity(player_table)
-      tape.complete_move(player_table)
-    end
+event.register({
+  defines.events.on_player_selected_area,
+  defines.events.on_player_alt_selected_area,
+}, function(e)
+  local player = game.get_player(e.player_index)
+  local player_table = global.players[e.player_index]
+  if player_table.flags.drawing then
+    player_table.flags.drawing = false
+    destroy_last_entity(player_table)
+    tape.complete_draw(player, player_table, e.name == defines.events.on_player_selected_area)
+    set_cursor_label(player, player_table)
+  elseif player_table.flags.editing then
+    destroy_last_entity(player_table)
+    tape.complete_move(player_table)
   end
-)
+end)
 
 -- PLAYER
 
@@ -289,7 +278,7 @@ event.on_player_cursor_stack_changed(function(e)
       destroy_last_entity(player_table)
       if player_table.flags.editing then
         tape.exit_edit_mode(player_table)
-        player.cursor_stack.set_stack{name = "tl-tool", count = 100}
+        player.cursor_stack.set_stack({ name = "tl-tool", count = 100 })
         set_cursor_label(player, player_table)
       else
         if player_table.flags.drawing then
@@ -307,7 +296,7 @@ event.on_player_cursor_stack_changed(function(e)
     end
   elseif holding_tl_tool(player) then
     player_table.flags.holding_tool = true
-    player.cursor_stack.set_stack{name = "tl-tool", count = 100}
+    player.cursor_stack.set_stack({ name = "tl-tool", count = 100 })
     set_cursor_label(player, player_table)
     if player.controller_type == defines.controllers.character and not player_table.flags.increased_build_distance then
       -- increase build distance

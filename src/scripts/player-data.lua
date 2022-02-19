@@ -3,21 +3,20 @@ local constants = require("constants")
 local player_data = {}
 
 -- from the core lualib
-local function color_from_hex(hex)  -- supports 'rrggbb', 'rgb', 'rrggbbaa', 'rgba', 'ww', 'w'
-  local function h(i,j)
-    return j and tonumber("0x"..hex:sub(i, j)) / 255 or tonumber("0x"..hex:sub(i, i)) / 15
+local function color_from_hex(hex) -- supports 'rrggbb', 'rgb', 'rrggbbaa', 'rgba', 'ww', 'w'
+  local function h(i, j)
+    return j and tonumber("0x" .. hex:sub(i, j)) / 255 or tonumber("0x" .. hex:sub(i, i)) / 15
   end
 
-  hex = hex:gsub("#","")
-  return #hex == 6 and {r = h(1, 2), g = h(3, 4), b = h(5, 6)}
-    or #hex == 3 and {r = h(1), g = h(2), b = h(3)}
-    or #hex == 8 and {r = h(1, 2), g = h(3, 4), b = h(5, 6), a = h(7, 8)}
-    or #hex == 4 and {r = h(1), g = h(2), b = h(3), a = h(4)}
-    or #hex == 2 and {r = h(1, 2), g = h(1, 2), b = h(1, 2)}
-    or #hex == 1 and {r = h(1), g = h(1), b = h(1)}
-    or {r = 1, g = 1, b = 1}
+  hex = hex:gsub("#", "")
+  return #hex == 6 and { r = h(1, 2), g = h(3, 4), b = h(5, 6) }
+    or #hex == 3 and { r = h(1), g = h(2), b = h(3) }
+    or #hex == 8 and { r = h(1, 2), g = h(3, 4), b = h(5, 6), a = h(7, 8) }
+    or #hex == 4 and { r = h(1), g = h(2), b = h(3), a = h(4) }
+    or #hex == 2 and { r = h(1, 2), g = h(1, 2), b = h(1, 2) }
+    or #hex == 1 and { r = h(1), g = h(1), b = h(1) }
+    or { r = 1, g = 1, b = 1 }
 end
-
 
 function player_data.init(player_index)
   global.players[player_index] = {
@@ -25,19 +24,19 @@ function player_data.init(player_index)
       editing = false,
       drawing = false,
       holding_tool = false,
-      increased_build_distance = false
+      increased_build_distance = false,
     },
     last_entity = nil,
     visual_settings = nil,
     tapes = {
       editing = nil,
-      drawing = nil
+      drawing = nil,
     },
     tape_settings = {
       mode = "subgrid",
       subgrid_divisor = 5,
-      split_divisor = 4
-    }
+      split_divisor = 4,
+    },
   }
 end
 
