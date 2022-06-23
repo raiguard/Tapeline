@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.8
-Date: ????
+Date: 2022-06-22
   Bugfixes:
     - Fixed that the 'not-selectable-in-game' flag was not set on the dummy entity
     - Fixed unknown key when dragging tapes
