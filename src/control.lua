@@ -56,13 +56,13 @@ local function set_cursor_label(player, player_table)
   end
 
   player.cursor_stack.label = (
-      (TapeArea and (TapeArea:width() .. "x" .. TapeArea:height() .. " | ") or "")
-      .. constants.mode_labels[settings.mode]
-      .. " mode | "
-      .. constants.divisor_labels[settings.mode]
-      .. " "
-      .. settings[settings.mode .. "_divisor"]
-    )
+    (TapeArea and (TapeArea:width() .. "x" .. TapeArea:height() .. " | ") or "")
+    .. constants.mode_labels[settings.mode]
+    .. " mode | "
+    .. constants.divisor_labels[settings.mode]
+    .. " "
+    .. settings[settings.mode .. "_divisor"]
+  )
 end
 
 -- -----------------------------------------------------------------------------
@@ -156,7 +156,7 @@ event.register({
       end
     else
       player.create_local_flying_text({
-        text = { "tl-message.minimal-value-is", constants.divisor_minimums[mode] },
+        text = { "message.tl-minimal-value-is", constants.divisor_minimums[mode] },
         create_at_cursor = true,
       })
       player.play_sound({ path = "utility/cannot_build", volume_modifier = 0.75 })
