@@ -2,12 +2,10 @@ local area = require("__flib__.area")
 local event = require("__flib__.event")
 local migration = require("__flib__.migration")
 
-local constants = require("constants")
-
-local global_data = require("scripts.global-data")
-local migrations = require("scripts.migrations")
-local player_data = require("scripts.player-data")
-local tape = require("scripts.tape")
+local constants = require("__Tapeline__.constants")
+local migrations = require("__Tapeline__.migrations")
+local player_data = require("__Tapeline__.player-data")
+local tape = require("__Tapeline__.tape")
 
 -- -----------------------------------------------------------------------------
 -- FUNCTIONS
@@ -71,7 +69,7 @@ end
 -- BOOTSTRAP
 
 event.on_init(function()
-  global_data.init()
+  global.players = {}
 
   for i, player in pairs(game.players) do
     player_data.init(i)

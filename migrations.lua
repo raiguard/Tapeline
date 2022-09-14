@@ -1,5 +1,4 @@
-local global_data = require("scripts.global-data")
-local player_data = require("scripts.player-data")
+local player_data = require("__Tapeline__.player-data")
 
 return {
   ["2.0.0"] = function()
@@ -8,7 +7,7 @@ return {
     rendering.clear("Tapeline")
 
     -- re-init
-    global_data.init()
+    global.players = {}
     for i, player in pairs(game.players) do
       player_data.init(i)
       player_data.refresh(player, global.players[i])

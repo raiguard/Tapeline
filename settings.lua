@@ -1,7 +1,6 @@
-local constants = require("constants")
+local constants = require("__Tapeline__.constants")
 
 data:extend({
-  -- player settings
   {
     type = "bool-setting",
     name = "tl-log-selection-area",
