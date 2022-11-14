@@ -27,6 +27,8 @@ local opposite_corners = {
   right_bottom = "left_top",
 }
 
+--- @param objects TapeObjects
+--- @param func fun(id: uint64, ...)
 local function apply_to_all_objects(objects, func, ...)
   for _, v in pairs(objects) do
     if type(v) == "table" then
@@ -37,9 +39,13 @@ local function apply_to_all_objects(objects, func, ...)
   end
 end
 
+--- @param player_index uint
+--- @param tape_data TapeData
+--- @param visual_settings VisualSettings
 local function create_objects(player_index, tape_data, visual_settings)
   local TapeArea = tape_data.Area
-  return {
+  --- @class TapeObjects
+  local objects = {
     background = draw_rectangle({
       color = visual_settings.tape_background_color,
       filled = true,
@@ -89,8 +95,13 @@ local function create_objects(player_index, tape_data, visual_settings)
       { x = {}, y = {} },
     },
   }
+  return objects
 end
 
+--- @param player_index uint
+--- @param tape_data TapeData
+--- @param tape_settings TapeSettings
+--- @param visual_settings VisualSettings
 local function update_objects(player_index, tape_data, tape_settings, visual_settings)
   local TapeArea = tape_data.Area
   local objects = tape_data.objects
@@ -210,8 +221,14 @@ local function update_objects(player_index, tape_data, tape_settings, visual_set
   bring_to_front(border)
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param origin MapPosition
+--- @param surface LuaSurface
 function tape.start_draw(player, player_table, origin, surface)
-  local TapeArea = area.load(area.from_position(origin)):ceil():corners()
+  -- TODO: Convert to flib bounding-box module
+  local TapeArea = area.from_position(origin):ceil():corners()
+  --- @class TapeData
   local tape_data = {
     Area = TapeArea,
     last_position = origin,
@@ -225,6 +242,10 @@ function tape.start_draw(player, player_table, origin, surface)
   player_table.flags.drawing = true
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param new_position MapPosition?
+--- @param is_ghost boolean?
 function tape.update_draw(player, player_table, new_position, is_ghost)
   local tape_data = player_table.tapes.drawing
   local TapeArea = area.load(tape_data.Area)
@@ -270,6 +291,9 @@ function tape.update_draw(player, player_table, new_position, is_ghost)
   update_objects(player.index, tape_data, player_table.tape_settings, player_table.visual_settings)
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param auto_clear boolean
 function tape.complete_draw(player, player_table, auto_clear)
   local tapes = player_table.tapes
   local tape_data = tapes.drawing
@@ -303,6 +327,7 @@ function tape.complete_draw(player, player_table, auto_clear)
   tapes.drawing = nil
 end
 
+--- @param player_table PlayerTable
 function tape.cancel_draw(player_table)
   player_table.flags.drawing = false
 
@@ -311,6 +336,8 @@ function tape.cancel_draw(player_table)
   player_table.tapes.drawing = nil
 end
 
+--- @param player_table PlayerTable
+--- @param tape_index number
 function tape.delete(player_table, tape_index)
   local tapes = player_table.tapes
   local tape_data = tapes[tape_index]
@@ -321,6 +348,9 @@ function tape.delete(player_table, tape_index)
   table.remove(tapes, tape_index)
 end
 
+--- @param player_index uint
+--- @param TapeArea BoundingBox
+--- @param surface LuaSurface
 local function create_highlight_box(player_index, TapeArea, surface)
   return surface.create_entity({
     name = "tl-highlight-box",
@@ -332,6 +362,9 @@ local function create_highlight_box(player_index, TapeArea, surface)
   })
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param tape_index number
 function tape.enter_edit_mode(player, player_table, tape_index)
   local tape_data = player_table.tapes[tape_index]
   local TapeArea = area.load(tape_data.Area)
@@ -342,6 +375,7 @@ function tape.enter_edit_mode(player, player_table, tape_index)
   player_table.tapes.editing = tape_data
 end
 
+--- @param player_table PlayerTable
 function tape.exit_edit_mode(player_table)
   local tape_data = player_table.tapes.editing
   tape_data.highlight_box.destroy()
@@ -350,6 +384,10 @@ function tape.exit_edit_mode(player_table)
   player_table.tapes.editing = nil
 end
 
+--- @param player_index uint
+--- @param player_table PlayerTable
+--- @param mode string
+--- @param divisor number
 function tape.edit_settings(player_index, player_table, mode, divisor)
   local tape_data = player_table.tapes.editing
   tape_data.settings.mode = mode
@@ -358,6 +396,10 @@ function tape.edit_settings(player_index, player_table, mode, divisor)
   update_objects(player_index, tape_data, tape_data.settings, player_table.visual_settings)
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
+--- @param new_position MapPosition
+--- @param surface LuaSurface
 function tape.move(player, player_table, new_position, surface)
   local tape_data = player_table.tapes.editing
   if surface ~= tape_data.surface then
@@ -392,10 +434,13 @@ function tape.move(player, player_table, new_position, surface)
   end
 end
 
+--- @param player_table PlayerTable
 function tape.complete_move(player_table)
   player_table.tapes.editing.last_position = nil
 end
 
+--- @param tape_data TapeData
+--- @param settings VisualSettings
 function tape.update_visual_settings(tape_data, settings)
   local objects = tape_data.objects
 

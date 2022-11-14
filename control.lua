@@ -7,9 +7,7 @@ local migrations = require("__Tapeline__.migrations")
 local player_data = require("__Tapeline__.player-data")
 local tape = require("__Tapeline__.tape")
 
--- -----------------------------------------------------------------------------
--- FUNCTIONS
-
+--- @param player_table PlayerTable
 local function destroy_last_entity(player_table)
   local last_entity = player_table.last_entity
   if last_entity then
@@ -18,7 +16,9 @@ local function destroy_last_entity(player_table)
   end
 end
 
--- select the topmost tape
+--- @param tapes table<number, TapeData>
+--- @param cursor_position MapPosition
+--- @param surface LuaSurface
 local function select_tape(tapes, cursor_position, surface)
   local topmost_tape
   local most_recent_update_time = 0
@@ -35,11 +35,14 @@ local function select_tape(tapes, cursor_position, surface)
   return topmost_tape
 end
 
+--- @param player LuaPlayer
 local function holding_tl_tool(player)
   local cursor_stack = player.cursor_stack
   return cursor_stack and cursor_stack.valid_for_read and cursor_stack.name == "tl-tool"
 end
 
+--- @param player LuaPlayer
+--- @param player_table PlayerTable
 local function set_cursor_label(player, player_table)
   local settings, TapeArea
   if player_table.flags.drawing then
@@ -63,40 +66,34 @@ local function set_cursor_label(player, player_table)
   )
 end
 
--- -----------------------------------------------------------------------------
--- EVENT HANDLERS
-
--- BOOTSTRAP
-
 event.on_init(function()
+  --- @type table<uint, PlayerTable>
   global.players = {}
 
-  for i, player in pairs(game.players) do
-    player_data.init(i)
-    player_data.refresh(player, global.players[i])
+  for _, player in pairs(game.players) do
+    player_data.init(player.index)
+    player_data.refresh(player, global.players[player.index])
   end
 end)
 
 event.on_configuration_changed(function(e)
   if migration.on_config_changed(e, migrations) then
     for i, player_table in pairs(global.players) do
-      local player = game.get_player(i)
+      local player = game.get_player(i) --[[@as LuaPlayer]]
       player_data.refresh(player, player_table)
     end
   end
 end)
 
--- CUSTOM INPUT
-
 event.register("tl-get-tool", function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if player.clear_cursor() then
     player.cursor_stack.set_stack({ name = "tl-tool", count = 100 })
   end
 end)
 
 event.register("tl-edit-tape", function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
 
   if holding_tl_tool(player) then
@@ -114,7 +111,7 @@ event.register("tl-edit-tape", function(e)
 end)
 
 event.register("tl-delete-tape", function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
 
   if holding_tl_tool(player) then
@@ -131,7 +128,7 @@ event.register({
   "tl-increase-divisor",
   "tl-decrease-divisor",
 }, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if holding_tl_tool(player) then
     local player_table = global.players[e.player_index]
     local settings
@@ -166,7 +163,7 @@ event.register({
   "tl-next-mode",
   "tl-previous-mode",
 }, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if holding_tl_tool(player) then
     local player_table = global.players[e.player_index]
     local settings
@@ -193,15 +190,13 @@ end)
 event.register("tl-clear-cursor", function(e)
   local player_table = global.players[e.player_index]
   if player_table.flags.drawing or player_table.flags.editing then
-    local player = game.get_player(e.player_index)
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     player.clear_cursor()
   end
 end)
 
--- ENTITY
-
 event.on_built_entity(function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
   local entity = e.created_entity
   local is_ghost = entity.name == "entity-ghost"
@@ -210,8 +205,11 @@ event.on_built_entity(function(e)
 
   if is_ghost then
     -- instantly revive the entity if it is a ghost
-    local _
-    _, entity = entity.silent_revive()
+    local _, new_entity = entity.silent_revive()
+    if not new_entity then
+      return
+    end
+    entity = new_entity
   end
   -- make the entity invincible to prevent attacks
   entity.destructible = false
@@ -234,13 +232,11 @@ end, {
   { filter = "ghost_name", name = "tl-dummy-entity" },
 })
 
--- SELECTION TOOL
-
 event.register({
   defines.events.on_player_selected_area,
   defines.events.on_player_alt_selected_area,
 }, function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
   if player_table.flags.drawing then
     player_table.flags.drawing = false
@@ -253,10 +249,8 @@ event.register({
   end
 end)
 
--- PLAYER
-
 event.on_player_created(function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   player_data.init(e.player_index)
   player_data.refresh(player, global.players[e.player_index])
 end)
@@ -266,7 +260,7 @@ event.on_player_removed(function(e)
 end)
 
 event.on_player_cursor_stack_changed(function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
   if not player_table then
     return
@@ -274,7 +268,7 @@ event.on_player_cursor_stack_changed(function(e)
   local cursor_stack = player.cursor_stack
   local is_empty = not cursor_stack or not cursor_stack.valid_for_read
   if player_table.flags.holding_tool then
-    if is_empty or cursor_stack.name ~= "tl-tool" then
+    if is_empty or cursor_stack.name ~= "tl-tool" then --- @diagnostic disable-line
       player_table.flags.holding_tool = false
       destroy_last_entity(player_table)
       if player_table.flags.editing then
@@ -290,7 +284,7 @@ event.on_player_cursor_stack_changed(function(e)
           local build_distance = player.character_build_distance_bonus
           if build_distance >= 1000000 then
             -- decrease build distance
-            player.character_build_distance_bonus = build_distance - 1000000
+            player.character_build_distance_bonus = build_distance - 1000000 --[[@as uint]]
           end
         end
       end
@@ -302,13 +296,13 @@ event.on_player_cursor_stack_changed(function(e)
     if player.controller_type == defines.controllers.character and not player_table.flags.increased_build_distance then
       -- increase build distance
       player_table.flags.increased_build_distance = true
-      player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
+      player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000 --[[@as uint]]
     end
   end
 end)
 
 event.on_pre_player_toggled_map_editor(function(e)
-  local player = game.get_player(e.player_index)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
   if not player_table then
     return
@@ -318,17 +312,15 @@ event.on_pre_player_toggled_map_editor(function(e)
     local build_distance = player.character_build_distance_bonus
     if build_distance >= 1000000 then
       -- decrease build distance
-      player.character_build_distance_bonus = build_distance - 1000000
+      player.character_build_distance_bonus = build_distance - 1000000 --[[@as uint]]
     end
   end
 end)
 
--- SETTINGS
-
 event.on_runtime_mod_setting_changed(function(e)
   local internal = constants.setting_names[e.setting]
   if internal then
-    local player = game.get_player(e.player_index)
+    local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
     local player_table = global.players[e.player_index]
     local visual_settings = player_table.visual_settings
     player_data.update_visual_setting(player, visual_settings, e.setting, internal)

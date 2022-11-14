@@ -31,6 +31,19 @@ constants.mode_labels = {
   split = "Split",
 }
 
+--- @class VisualSettings
+--- @field log_selection_area boolean
+--- @field draw_tape_on_ground boolean
+--- @field tape_line_width float
+--- @field tape_clear_delay number
+--- @field tape_background_color Color
+--- @field tape_border_color Color
+--- @field tape_label_color Color
+--- @field tape_line_color_1 Color
+--- @field tape_line_color_2 Color
+--- @field tape_line_color_3 Color
+--- @field tape_line_color_4 Color
+
 constants.setting_names = {
   ["tl-log-selection-area"] = "log_selection_area",
   ["tl-draw-tape-on-ground"] = "draw_tape_on_ground",
