@@ -304,6 +304,7 @@ event.on_player_cursor_stack_changed(function(e)
   end
 end)
 
+-- FIXME: Cancel draw when any controller change occurs (requires API addition)
 event.on_pre_player_toggled_map_editor(function(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_table = global.players[e.player_index]
