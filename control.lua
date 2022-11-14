@@ -56,14 +56,17 @@ local function set_cursor_label(player, player_table)
     settings = player_table.tape_settings
   end
 
-  player.cursor_stack.label = (
-    (TapeArea and (TapeArea:width() .. "x" .. TapeArea:height() .. " | ") or "")
-    .. constants.mode_labels[settings.mode]
-    .. " mode | "
-    .. constants.divisor_labels[settings.mode]
-    .. " "
-    .. settings[settings.mode .. "_divisor"]
-  )
+  local cursor_stack = player.cursor_stack
+  if cursor_stack and cursor_stack.valid_for_read then
+    cursor_stack.label = (
+      (TapeArea and (TapeArea:width() .. "x" .. TapeArea:height() .. " | ") or "")
+      .. constants.mode_labels[settings.mode]
+      .. " mode | "
+      .. constants.divisor_labels[settings.mode]
+      .. " "
+      .. settings[settings.mode .. "_divisor"]
+    )
+  end
 end
 
 event.on_init(function()
