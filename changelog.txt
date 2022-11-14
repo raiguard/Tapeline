@@ -1,7 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.9
 Date: ????
-  Features:
+  Bugfixes:
+    - Fixed a rare crash when changing controllers and changing the cursor stack on the same tick
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.8
 Date: 2022-06-22

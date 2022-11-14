@@ -279,7 +279,7 @@ event.on_player_cursor_stack_changed(function(e)
         if player_table.flags.drawing then
           tape.cancel_draw(player_table)
         end
-        if player_table.flags.increased_build_distance then
+        if player.controller_type == defines.controllers.character and player_table.flags.increased_build_distance then
           player_table.flags.increased_build_distance = false
           local build_distance = player.character_build_distance_bonus
           if build_distance >= 1000000 then
