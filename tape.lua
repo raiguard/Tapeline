@@ -1,5 +1,5 @@
-local area = require("__flib__.area")
-local table = require("__flib__.table")
+local area = require("__flib__/area")
+local table = require("__flib__/table")
 
 local bring_to_front = rendering.bring_to_front
 local destroy = rendering.destroy

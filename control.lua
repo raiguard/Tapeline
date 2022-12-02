@@ -1,11 +1,11 @@
-local area = require("__flib__.area")
-local event = require("__flib__.event")
-local migration = require("__flib__.migration")
+local area = require("__flib__/area")
+local event = require("__flib__/event")
+local migration = require("__flib__/migration")
 
-local constants = require("__Tapeline__.constants")
-local migrations = require("__Tapeline__.migrations")
-local player_data = require("__Tapeline__.player-data")
-local tape = require("__Tapeline__.tape")
+local constants = require("__Tapeline__/constants")
+local migrations = require("__Tapeline__/migrations")
+local player_data = require("__Tapeline__/player-data")
+local tape = require("__Tapeline__/tape")
 
 --- @param player_table PlayerTable
 local function destroy_last_entity(player_table)

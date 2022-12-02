@@ -1,4 +1,4 @@
-local player_data = require("__Tapeline__.player-data")
+local player_data = require("__Tapeline__/player-data")
 
 return {
   ["2.0.0"] = function()
