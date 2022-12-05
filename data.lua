@@ -6,6 +6,8 @@ data:extend({
     type = "custom-input",
     name = "tl-get-tool",
     key_sequence = "ALT + M",
+    action = "spawn-item",
+    item_to_spawn = "tl-tool",
     order = "a",
   },
   {
@@ -89,7 +91,7 @@ data:extend({
     selection_cursor_box_type = "not-allowed",
     alt_selection_cursor_box_type = "not-allowed",
     place_result = "tl-dummy-entity",
-    stack_size = 100,
+    stack_size = 10,
     flags = { "hidden", "only-in-cursor", "spawnable" },
     draw_label_for_cursor_render = true,
     mouse_cursor = "tl-tool-cursor",

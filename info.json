@@ -1,11 +1,11 @@
 {
   "name": "Tapeline",
-  "version": "2.0.10",
+  "version": "3.0.0",
   "title": "Tapeline",
   "author": "raiguard",
   "contact": "https://lists.sr.ht/~raiguard/factorio-mods-discuss",
   "homepage": "https://sr.ht/~raiguard/factorio-mods",
   "factorio_version": "1.1",
-  "dependencies": ["base >= 1.1.0", "flib >= 0.7.0"],
+  "dependencies": ["base >= 1.1.74", "flib >= 0.12.0"],
   "description": "Measure distances or create a flat surface to do work on. Make temporary measurements, or create persistent measurements that can be adjusted, moved, or deleted."
 }

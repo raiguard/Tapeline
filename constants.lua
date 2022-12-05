@@ -1,5 +1,16 @@
 local constants = {}
 
+-- FIXME:
+constants.colors = {
+  background_color = { a = 0.8 },
+  border_color = { r = 0.8, g = 0.8, b = 0.8 },
+  label_color = { r = 0.8, g = 0.8, b = 0.8 },
+  line_color_1 = { r = 0.4, g = 0.4, b = 0.4 },
+  line_color_2 = { r = 0.4, g = 0.8, b = 0.4 },
+  line_color_3 = { r = 0.8, g = 0.4, b = 0.4 },
+  line_color_4 = { r = 0.8, g = 0.8, b = 0.4 },
+}
+
 constants.default_colors = {
   tape_background_color = "#000000cc",
   tape_border_color = "#cc",
@@ -29,33 +40,6 @@ constants.modes = {
 constants.mode_labels = {
   subgrid = "Subgrid",
   split = "Split",
-}
-
---- @class VisualSettings
---- @field log_selection_area boolean
---- @field draw_tape_on_ground boolean
---- @field tape_line_width float
---- @field tape_clear_delay number
---- @field tape_background_color Color
---- @field tape_border_color Color
---- @field tape_label_color Color
---- @field tape_line_color_1 Color
---- @field tape_line_color_2 Color
---- @field tape_line_color_3 Color
---- @field tape_line_color_4 Color
-
-constants.setting_names = {
-  ["tl-log-selection-area"] = "log_selection_area",
-  ["tl-draw-tape-on-ground"] = "draw_tape_on_ground",
-  ["tl-tape-line-width"] = "tape_line_width",
-  ["tl-tape-clear-delay"] = "tape_clear_delay",
-  ["tl-tape-background-color"] = "tape_background_color",
-  ["tl-tape-border-color"] = "tape_border_color",
-  ["tl-tape-label-color"] = "tape_label_color",
-  ["tl-tape-line-color-1"] = "tape_line_color_1",
-  ["tl-tape-line-color-2"] = "tape_line_color_2",
-  ["tl-tape-line-color-3"] = "tape_line_color_3",
-  ["tl-tape-line-color-4"] = "tape_line_color_4",
 }
 
 return constants
