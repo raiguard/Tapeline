@@ -1,5 +1,4 @@
 local bounding_box = require("__flib__/bounding-box")
-local util = require("__Tapeline__/util")
 
 local tape = {}
 
@@ -34,27 +33,33 @@ function tape.new(player, entity)
     }),
   }
   global.tapes[id] = tape
-  util.set_cursor_tool(self.player, self)
   return self
 end
 
 --- @param self Tape
+function tape.update(self)
+  rendering.set_left_top(self.render, self.box.left_top)
+  rendering.set_right_bottom(self.render, self.box.right_bottom)
+end
+
+--- @param self Tape
 --- @param entity LuaEntity
-function tape.update(self, entity)
+function tape.resize(self, entity)
   local old = self.entity
   if old and old.valid then
     old.destroy()
   end
   self.entity = entity
-  -- TODO: Optimize this
-  self.box = bounding_box.ceil(
-    bounding_box.expand_to_contain_position(bounding_box.from_position(self.anchor, true), entity.position)
-  )
-  rendering.set_left_top(self.render, self.box.left_top)
-  rendering.set_right_bottom(self.render, self.box.right_bottom)
-  util.set_cursor_tool(self.player, self)
+  local position = entity.position
+  if bounding_box.contains_position(self.box, position) then
+    -- Reset back to 1x1 at anchor so it shrinks properly
+    self.box = bounding_box.from_position(self.anchor, true)
+  end
+  self.box = bounding_box.ceil(bounding_box.expand_to_contain_position(self.box, position))
+  tape.update(self)
 end
 
+--- @param self Tape
 function tape.destroy(self)
   rendering.destroy(self.render)
   local entity = self.entity
