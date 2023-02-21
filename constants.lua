@@ -1,13 +1,13 @@
 local constants = {}
 
 constants.default_colors = {
-  tape_background_color = "#000000cc",
-  tape_border_color = "#cc",
-  tape_label_color = "#cc",
-  tape_line_color_1 = "#66",
-  tape_line_color_2 = "#66cc66",
-  tape_line_color_3 = "#cc6666",
-  tape_line_color_4 = "#cccc66",
+  tape_background_color = { a = 204 },
+  tape_border_color = { r = 204, g = 204, b = 204 },
+  tape_label_color = { r = 204, g = 204, b = 204 },
+  tape_line_color_1 = { r = 102, g = 102, b = 102 },
+  tape_line_color_2 = { r = 102, g = 204, b = 102 },
+  tape_line_color_3 = { r = 204, g = 102, b = 102 },
+  tape_line_color_4 = { r = 204, g = 204, b = 102 },
 }
 
 constants.divisor_labels = {
