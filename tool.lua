@@ -70,15 +70,11 @@ end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
 local function on_player_selected_area(e)
-  local drawing = global.drawing[e.player_index]
-  if not drawing then
-    return
-  end
   local player = game.get_player(e.player_index)
   if not player then
     return
   end
-  set_tool(player, drawing)
+  set_tool(player)
 end
 
 local function on_init()
