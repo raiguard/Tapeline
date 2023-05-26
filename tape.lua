@@ -44,11 +44,10 @@ local function resize_tape(self, entity)
   end
   self.entity = entity
   local position = entity.position
-  if flib_bounding_box.contains_position(self.box, position) then
-    -- Reset back to 1x1 at anchor so it shrinks properly
-    self.box = flib_bounding_box.from_position(self.anchor, true)
-  end
-  self.box = flib_bounding_box.ceil(flib_bounding_box.expand_to_contain_position(self.box, position))
+  local box = flib_bounding_box.from_position(self.anchor, true)
+  box = flib_bounding_box.expand_to_contain_position(box, position)
+  box = flib_bounding_box.ceil(box)
+  self.box = box
   update_tape(self)
 end
 
