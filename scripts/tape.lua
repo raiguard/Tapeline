@@ -1,4 +1,5 @@
 local flib_bounding_box = require("__flib__/bounding-box")
+local flib_position = require("__flib__/position")
 
 --- @class Tape
 --- @field anchor MapPosition
@@ -6,7 +7,8 @@ local flib_bounding_box = require("__flib__/bounding-box")
 --- @field entity LuaEntity
 --- @field id integer
 --- @field player LuaPlayer
---- @field render uint64
+--- @field rect uint64
+--- @field circle uint64
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
@@ -15,21 +17,30 @@ local function new_tape(player, entity)
   local id = global.next_tape_id
   global.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
+  --- @type Tape
   local self = {
     anchor = entity.position,
     box = box,
     entity = entity,
     id = id,
     player = player,
-    --- @type uint64?
-    render = rendering.draw_rectangle({
+    rect = rendering.draw_rectangle({
       color = { r = 1, g = 1, b = 1 },
       filled = false,
-      width = 1.3,
+      width = 2,
       players = { player },
       surface = entity.surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
+    }),
+    circle = rendering.draw_circle({
+      color = { r = 1, g = 1 },
+      filled = false,
+      width = 2,
+      players = { player },
+      surface = entity.surface,
+      radius = flib_position.distance(box.left_top, box.right_bottom) - 1,
+      target = entity.position,
     }),
   }
   global.tapes[id] = self
@@ -38,8 +49,10 @@ end
 
 --- @param self Tape
 local function update_tape(self)
-  rendering.set_left_top(self.render, self.box.left_top)
-  rendering.set_right_bottom(self.render, self.box.right_bottom)
+  rendering.set_left_top(self.rect, self.box.left_top)
+  rendering.set_right_bottom(self.rect, self.box.right_bottom)
+  rendering.set_radius(self.circle, flib_position.distance(self.box.left_top, self.box.right_bottom) - 1)
+  rendering.set_target(self.circle, self.anchor)
 end
 
 --- @param self Tape
@@ -60,7 +73,8 @@ end
 
 --- @param self Tape
 local function destroy_tape(self)
-  rendering.destroy(self.render)
+  rendering.destroy(self.rect)
+  rendering.destroy(self.circle)
   local entity = self.entity
   if entity and entity.valid then
     entity.destroy()

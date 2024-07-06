@@ -1,4 +1,4 @@
-local bounding_box = require("__flib__/bounding-box")
+local flib_bounding_box = require("__flib__/bounding-box")
 
 --- @param player LuaPlayer
 --- @return LuaItemStack?
@@ -10,14 +10,14 @@ local function get_tool(player)
 end
 
 --- @param player LuaPlayer
---- @param tape Tape?
-local function set_tool(player, tape)
+--- @param box BoundingBox?
+local function set_tool(player, box)
   local cursor_stack = player.cursor_stack
   if cursor_stack then
     if not cursor_stack.valid_for_read or cursor_stack.name == "tl-tool" or player.clear_cursor() then
       cursor_stack.set_stack({ name = "tl-tool", count = 10 })
-      if tape then
-        cursor_stack.label = bounding_box.width(tape.box) .. "x" .. bounding_box.height(tape.box)
+      if box then
+        cursor_stack.label = flib_bounding_box.width(box) .. "x" .. flib_bounding_box.height(box)
       else
         cursor_stack.label = " "
       end
@@ -65,7 +65,7 @@ local function on_built_entity(e)
   if not drawing then
     return
   end
-  set_tool(player, drawing)
+  set_tool(player, drawing.box)
 end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
