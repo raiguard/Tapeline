@@ -1,5 +1,13 @@
 local flib_bounding_box = require("__flib__/bounding-box")
 
+--- @class Tape
+--- @field anchor MapPosition
+--- @field box BoundingBox
+--- @field entity LuaEntity
+--- @field id integer
+--- @field player LuaPlayer
+--- @field render uint64
+
 --- @param player LuaPlayer
 --- @param entity LuaEntity
 --- @return Tape
@@ -7,7 +15,6 @@ local function new_tape(player, entity)
   local id = global.next_tape_id
   global.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
-  --- @class Tape
   local self = {
     anchor = entity.position,
     box = box,
