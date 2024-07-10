@@ -4,11 +4,13 @@ local flib_position = require("__flib__.position")
 --- @class Tape
 --- @field anchor MapPosition
 --- @field box BoundingBox
+--- @field cursor MapPosition
 --- @field entity LuaEntity
 --- @field id integer
 --- @field player LuaPlayer
 --- @field rect uint64
 --- @field circle uint64
+--- @field line uint64
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
@@ -21,6 +23,7 @@ local function new_tape(player, entity)
   local self = {
     anchor = entity.position,
     box = box,
+    cursor = entity.position,
     entity = entity,
     id = id,
     player = player,
@@ -42,6 +45,19 @@ local function new_tape(player, entity)
       radius = flib_position.distance(box.left_top, box.right_bottom) - 1,
       target = entity.position,
     }),
+    line = rendering.draw_line({
+      color = { g = 1 },
+      width = 4,
+      gap_length = 0.5,
+      dash_length = 0.5,
+      dash_offset = 0.25,
+      players = { player },
+      surface = entity.surface,
+      radius = flib_position.distance(box.left_top, box.right_bottom) - 1,
+      target = entity.position,
+      from = entity.position,
+      to = entity.position,
+    }),
   }
   global.tapes[id] = self
   return self
@@ -53,6 +69,8 @@ local function update_tape(self)
   rendering.set_right_bottom(self.rect, self.box.right_bottom)
   rendering.set_radius(self.circle, flib_position.distance(self.box.left_top, self.box.right_bottom) - 1)
   rendering.set_target(self.circle, self.anchor)
+  rendering.set_from(self.line, self.anchor)
+  rendering.set_to(self.line, self.cursor)
 end
 
 --- @param self Tape
@@ -68,6 +86,7 @@ local function resize_tape(self, entity)
   box = flib_bounding_box.expand_to_contain_position(box, position)
   box = flib_bounding_box.ceil(box)
   self.box = box
+  self.cursor = position
   update_tape(self)
 end
 
@@ -75,6 +94,7 @@ end
 local function destroy_tape(self)
   rendering.destroy(self.rect)
   rendering.destroy(self.circle)
+  rendering.destroy(self.line)
   local entity = self.entity
   if entity and entity.valid then
     entity.destroy()
