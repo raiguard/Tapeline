@@ -1,5 +1,5 @@
-local flib_bounding_box = require("__flib__/bounding-box")
-local flib_position = require("__flib__/position")
+local flib_bounding_box = require("__flib__.bounding-box")
+local flib_position = require("__flib__.position")
 
 --- @class Tape
 --- @field anchor MapPosition

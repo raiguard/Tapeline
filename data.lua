@@ -1,5 +1,5 @@
-local collision_mask_util = require("__core__/lualib/collision-mask-util")
-local data_util = require("__flib__/data-util")
+local collision_mask_util = require("__core__.lualib.collision-mask-util")
+local data_util = require("__flib__.data-util")
 
 data:extend({
   {

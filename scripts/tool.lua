@@ -1,4 +1,4 @@
-local flib_bounding_box = require("__flib__/bounding-box")
+local flib_bounding_box = require("__flib__.bounding-box")
 
 --- @param player LuaPlayer
 --- @return LuaItemStack?

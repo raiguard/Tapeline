@@ -1,4 +1,4 @@
--- local constants = require("__Tapeline__/constants")
+-- local constants = require("constants")
 
 -- data:extend({
 --   {
