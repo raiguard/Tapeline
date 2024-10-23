@@ -102,6 +102,7 @@ local function update_tape(self)
         line.from = { x = x, y = box.left_top.y }
         line.to = { x = x, y = box.right_bottom.y }
         line.color = color
+        line.visible = true
       else
         line = rendering.draw_line({
           color = color,
@@ -121,6 +122,7 @@ local function update_tape(self)
         line.from = { x = box.left_top.x, y = y }
         line.to = { x = box.right_bottom.x, y = y }
         line.color = color
+        line.visible = true
       else
         line = rendering.draw_line({
           color = color,
@@ -143,8 +145,7 @@ local function update_tape(self)
     -- TODO:
   end
   for i = i + 1, #lines do
-    lines[i].destroy()
-    lines[i] = nil
+    lines[i].visible = false
   end
 
   self.border.bring_to_front()
