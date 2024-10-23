@@ -1,5 +1,4 @@
 local flib_bounding_box = require("__flib__.bounding-box")
-local flib_position = require("__flib__.position")
 
 --- @class Tape
 --- @field anchor MapPosition
@@ -8,9 +7,10 @@ local flib_position = require("__flib__.position")
 --- @field entity LuaEntity
 --- @field id integer
 --- @field player LuaPlayer
---- @field rect LuaRenderObject
---- @field circle LuaRenderObject
---- @field line LuaRenderObject
+--- @field background LuaRenderObject
+--- @field border LuaRenderObject
+--- @field label_north LuaRenderObject
+--- @field label_west LuaRenderObject
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
@@ -19,6 +19,7 @@ local function new_tape(player, entity)
   local id = storage.next_tape_id
   storage.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
+  local center = flib_bounding_box.center(box)
   --- @type Tape
   local self = {
     anchor = entity.position,
@@ -27,36 +28,41 @@ local function new_tape(player, entity)
     entity = entity,
     id = id,
     player = player,
-    rect = rendering.draw_rectangle({
-      color = { r = 1, g = 1, b = 1 },
-      filled = false,
-      width = 2,
+    background = rendering.draw_rectangle({
+      color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
+      filled = true,
       players = { player },
       surface = entity.surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
     }),
-    circle = rendering.draw_circle({
-      color = { r = 1, g = 1 },
+    border = rendering.draw_rectangle({
+      color = player.mod_settings["tl-tape-border-color"].value --[[@as Color]],
       filled = false,
-      width = 2,
+      width = player.mod_settings["tl-tape-line-width"].value --[[@as double]],
       players = { player },
       surface = entity.surface,
-      radius = flib_position.distance(box.left_top, box.right_bottom) - 1,
-      target = entity.position,
+      left_top = box.left_top,
+      right_bottom = box.right_bottom,
     }),
-    line = rendering.draw_line({
-      color = { g = 1 },
-      width = 4,
-      gap_length = 0.5,
-      dash_length = 0.5,
-      dash_offset = 0.25,
-      players = { player },
+    label_north = rendering.draw_text({
+      text = tostring(flib_bounding_box.width(box)),
       surface = entity.surface,
-      radius = flib_position.distance(box.left_top, box.right_bottom) - 1,
-      target = entity.position,
-      from = entity.position,
-      to = entity.position,
+      target = { x = center.x, y = box.left_top.y },
+      color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
+      scale = 2,
+      alignment = "center",
+      vertical_alignment = "bottom",
+    }),
+    label_west = rendering.draw_text({
+      text = flib_bounding_box.height(box),
+      surface = entity.surface,
+      target = { x = box.left_top.x, y = center.y },
+      color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
+      scale = 2,
+      alignment = "center",
+      vertical_alignment = "bottom",
+      orientation = 0.75,
     }),
   }
   storage.tapes[id] = self
@@ -65,12 +71,15 @@ end
 
 --- @param self Tape
 local function update_tape(self)
-  self.rect.left_top = self.box.left_top
-  self.rect.right_bottom = self.box.right_bottom
-  self.circle.radius = flib_position.distance(self.box.left_top, self.box.right_bottom) - 1
-  self.circle.target = self.anchor
-  self.line.from = self.anchor
-  self.line.to = self.cursor
+  self.background.left_top = self.box.left_top
+  self.background.right_bottom = self.box.right_bottom
+  self.border.left_top = self.box.left_top
+  self.border.right_bottom = self.box.right_bottom
+  local center = flib_bounding_box.center(self.box)
+  self.label_north.target = { x = center.x, y = self.box.left_top.y }
+  self.label_north.text = flib_bounding_box.width(self.box)
+  self.label_west.target = { x = self.box.left_top.x, y = center.y }
+  self.label_west.text = flib_bounding_box.height(self.box)
 end
 
 --- @param self Tape
@@ -92,14 +101,17 @@ end
 
 --- @param self Tape
 local function destroy_tape(self)
-  if self.rect.valid then
-    self.rect.destroy()
+  if self.background.valid then
+    self.background.destroy()
   end
-  if self.circle.valid then
-    self.circle.destroy()
+  if self.border.valid then
+    self.border.destroy()
   end
-  if self.line.valid then
-    self.line.destroy()
+  if self.label_north.valid then
+    self.label_north.destroy()
+  end
+  if self.label_west.valid then
+    self.label_west.destroy()
   end
   local entity = self.entity
   if entity and entity.valid then
