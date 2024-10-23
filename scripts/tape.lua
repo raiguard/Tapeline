@@ -81,10 +81,13 @@ end
 --- @param self Tape
 local function update_tape(self)
   local box = self.box
+  local draw_on_ground = self.player.mod_settings["tl-draw-tape-on-ground"].value --[[@as boolean]]
   self.background.left_top = box.left_top
   self.background.right_bottom = box.right_bottom
+  self.background.draw_on_ground = draw_on_ground
   self.border.left_top = box.left_top
   self.border.right_bottom = box.right_bottom
+  self.border.draw_on_ground = draw_on_ground
   local center = flib_bounding_box.center(box)
   self.label_north.target = { x = center.x, y = box.left_top.y }
   self.label_north.text = flib_bounding_box.width(box)
@@ -103,6 +106,7 @@ local function update_tape(self)
         line.to = { x = x, y = box.right_bottom.y }
         line.color = color
         line.visible = true
+        line.draw_on_ground = draw_on_ground
       else
         line = rendering.draw_line({
           color = color,
@@ -111,6 +115,7 @@ local function update_tape(self)
           to = { x = x, y = box.right_bottom.y },
           surface = self.surface,
           players = { self.player },
+          draw_on_ground = draw_on_ground,
         })
         lines[i] = line
       end
@@ -123,6 +128,7 @@ local function update_tape(self)
         line.to = { x = box.right_bottom.x, y = y }
         line.color = color
         line.visible = true
+        line.draw_on_ground = draw_on_ground
       else
         line = rendering.draw_line({
           color = color,
@@ -131,6 +137,7 @@ local function update_tape(self)
           to = { x = box.right_bottom.x, y = y },
           surface = self.surface,
           players = { self.player },
+          draw_on_ground = draw_on_ground,
         })
         lines[i] = line
       end
