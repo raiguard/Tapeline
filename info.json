@@ -5,7 +5,7 @@
   "author": "raiguard",
   "contact": "https://github.com/raiguard/Tapeline",
   "homepage": "https://github.com/raiguard/Tapeline",
-  "factorio_version": "1.1",
-  "dependencies": ["base >= 1.1.74", "flib >= 0.12.0"],
+  "factorio_version": "2.0",
+  "dependencies": ["base >= 2.0.8", "flib >= 0.15.0"],
   "description": "Measure distances or create a flat surface to do work on. Make temporary measurements, or create persistent measurements that can be adjusted, moved, or deleted."
 }
