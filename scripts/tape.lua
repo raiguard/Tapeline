@@ -1,11 +1,10 @@
-local flib_bounding_box = require("__flib__.bounding-box")
-
 --- @class Tape
 --- @field anchor MapPosition
 --- @field box BoundingBox
 --- @field cursor MapPosition
 --- @field entity LuaEntity
 --- @field tick_to_die MapTick
+--- @field settings TapeSettings
 --- @field id integer
 --- @field player LuaPlayer
 --- @field surface LuaSurface
@@ -15,6 +14,8 @@ local flib_bounding_box = require("__flib__.bounding-box")
 --- @field label_west LuaRenderObject
 --- @field lines LuaRenderObject[]
 
+local flib_bounding_box = require("__flib__.bounding-box")
+
 --- @param player LuaPlayer
 --- @param entity LuaEntity
 --- @return Tape
@@ -23,6 +24,7 @@ local function new_tape(player, entity)
   storage.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
   local center = flib_bounding_box.center(box)
+
   --- @type Tape
   local self = {
     anchor = entity.position,
@@ -32,6 +34,7 @@ local function new_tape(player, entity)
     id = id,
     player = player,
     tick_to_die = math.huge,
+    settings = storage.player_settings[player.index],
     surface = entity.surface,
     background = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
@@ -89,44 +92,55 @@ local function update_tape(self)
   self.label_west.text = flib_bounding_box.height(box)
 
   local lines = self.lines
-  local color = self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]]
   local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
-  for x = box.left_top.x + 1, box.right_bottom.x - 1 do
-    i = i + 1
-    local line = lines[i]
-    if line then
-      line.from = { x = x, y = box.left_top.y }
-      line.to = { x = x, y = box.right_bottom.y }
-    else
-      line = rendering.draw_line({
-        color = color,
-        width = width,
-        from = { x = x, y = box.left_top.y },
-        to = { x = x, y = box.right_bottom.y },
-        surface = self.surface,
-        players = { self.player },
-      })
-      lines[i] = line
+  local function draw_lines(color, step)
+    for x = box.left_top.x + step, box.right_bottom.x, step do
+      i = i + 1
+      local line = lines[i]
+      if line then
+        line.from = { x = x, y = box.left_top.y }
+        line.to = { x = x, y = box.right_bottom.y }
+        line.color = color
+      else
+        line = rendering.draw_line({
+          color = color,
+          width = width,
+          from = { x = x, y = box.left_top.y },
+          to = { x = x, y = box.right_bottom.y },
+          surface = self.surface,
+          players = { self.player },
+        })
+        lines[i] = line
+      end
+    end
+    for y = box.left_top.y + step, box.right_bottom.y, step do
+      i = i + 1
+      local line = lines[i]
+      if line then
+        line.from = { x = box.left_top.x, y = y }
+        line.to = { x = box.right_bottom.x, y = y }
+        line.color = color
+      else
+        line = rendering.draw_line({
+          color = color,
+          width = width,
+          from = { x = box.left_top.x, y = y },
+          to = { x = box.right_bottom.x, y = y },
+          surface = self.surface,
+          players = { self.player },
+        })
+        lines[i] = line
+      end
     end
   end
-  for y = box.left_top.y + 1, box.right_bottom.y - 1 do
-    i = i + 1
-    local line = lines[i]
-    if line then
-      line.from = { x = box.left_top.x, y = y }
-      line.to = { x = box.right_bottom.x, y = y }
-    else
-      line = rendering.draw_line({
-        color = color,
-        width = width,
-        from = { x = box.left_top.x, y = y },
-        to = { x = box.right_bottom.x, y = y },
-        surface = self.surface,
-        players = { self.player },
-      })
-      lines[i] = line
-    end
+  draw_lines(self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]], 1)
+  if self.settings.mode == "subgrid" then
+    draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
+    draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
+    draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
+  else
+    -- TODO:
   end
   for i = i + 1, #lines do
     lines[i].destroy()
@@ -177,14 +191,6 @@ local function destroy_tape(self)
     entity.destroy()
   end
   storage.tapes[self.id] = nil
-end
-
-local function on_init()
-  --- @type table<uint, Tape>
-  storage.drawing = {}
-  storage.next_tape_id = 1
-  --- @type table<uint, Tape>
-  storage.tapes = {}
 end
 
 --- @param e EventData.on_built_entity
@@ -239,7 +245,13 @@ end
 
 local tape = {}
 
-tape.on_init = on_init
+function tape.on_init()
+  --- @type table<uint, Tape>
+  storage.drawing = {}
+  storage.next_tape_id = 1
+  --- @type table<uint, Tape>
+  storage.tapes = {}
+end
 
 tape.events = {
   [defines.events.on_built_entity] = on_built_entity,

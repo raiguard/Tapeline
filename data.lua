@@ -24,13 +24,13 @@ data:extend({
   {
     type = "custom-input",
     name = "tl-increase-divisor",
-    key_sequence = "SHIFT + mouse-wheel-up",
+    key_sequence = "ALT + mouse-wheel-up",
     order = "d",
   },
   {
     type = "custom-input",
     name = "tl-decrease-divisor",
-    key_sequence = "SHIFT + mouse-wheel-down",
+    key_sequence = "ALT + mouse-wheel-down",
     order = "e",
   },
   {
@@ -63,14 +63,7 @@ data:extend({
     collision_box = { { -0.4, -0.4 }, { 0.4, 0.4 } },
     collision_mask = { layers = { tapeline = true } },
     selectable_in_game = false,
-    picture = {
-      filename = data_util.empty_image,
-      width = 8,
-      height = 8,
-    },
-    build_sound = {
-      filename = "__core__/sound/silence-1sec.ogg",
-    },
+    build_sound = { filename = "__core__/sound/silence-1sec.ogg" },
     created_smoke = { smoke_name = "tl-empty-smoke" },
     alert_when_damaged = false,
   },
