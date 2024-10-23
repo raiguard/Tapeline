@@ -19,7 +19,7 @@ local function set_tool(player, box)
       if box then
         cursor_stack.label = flib_bounding_box.width(box) .. "x" .. flib_bounding_box.height(box)
       else
-        cursor_stack.label = " "
+        cursor_stack.label = ""
       end
     end
     if player.controller_type == defines.controllers.character and player.character_build_distance_bonus < 1000000 then
@@ -32,11 +32,11 @@ end
 local function on_player_cursor_stack_changed(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_tool = get_tool(player)
-  if player_tool and not global.holding_tool[player.index] then
-    global.holding_tool[player.index] = true
+  if player_tool and not storage.holding_tool[player.index] then
+    storage.holding_tool[player.index] = true
     set_tool(player)
-  elseif not player_tool and global.holding_tool[player.index] then
-    global.holding_tool[player.index] = nil
+  elseif not player_tool and storage.holding_tool[player.index] then
+    storage.holding_tool[player.index] = nil
     -- FIXME: Handle player controller changes
     if player.controller_type == defines.controllers.character and player.character_build_distance_bonus >= 1000000 then
       player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
@@ -46,7 +46,7 @@ end
 
 --- @param e EventData.on_built_entity
 local function on_built_entity(e)
-  local entity = e.created_entity
+  local entity = e.entity
   if not entity.valid then
     return
   end
@@ -61,7 +61,7 @@ local function on_built_entity(e)
   if not player then
     return
   end
-  local drawing = global.drawing[e.player_index]
+  local drawing = storage.drawing[e.player_index]
   if not drawing then
     return
   end
@@ -79,7 +79,7 @@ end
 
 local function on_init()
   --- @type table<uint, boolean>
-  global.holding_tool = {}
+  storage.holding_tool = {}
 end
 
 local tool = {}

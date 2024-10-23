@@ -8,16 +8,16 @@ local flib_position = require("__flib__.position")
 --- @field entity LuaEntity
 --- @field id integer
 --- @field player LuaPlayer
---- @field rect uint64
---- @field circle uint64
---- @field line uint64
+--- @field rect LuaRenderObject
+--- @field circle LuaRenderObject
+--- @field line LuaRenderObject
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
 --- @return Tape
 local function new_tape(player, entity)
-  local id = global.next_tape_id
-  global.next_tape_id = id + 1
+  local id = storage.next_tape_id
+  storage.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
   --- @type Tape
   local self = {
@@ -59,18 +59,18 @@ local function new_tape(player, entity)
       to = entity.position,
     }),
   }
-  global.tapes[id] = self
+  storage.tapes[id] = self
   return self
 end
 
 --- @param self Tape
 local function update_tape(self)
-  rendering.set_left_top(self.rect, self.box.left_top)
-  rendering.set_right_bottom(self.rect, self.box.right_bottom)
-  rendering.set_radius(self.circle, flib_position.distance(self.box.left_top, self.box.right_bottom) - 1)
-  rendering.set_target(self.circle, self.anchor)
-  rendering.set_from(self.line, self.anchor)
-  rendering.set_to(self.line, self.cursor)
+  self.rect.left_top = self.box.left_top
+  self.rect.right_bottom = self.box.right_bottom
+  self.circle.radius = flib_position.distance(self.box.left_top, self.box.right_bottom) - 1
+  self.circle.target = self.anchor
+  self.line.from = self.anchor
+  self.line.to = self.cursor
 end
 
 --- @param self Tape
@@ -92,26 +92,32 @@ end
 
 --- @param self Tape
 local function destroy_tape(self)
-  rendering.destroy(self.rect)
-  rendering.destroy(self.circle)
-  rendering.destroy(self.line)
+  if self.rect.valid then
+    self.rect.destroy()
+  end
+  if self.circle.valid then
+    self.circle.destroy()
+  end
+  if self.line.valid then
+    self.line.destroy()
+  end
   local entity = self.entity
   if entity and entity.valid then
     entity.destroy()
   end
-  global.tapes[self.id] = nil
+  storage.tapes[self.id] = nil
 end
 
 local function on_init()
   --- @type table<uint, Tape>
-  global.drawing = {}
-  global.next_tape_id = 1
-  global.tapes = {}
+  storage.drawing = {}
+  storage.next_tape_id = 1
+  storage.tapes = {}
 end
 
 --- @param e EventData.on_built_entity
 local function on_built_entity(e)
-  local entity = e.created_entity
+  local entity = e.entity
   if not entity.valid then
     return
   end
@@ -122,24 +128,24 @@ local function on_built_entity(e)
   if name ~= "tl-dummy-entity" then
     return
   end
-  local drawing = global.drawing[e.player_index]
+  local drawing = storage.drawing[e.player_index]
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if drawing then
     resize_tape(drawing, entity)
   else
-    drawing = new_tape(player, e.created_entity)
-    global.drawing[e.player_index] = drawing
+    drawing = new_tape(player, e.entity)
+    storage.drawing[e.player_index] = drawing
   end
 end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
 local function on_player_selected_area(e)
-  local drawing = global.drawing[e.player_index]
+  local drawing = storage.drawing[e.player_index]
   if not drawing then
     return
   end
   destroy_tape(drawing)
-  global.drawing[e.player_index] = nil
+  storage.drawing[e.player_index] = nil
 end
 
 local tape = {}
