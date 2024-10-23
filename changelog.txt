@@ -1,7 +1,10 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.0
 Date: ????
-  Features:
+  Changes:
+    - Updated to Factorio 2.0.
+    - Rewrote the mod from scratch.
+    - Changed the "change divisor" hotkeys from shift + mousewheel to alt + mousewheel.
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.10
 Date: 2023-10-14
