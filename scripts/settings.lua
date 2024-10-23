@@ -3,13 +3,18 @@
 --- @field subgrid_size int
 --- @field splits int
 
---- @param e EventData.on_player_created
-local function on_player_created(e)
-  storage.player_settings[e.player_index] = {
+--- @param player_index uint
+local function create_settings(player_index)
+  storage.player_settings[player_index] = {
     mode = "subgrid",
     subgrid_size = 5,
     splits = 4,
   }
+end
+
+--- @param e EventData.on_player_created
+local function on_player_created(e)
+  create_settings(e.player_index)
 end
 
 --- @param e EventData.on_player_removed
@@ -36,6 +41,9 @@ local M = {}
 function M.on_init()
   --- @type table<uint, TapeSettings>
   storage.player_settings = {}
+  for player_index in pairs(game.players) do
+    create_settings(player_index --[[@as uint]])
+  end
 end
 
 M.events = {
