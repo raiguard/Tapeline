@@ -25,6 +25,8 @@ local function new_tape(player, entity)
   storage.next_tape_id = id + 1
   local box = flib_bounding_box.from_position(entity.position, true)
   local center = flib_bounding_box.center(box)
+  local width = flib_bounding_box.width(box)
+  local height = flib_bounding_box.height(box)
 
   --- @type Tape
   local self = {
@@ -55,16 +57,17 @@ local function new_tape(player, entity)
       right_bottom = box.right_bottom,
     }),
     label_north = rendering.draw_text({
-      text = flib_bounding_box.width(box),
+      text = tostring(width),
       surface = entity.surface,
       target = { x = center.x, y = box.left_top.y },
       color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
       scale = 2,
       alignment = "center",
       vertical_alignment = "bottom",
+      visible = width > 1,
     }),
     label_west = rendering.draw_text({
-      text = flib_bounding_box.height(box),
+      text = tostring(height),
       surface = entity.surface,
       target = { x = box.left_top.x, y = center.y },
       color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
@@ -72,6 +75,7 @@ local function new_tape(player, entity)
       alignment = "center",
       vertical_alignment = "bottom",
       orientation = 0.75,
+      visible = height > 1,
     }),
     lines = {},
   }
@@ -91,21 +95,29 @@ local function update_tape(self)
   self.border.draw_on_ground = draw_on_ground
   local center = flib_bounding_box.center(box)
   self.label_north.target = { x = center.x, y = box.left_top.y }
-  self.label_north.text = flib_bounding_box.width(box)
+  local width = flib_bounding_box.width(box)
+  self.label_north.text = tostring(width)
+  self.label_north.visible = width > 1
+  local height = flib_bounding_box.height(box)
   self.label_west.target = { x = box.left_top.x, y = center.y }
-  self.label_west.text = flib_bounding_box.height(box)
+  self.label_west.text = height
+  self.label_west.visible = height > 1
 
   local lines = self.lines
   local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
   local function draw_lines(color, step)
-    -- TODO: Draw subgrids out from the anchor point
-    for x = box.left_top.x + step, box.right_bottom.x, step do
+    local from_x = self.anchor.x <= center.x and box.left_top.x or box.right_bottom.x
+    local from_y = self.anchor.y <= center.y and box.left_top.y or box.right_bottom.y
+    local to_x = self.anchor.x > center.x and box.left_top.x or box.right_bottom.x
+    local to_y = self.anchor.y > center.y and box.left_top.y or box.right_bottom.y
+    local step_x = from_x <= to_x and step or -step
+    for x = from_x + step_x, to_x, step_x do
       i = i + 1
       local line = lines[i]
       if line then
-        line.from = { x = x, y = box.left_top.y }
-        line.to = { x = x, y = box.right_bottom.y }
+        line.from = { x = x, y = from_y }
+        line.to = { x = x, y = to_y }
         line.color = color
         line.visible = true
         line.draw_on_ground = draw_on_ground
@@ -113,8 +125,8 @@ local function update_tape(self)
         line = rendering.draw_line({
           color = color,
           width = width,
-          from = { x = x, y = box.left_top.y },
-          to = { x = x, y = box.right_bottom.y },
+          from = { x = x, y = from_y },
+          to = { x = x, y = to_y },
           surface = self.surface,
           players = { self.player },
           draw_on_ground = draw_on_ground,
@@ -122,12 +134,13 @@ local function update_tape(self)
         lines[i] = line
       end
     end
-    for y = box.left_top.y + step, box.right_bottom.y, step do
+    local step_y = from_y <= to_y and step or -step
+    for y = from_y + step_y, to_y, step_y do
       i = i + 1
       local line = lines[i]
       if line then
-        line.from = { x = box.left_top.x, y = y }
-        line.to = { x = box.right_bottom.x, y = y }
+        line.from = { x = from_x, y = y }
+        line.to = { x = to_x, y = y }
         line.color = color
         line.visible = true
         line.draw_on_ground = draw_on_ground
@@ -135,8 +148,8 @@ local function update_tape(self)
         line = rendering.draw_line({
           color = color,
           width = width,
-          from = { x = box.left_top.x, y = y },
-          to = { x = box.right_bottom.x, y = y },
+          from = { x = from_x, y = y },
+          to = { x = to_x, y = y },
           surface = self.surface,
           players = { self.player },
           draw_on_ground = draw_on_ground,
