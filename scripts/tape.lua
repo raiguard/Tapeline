@@ -8,10 +8,12 @@ local flib_bounding_box = require("__flib__.bounding-box")
 --- @field tick_to_die MapTick
 --- @field id integer
 --- @field player LuaPlayer
+--- @field surface LuaSurface
 --- @field background LuaRenderObject
 --- @field border LuaRenderObject
 --- @field label_north LuaRenderObject
 --- @field label_west LuaRenderObject
+--- @field lines LuaRenderObject[]
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
@@ -30,6 +32,7 @@ local function new_tape(player, entity)
     id = id,
     player = player,
     tick_to_die = math.huge,
+    surface = entity.surface,
     background = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
       filled = true,
@@ -66,6 +69,7 @@ local function new_tape(player, entity)
       vertical_alignment = "bottom",
       orientation = 0.75,
     }),
+    lines = {},
   }
   storage.tapes[id] = self
   return self
@@ -73,15 +77,63 @@ end
 
 --- @param self Tape
 local function update_tape(self)
-  self.background.left_top = self.box.left_top
-  self.background.right_bottom = self.box.right_bottom
-  self.border.left_top = self.box.left_top
-  self.border.right_bottom = self.box.right_bottom
-  local center = flib_bounding_box.center(self.box)
-  self.label_north.target = { x = center.x, y = self.box.left_top.y }
-  self.label_north.text = flib_bounding_box.width(self.box)
-  self.label_west.target = { x = self.box.left_top.x, y = center.y }
-  self.label_west.text = flib_bounding_box.height(self.box)
+  local box = self.box
+  self.background.left_top = box.left_top
+  self.background.right_bottom = box.right_bottom
+  self.border.left_top = box.left_top
+  self.border.right_bottom = box.right_bottom
+  local center = flib_bounding_box.center(box)
+  self.label_north.target = { x = center.x, y = box.left_top.y }
+  self.label_north.text = flib_bounding_box.width(box)
+  self.label_west.target = { x = box.left_top.x, y = center.y }
+  self.label_west.text = flib_bounding_box.height(box)
+
+  local lines = self.lines
+  local color = self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]]
+  local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
+  local i = 0
+  for x = box.left_top.x + 1, box.right_bottom.x - 1 do
+    i = i + 1
+    local line = lines[i]
+    if line then
+      line.from = { x = x, y = box.left_top.y }
+      line.to = { x = x, y = box.right_bottom.y }
+    else
+      line = rendering.draw_line({
+        color = color,
+        width = width,
+        from = { x = x, y = box.left_top.y },
+        to = { x = x, y = box.right_bottom.y },
+        surface = self.surface,
+        players = { self.player },
+      })
+      lines[i] = line
+    end
+  end
+  for y = box.left_top.y + 1, box.right_bottom.y - 1 do
+    i = i + 1
+    local line = lines[i]
+    if line then
+      line.from = { x = box.left_top.x, y = y }
+      line.to = { x = box.right_bottom.x, y = y }
+    else
+      line = rendering.draw_line({
+        color = color,
+        width = width,
+        from = { x = box.left_top.x, y = y },
+        to = { x = box.right_bottom.x, y = y },
+        surface = self.surface,
+        players = { self.player },
+      })
+      lines[i] = line
+    end
+  end
+  for i = i + 1, #lines do
+    lines[i].destroy()
+    lines[i] = nil
+  end
+
+  self.border.bring_to_front()
 end
 
 --- @param self Tape
@@ -114,6 +166,11 @@ local function destroy_tape(self)
   end
   if self.label_west.valid then
     self.label_west.destroy()
+  end
+  for _, line in pairs(self.lines) do
+    if line.valid then
+      line.destroy()
+    end
   end
   local entity = self.entity
   if entity and entity.valid then
