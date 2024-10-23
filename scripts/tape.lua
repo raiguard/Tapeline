@@ -15,6 +15,7 @@
 --- @field lines LuaRenderObject[]
 
 local flib_bounding_box = require("__flib__.bounding-box")
+local flib_position = require("__flib__.position")
 
 --- @param player LuaPlayer
 --- @param entity LuaEntity
@@ -98,6 +99,7 @@ local function update_tape(self)
   local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
   local function draw_lines(color, step)
+    -- TODO: Draw subgrids out from the anchor point
     for x = box.left_top.x + step, box.right_bottom.x, step do
       i = i + 1
       local line = lines[i]
@@ -167,6 +169,17 @@ local function resize_tape(self, entity)
   end
   self.entity = entity
   local position = entity.position
+  if entity.type ~= "entity-ghost" then
+    local delta = flib_position.sub(self.anchor, position)
+    -- TODO: Add flib_position.abs
+    delta.x = math.abs(delta.x)
+    delta.y = math.abs(delta.y)
+    if delta.x > delta.y then
+      position.y = self.anchor.y
+    else
+      position.x = self.anchor.x
+    end
+  end
   local box = flib_bounding_box.from_position(self.anchor, true)
   box = flib_bounding_box.expand_to_contain_position(box, position)
   box = flib_bounding_box.ceil(box)
