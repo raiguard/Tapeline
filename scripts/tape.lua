@@ -189,10 +189,7 @@ local function resize_tape(self, entity)
   self.entity = entity
   local position = entity.position
   if entity.type ~= "entity-ghost" then
-    local delta = flib_position.sub(self.anchor, position)
-    -- TODO: Add flib_position.abs
-    delta.x = math.abs(delta.x)
-    delta.y = math.abs(delta.y)
+    local delta = flib_position.abs(flib_position.sub(self.anchor, position))
     if delta.x > delta.y then
       position.y = self.anchor.y
     else
