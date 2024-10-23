@@ -106,11 +106,13 @@ local function update_tape(self)
   local lines = self.lines
   local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
+
   local function draw_lines(color, step)
     local from_x = self.anchor.x <= center.x and box.left_top.x or box.right_bottom.x
     local from_y = self.anchor.y <= center.y and box.left_top.y or box.right_bottom.y
     local to_x = self.anchor.x > center.x and box.left_top.x or box.right_bottom.x
     local to_y = self.anchor.y > center.y and box.left_top.y or box.right_bottom.y
+
     local step_x = from_x <= to_x and step or -step
     for x = from_x + step_x, to_x, step_x do
       i = i + 1
@@ -134,6 +136,7 @@ local function update_tape(self)
         lines[i] = line
       end
     end
+
     local step_y = from_y <= to_y and step or -step
     for y = from_y + step_y, to_y, step_y do
       i = i + 1
@@ -158,7 +161,9 @@ local function update_tape(self)
       end
     end
   end
+
   draw_lines(self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]], 1)
+
   if self.settings.mode == "subgrid" then
     draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
     draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
@@ -166,6 +171,7 @@ local function update_tape(self)
   else
     -- TODO:
   end
+
   for i = i + 1, #lines do
     lines[i].visible = false
   end
