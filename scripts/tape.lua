@@ -5,6 +5,7 @@ local flib_bounding_box = require("__flib__.bounding-box")
 --- @field box BoundingBox
 --- @field cursor MapPosition
 --- @field entity LuaEntity
+--- @field tick_to_die MapTick
 --- @field id integer
 --- @field player LuaPlayer
 --- @field background LuaRenderObject
@@ -28,6 +29,7 @@ local function new_tape(player, entity)
     entity = entity,
     id = id,
     player = player,
+    tick_to_die = math.huge,
     background = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
       filled = true,
@@ -46,7 +48,7 @@ local function new_tape(player, entity)
       right_bottom = box.right_bottom,
     }),
     label_north = rendering.draw_text({
-      text = tostring(flib_bounding_box.width(box)),
+      text = flib_bounding_box.width(box),
       surface = entity.surface,
       target = { x = center.x, y = box.left_top.y },
       color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
@@ -124,6 +126,7 @@ local function on_init()
   --- @type table<uint, Tape>
   storage.drawing = {}
   storage.next_tape_id = 1
+  --- @type table<uint, Tape>
   storage.tapes = {}
 end
 
@@ -152,12 +155,29 @@ end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
 local function on_player_selected_area(e)
-  local drawing = storage.drawing[e.player_index]
-  if not drawing then
+  local tape_data = storage.drawing[e.player_index]
+  if not tape_data then
     return
   end
-  destroy_tape(drawing)
   storage.drawing[e.player_index] = nil
+  if e.name == defines.events.on_player_selected_area then
+    local time_to_live = tape_data.player.mod_settings["tl-tape-clear-delay"].value --[[@as double]]
+    tape_data.tick_to_die = game.tick + time_to_live * 60
+  end
+  storage.tapes[tape_data.id] = tape_data
+end
+
+--- @param e EventData.on_tick
+local function on_tick(e)
+  for _, tape_data in pairs(storage.tapes or {}) do
+    if tape_data.tick_to_die > e.tick then
+      goto continue
+    end
+
+    destroy_tape(tape_data)
+
+    ::continue::
+  end
 end
 
 local tape = {}
@@ -168,6 +188,7 @@ tape.events = {
   [defines.events.on_built_entity] = on_built_entity,
   [defines.events.on_player_alt_selected_area] = on_player_selected_area,
   [defines.events.on_player_selected_area] = on_player_selected_area,
+  [defines.events.on_tick] = on_tick,
 }
 
 return tape
