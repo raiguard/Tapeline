@@ -3,6 +3,7 @@
 --- @field box BoundingBox
 --- @field cursor MapPosition
 --- @field entity LuaEntity
+--- @field editing_box LuaEntity?
 --- @field tick_to_die MapTick
 --- @field settings TapeSettings
 --- @field id integer
@@ -280,9 +281,41 @@ local function on_tick(e)
   end
 end
 
+--- @param e EventData.CustomInputEvent
+local function on_edit_tape(e)
+  if storage.editing[e.player_index] then
+    return
+  end
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+  -- TODO: Consistent order
+  --- @type Tape?
+  local tape
+  for _, stored_tape in pairs(storage.tapes) do
+    if stored_tape.player == player then
+      tape = stored_tape
+      break
+    end
+  end
+  if not tape then
+    return
+  end
+  storage.editing[e.player_index] = tape
+  storage.tapes[tape.id] = nil
+  tape.editing_box = tape.surface.create_entity({
+    name = "tl-highlight-box",
+    position = flib_bounding_box.center(tape.box),
+    bounding_box = flib_bounding_box.resize(tape.box, 0.3),
+    cursor_box_type = "electricity",
+    render_player_index = tape.player.index,
+    blink_interval = 30,
+  })
+end
+
 local tape = {}
 
 function tape.on_init()
+  --- @type table<uint, Tape>
+  storage.editing = {}
   --- @type table<uint, Tape>
   storage.drawing = {}
   storage.next_tape_id = 1
@@ -295,6 +328,7 @@ tape.events = {
   [defines.events.on_player_alt_selected_area] = on_player_selected_area,
   [defines.events.on_player_selected_area] = on_player_selected_area,
   [defines.events.on_tick] = on_tick,
+  ["tl-edit-tape"] = on_edit_tape,
 }
 
 return tape
