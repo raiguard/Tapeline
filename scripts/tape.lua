@@ -21,6 +21,21 @@ local flib_bounding_box = require("__flib__.bounding-box")
 local flib_position = require("__flib__.position")
 
 --- @param player LuaPlayer
+--- @param position MapPosition
+local function get_tape_at_position(player, position)
+  -- TODO: Consistent order
+  for _, stored_tape in pairs(storage.tapes) do
+    if
+      stored_tape.player == player
+      and stored_tape.surface == player.surface
+      and flib_bounding_box.contains_position(stored_tape.box, position)
+    then
+      return stored_tape
+    end
+  end
+end
+
+--- @param player LuaPlayer
 --- @param entity LuaEntity
 --- @return Tape
 local function new_tape(player, entity)
@@ -262,11 +277,21 @@ local function destroy_tape(self)
       line.destroy()
     end
   end
+
   local entity = self.entity
   if entity and entity.valid then
     entity.destroy()
   end
-  storage.tapes[self.id] = nil
+
+  if self.editing_box and self.editing_box.valid then
+    self.editing_box.destroy()
+  end
+
+  if self.editing then
+    storage.editing[self.player.index] = nil
+  else
+    storage.tapes[self.id] = nil
+  end
 end
 
 --- @param e EventData.on_built_entity
@@ -330,15 +355,7 @@ local function on_edit_tape(e)
     return
   end
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  -- TODO: Consistent order
-  --- @type Tape?
-  local tape
-  for _, stored_tape in pairs(storage.tapes) do
-    if stored_tape.player == player and flib_bounding_box.contains_position(stored_tape.box, e.cursor_position) then
-      tape = stored_tape
-      break
-    end
-  end
+  local tape = get_tape_at_position(player, e.cursor_position)
   if not tape then
     return
   end
@@ -346,6 +363,22 @@ local function on_edit_tape(e)
   storage.editing[e.player_index] = tape
   storage.tapes[tape.id] = nil
   update_tape(tape)
+end
+
+--- @param e EventData.CustomInputEvent
+local function on_delete_tape(e)
+  local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
+
+  local editing = storage.editing[e.player_index]
+  if editing and flib_bounding_box.contains_position(editing.box, e.cursor_position) then
+    destroy_tape(editing)
+    return
+  end
+
+  local tape = get_tape_at_position(player, e.cursor_position)
+  if tape then
+    destroy_tape(tape)
+  end
 end
 
 --- @param e EventData.CustomInputEvent
@@ -378,6 +411,7 @@ tape.events = {
   [defines.events.on_player_selected_area] = on_player_selected_area,
   [defines.events.on_tick] = on_tick,
   ["tl-edit-tape"] = on_edit_tape,
+  ["tl-delete-tape"] = on_delete_tape,
   ["tl-linked-clear-cursor"] = on_clear_cursor,
 }
 
