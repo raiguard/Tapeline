@@ -61,11 +61,11 @@ local function on_built_entity(e)
   if not player then
     return
   end
-  local drawing = storage.drawing[e.player_index]
-  if not drawing then
+  local tape = storage.editing[e.player_index] or storage.drawing[e.player_index]
+  if not tape then
     return
   end
-  set_tool(player, drawing.box)
+  set_tool(player, tape.box)
 end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area

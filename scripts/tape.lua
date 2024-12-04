@@ -3,7 +3,9 @@
 --- @field box BoundingBox
 --- @field cursor MapPosition
 --- @field entity LuaEntity
+--- @field editing boolean
 --- @field editing_box LuaEntity?
+--- @field move_drag_anchor MapPosition?
 --- @field tick_to_die MapTick
 --- @field settings TapeSettings
 --- @field id integer
@@ -34,6 +36,7 @@ local function new_tape(player, entity)
     anchor = entity.position,
     box = box,
     cursor = entity.position,
+    editing = false,
     entity = entity,
     id = id,
     player = player,
@@ -178,6 +181,19 @@ local function update_tape(self)
   end
 
   self.border.bring_to_front()
+  if self.editing_box then
+    self.editing_box.destroy()
+  end
+  if self.editing then
+    self.editing_box = self.surface.create_entity({
+      name = "tl-highlight-box",
+      position = flib_bounding_box.center(self.box),
+      bounding_box = flib_bounding_box.resize(self.box, 0.3),
+      cursor_box_type = "electricity",
+      render_player_index = self.player.index,
+      blink_interval = 30,
+    })
+  end
 end
 
 --- @param self Tape
@@ -202,6 +218,28 @@ local function resize_tape(self, entity)
   box = flib_bounding_box.ceil(box)
   self.box = box
   self.cursor = position
+  update_tape(self)
+end
+
+--- @param self Tape
+--- @param entity LuaEntity
+local function move_tape(self, entity)
+  local old = self.entity
+  if old and old.valid then
+    old.destroy()
+  end
+  self.entity = entity
+  if not flib_bounding_box.contains_position(self.box, entity.position) then
+    return
+  end
+  if not self.move_drag_anchor then
+    self.move_drag_anchor = entity.position
+    return
+  end
+  local delta = flib_position.sub(entity.position, self.move_drag_anchor --[[@as MapPosition]])
+  self.anchor = flib_position.add(self.anchor, delta)
+  self.box = flib_bounding_box.move(self.box, delta)
+  self.move_drag_anchor = entity.position
   update_tape(self)
 end
 
@@ -242,6 +280,11 @@ local function on_built_entity(e)
     name = entity.ghost_name
   end
   if name ~= "tl-dummy-entity" then
+    return
+  end
+  local editing = storage.editing[e.player_index]
+  if editing then
+    move_tape(editing, entity)
     return
   end
   local drawing = storage.drawing[e.player_index]
@@ -291,7 +334,7 @@ local function on_edit_tape(e)
   --- @type Tape?
   local tape
   for _, stored_tape in pairs(storage.tapes) do
-    if stored_tape.player == player then
+    if stored_tape.player == player and flib_bounding_box.contains_position(stored_tape.box, e.cursor_position) then
       tape = stored_tape
       break
     end
@@ -301,14 +344,8 @@ local function on_edit_tape(e)
   end
   storage.editing[e.player_index] = tape
   storage.tapes[tape.id] = nil
-  tape.editing_box = tape.surface.create_entity({
-    name = "tl-highlight-box",
-    position = flib_bounding_box.center(tape.box),
-    bounding_box = flib_bounding_box.resize(tape.box, 0.3),
-    cursor_box_type = "electricity",
-    render_player_index = tape.player.index,
-    blink_interval = 30,
-  })
+  tape.editing = true
+  update_tape(tape)
 end
 
 local tape = {}
