@@ -342,9 +342,21 @@ local function on_edit_tape(e)
   if not tape then
     return
   end
+  tape.editing = true
   storage.editing[e.player_index] = tape
   storage.tapes[tape.id] = nil
-  tape.editing = true
+  update_tape(tape)
+end
+
+--- @param e EventData.CustomInputEvent
+local function on_clear_cursor(e)
+  local tape = storage.editing[e.player_index]
+  if not tape then
+    return
+  end
+  tape.editing = false
+  storage.editing[e.player_index] = nil
+  storage.tapes[tape.id] = tape
   update_tape(tape)
 end
 
@@ -366,6 +378,7 @@ tape.events = {
   [defines.events.on_player_selected_area] = on_player_selected_area,
   [defines.events.on_tick] = on_tick,
   ["tl-edit-tape"] = on_edit_tape,
+  ["tl-linked-clear-cursor"] = on_clear_cursor,
 }
 
 return tape
