@@ -244,11 +244,10 @@ local function move_tape(self, entity)
     old.destroy()
   end
   self.entity = entity
-  if not flib_bounding_box.contains_position(self.box, entity.position) then
-    return
-  end
   if not self.move_drag_anchor then
-    self.move_drag_anchor = entity.position
+    if flib_bounding_box.contains_position(self.box, entity.position) then
+      self.move_drag_anchor = entity.position
+    end
     return
   end
   local delta = flib_position.sub(entity.position, self.move_drag_anchor --[[@as MapPosition]])
@@ -324,16 +323,21 @@ end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
 local function on_player_selected_area(e)
-  local tape_data = storage.drawing[e.player_index]
-  if not tape_data then
+  local editing_tape = storage.editing[e.player_index]
+  if editing_tape then
+    editing_tape.move_drag_anchor = nil
+    return
+  end
+  local drawing_tape = storage.drawing[e.player_index]
+  if not drawing_tape then
     return
   end
   storage.drawing[e.player_index] = nil
   if e.name == defines.events.on_player_selected_area then
-    local time_to_live = tape_data.player.mod_settings["tl-tape-clear-delay"].value --[[@as double]]
-    tape_data.tick_to_die = game.tick + time_to_live * 60
+    local time_to_live = drawing_tape.player.mod_settings["tl-tape-clear-delay"].value --[[@as double]]
+    drawing_tape.tick_to_die = game.tick + time_to_live * 60
   end
-  storage.tapes[tape_data.id] = tape_data
+  storage.tapes[drawing_tape.id] = drawing_tape
 end
 
 --- @param e EventData.on_tick
