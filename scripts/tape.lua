@@ -111,6 +111,8 @@ end
 
 --- @param self Tape
 local function update_tape(self)
+  local line_width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
+
   local box = self.box
   local draw_on_ground = self.player.mod_settings["tl-draw-tape-on-ground"].value --[[@as boolean]]
   self.background.left_top = box.left_top
@@ -119,6 +121,7 @@ local function update_tape(self)
   self.border.left_top = box.left_top
   self.border.right_bottom = box.right_bottom
   self.border.draw_on_ground = draw_on_ground
+  self.border.width = line_width
   local center = flib_bounding_box.center(box)
   self.label_north.target = { x = center.x, y = box.left_top.y }
   local width = flib_bounding_box.width(box)
@@ -130,7 +133,6 @@ local function update_tape(self)
   self.label_west.visible = height > 1
 
   local lines = self.lines
-  local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
 
   --- @param color Color
@@ -149,15 +151,16 @@ local function update_tape(self)
         i = i + 1
         local line = lines[i]
         if line then
+          line.color = color
+          line.width = line_width
           line.from = { x = x, y = from_y }
           line.to = { x = x, y = to_y }
-          line.color = color
           line.visible = true
           line.draw_on_ground = draw_on_ground
         else
           line = rendering.draw_line({
             color = color,
-            width = width,
+            width = line_width,
             from = { x = x, y = from_y },
             to = { x = x, y = to_y },
             surface = self.surface,
@@ -175,15 +178,16 @@ local function update_tape(self)
         i = i + 1
         local line = lines[i]
         if line then
+          line.color = color
+          line.width = line_width
           line.from = { x = from_x, y = y }
           line.to = { x = to_x, y = y }
-          line.color = color
           line.visible = true
           line.draw_on_ground = draw_on_ground
         else
           line = rendering.draw_line({
             color = color,
-            width = width,
+            width = line_width,
             from = { x = from_x, y = y },
             to = { x = to_x, y = y },
             surface = self.surface,
@@ -462,6 +466,26 @@ local function on_change_divisor(e)
   end
 end
 
+--- @param e EventData.on_runtime_mod_setting_changed
+local function on_runtime_mod_setting_changed(e)
+  if not string.find(e.setting, "^tl%-") then
+    return
+  end
+  local editing = storage.editing[e.player_index]
+  if editing then
+    update_tape(editing)
+  end
+  local drawing = storage.drawing[e.player_index]
+  if drawing then
+    update_tape(drawing)
+  end
+  for _, tape in pairs(storage.tapes) do
+    if tape.player.index == e.player_index then
+      update_tape(tape)
+    end
+  end
+end
+
 local tape = {}
 
 function tape.on_init()
@@ -486,6 +510,7 @@ tape.events = {
   ["tl-previous-mode"] = on_change_mode,
   ["tl-increase-divisor"] = on_change_divisor,
   ["tl-decrease-divisor"] = on_change_divisor,
+  [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
 }
 
 return tape
