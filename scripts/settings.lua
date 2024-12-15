@@ -22,20 +22,6 @@ local function on_player_removed(e)
   storage.player_settings[e.player_index] = nil
 end
 
---- @param e EventData.CustomInputEvent
-local function on_change_divisor(e)
-  local delta = e.input_name == "tl-increase-divisor" and 1 or -1
-  local settings = storage.player_settings[e.player_index]
-  if not settings then
-    return
-  end
-  if settings.mode == "subgrid" then
-    settings.subgrid_size = math.max(0, settings.subgrid_size + delta)
-  else
-    settings.splits = math.max(2, settings.splits + delta)
-  end
-end
-
 local M = {}
 
 function M.on_init()
@@ -49,8 +35,6 @@ end
 M.events = {
   [defines.events.on_player_created] = on_player_created,
   [defines.events.on_player_removed] = on_player_removed,
-  ["tl-increase-divisor"] = on_change_divisor,
-  ["tl-decrease-divisor"] = on_change_divisor,
 }
 
 return M

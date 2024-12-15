@@ -429,6 +429,24 @@ local function on_change_mode(e)
   settings.mode = settings.mode == "subgrid" and "split" or "subgrid"
 end
 
+--- @param e EventData.CustomInputEvent
+local function on_change_divisor(e)
+  local delta = e.input_name == "tl-increase-divisor" and 1 or -1
+  local tape = storage.editing[e.player_index]
+  local settings = tape and tape.settings or storage.player_settings[e.player_index]
+  if not settings then
+    return
+  end
+  if settings.mode == "subgrid" then
+    settings.subgrid_size = math.max(0, settings.subgrid_size + delta)
+  else
+    settings.splits = math.max(2, settings.splits + delta)
+  end
+  if tape then
+    update_tape(tape)
+  end
+end
+
 local tape = {}
 
 function tape.on_init()
@@ -451,6 +469,8 @@ tape.events = {
   ["tl-linked-clear-cursor"] = on_clear_cursor,
   ["tl-next-mode"] = on_change_mode,
   ["tl-previous-mode"] = on_change_mode,
+  ["tl-increase-divisor"] = on_change_divisor,
+  ["tl-decrease-divisor"] = on_change_divisor,
 }
 
 return tape
