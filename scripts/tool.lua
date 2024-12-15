@@ -1,5 +1,24 @@
 local flib_bounding_box = require("__flib__.bounding-box")
 
+--- @param settings TapeSettings
+--- @param tape Tape?
+--- @return string
+local function build_label(settings, tape)
+  local output = ""
+  if tape then
+    output = output
+      .. tostring(flib_bounding_box.width(tape.box))
+      .. "×"
+      .. tostring(flib_bounding_box.height(tape.box))
+      .. " | "
+  end
+  if settings.mode == "subgrid" then
+    return output .. "Subgrid mode | Size: " .. tostring(settings.subgrid_size)
+  else
+    return output .. "Split mode | # of splits: " .. tostring(settings.splits)
+  end
+end
+
 --- @param player LuaPlayer
 --- @return LuaItemStack?
 local function get_tool(player)
@@ -10,17 +29,14 @@ local function get_tool(player)
 end
 
 --- @param player LuaPlayer
---- @param box BoundingBox?
-local function set_tool(player, box)
+--- @param tape Tape?
+local function set_tool(player, tape)
   local cursor_stack = player.cursor_stack
   if cursor_stack then
     if not cursor_stack.valid_for_read or cursor_stack.name == "tl-tool" or player.clear_cursor() then
       cursor_stack.set_stack({ name = "tl-tool", count = 10 })
-      if box then
-        cursor_stack.label = flib_bounding_box.width(box) .. "x" .. flib_bounding_box.height(box)
-      else
-        cursor_stack.label = ""
-      end
+      local settings = tape and tape.settings or storage.player_settings[player.index]
+      cursor_stack.label = build_label(settings, tape)
     end
     if player.controller_type == defines.controllers.character and player.character_build_distance_bonus < 1000000 then
       player.character_build_distance_bonus = player.character_build_distance_bonus + 1000000
@@ -34,7 +50,7 @@ local function on_player_cursor_stack_changed(e)
   local player_tool = get_tool(player)
   if player_tool and not storage.holding_tool[player.index] then
     storage.holding_tool[player.index] = true
-    set_tool(player)
+    set_tool(player, storage.editing[e.player_index] or storage.drawing[e.player_index])
   elseif not player_tool and storage.holding_tool[player.index] then
     storage.holding_tool[player.index] = nil
     -- FIXME: Handle player controller changes
@@ -65,7 +81,7 @@ local function on_built_entity(e)
   if not tape then
     return
   end
-  set_tool(player, tape.box)
+  set_tool(player, tape)
 end
 
 --- @param e EventData.on_player_selected_area|EventData.on_player_alt_selected_area
@@ -74,7 +90,7 @@ local function on_player_selected_area(e)
   if not player then
     return
   end
-  set_tool(player)
+  set_tool(player, storage.editing[e.player_index])
 end
 
 local function on_init()
@@ -92,5 +108,8 @@ tool.events = {
   [defines.events.on_player_cursor_stack_changed] = on_player_cursor_stack_changed,
   [defines.events.on_player_selected_area] = on_player_selected_area,
 }
+
+tool.set = set_tool
+tool.get = get_tool
 
 return tool

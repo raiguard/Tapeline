@@ -19,6 +19,9 @@
 
 local flib_bounding_box = require("__flib__.bounding-box")
 local flib_position = require("__flib__.position")
+local flib_table = require("__flib__.table")
+
+local tool = require("scripts.tool")
 
 --- @param player LuaPlayer
 --- @param position MapPosition
@@ -59,7 +62,7 @@ local function new_tape(player, entity)
     id = id,
     player = player,
     tick_to_die = math.huge,
-    settings = storage.player_settings[player.index],
+    settings = flib_table.deep_copy(storage.player_settings[player.index]),
     surface = entity.surface,
     background = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
@@ -102,6 +105,7 @@ local function new_tape(player, entity)
     lines = {},
   }
   storage.tapes[id] = self
+  tool.set(self.player)
   return self
 end
 
@@ -229,6 +233,8 @@ local function update_tape(self)
       blink_interval = 30,
     })
   end
+
+  tool.set(self.player, self)
 end
 
 --- @param self Tape
@@ -311,6 +317,8 @@ local function destroy_tape(self)
   else
     storage.tapes[self.id] = nil
   end
+
+  tool.set(self.player)
 end
 
 --- @param e EventData.on_built_entity
@@ -427,6 +435,9 @@ local function on_change_mode(e)
   end
   local settings = storage.player_settings[e.player_index]
   settings.mode = settings.mode == "subgrid" and "split" or "subgrid"
+  local player = game.get_player(e.player_index)
+  --- @cast player -?
+  tool.set(player)
 end
 
 --- @param e EventData.CustomInputEvent
@@ -444,6 +455,10 @@ local function on_change_divisor(e)
   end
   if tape then
     update_tape(tape)
+  else
+    local player = game.get_player(e.player_index)
+    --- @cast player -?
+    tool.set(player)
   end
 end
 
