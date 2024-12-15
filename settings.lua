@@ -3,13 +3,6 @@
 data:extend({
   {
     type = "bool-setting",
-    name = "tl-log-selection-area",
-    setting_type = "runtime-per-user",
-    default_value = false,
-    order = "a",
-  },
-  {
-    type = "bool-setting",
     name = "tl-draw-tape-on-ground",
     setting_type = "runtime-per-user",
     default_value = true,
