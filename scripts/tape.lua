@@ -23,16 +23,19 @@ local flib_position = require("__flib__.position")
 --- @param player LuaPlayer
 --- @param position MapPosition
 local function get_tape_at_position(player, position)
-  -- TODO: Consistent order
+  --- @type Tape?
+  local result
   for _, stored_tape in pairs(storage.tapes) do
     if
       stored_tape.player == player
       and stored_tape.surface == player.surface
       and flib_bounding_box.contains_position(stored_tape.box, position)
+      and (not result or result.id < stored_tape.id)
     then
-      return stored_tape
+      result = stored_tape
     end
   end
+  return result
 end
 
 --- @param player LuaPlayer
@@ -126,57 +129,65 @@ local function update_tape(self)
   local width = self.player.mod_settings["tl-tape-line-width"].value --[[@as double]]
   local i = 0
 
-  local function draw_lines(color, step)
+  --- @param color Color
+  --- @param step_x integer
+  --- @param step_y integer?
+  local function draw_lines(color, step_x, step_y)
+    step_y = step_y or step_x
     local from_x = self.anchor.x <= center.x and box.left_top.x or box.right_bottom.x
     local from_y = self.anchor.y <= center.y and box.left_top.y or box.right_bottom.y
     local to_x = self.anchor.x > center.x and box.left_top.x or box.right_bottom.x
     local to_y = self.anchor.y > center.y and box.left_top.y or box.right_bottom.y
 
-    local step_x = from_x <= to_x and step or -step
-    for x = from_x + step_x, to_x, step_x do
-      i = i + 1
-      local line = lines[i]
-      if line then
-        line.from = { x = x, y = from_y }
-        line.to = { x = x, y = to_y }
-        line.color = color
-        line.visible = true
-        line.draw_on_ground = draw_on_ground
-      else
-        line = rendering.draw_line({
-          color = color,
-          width = width,
-          from = { x = x, y = from_y },
-          to = { x = x, y = to_y },
-          surface = self.surface,
-          players = { self.player },
-          draw_on_ground = draw_on_ground,
-        })
-        lines[i] = line
+    if flib_bounding_box.width(self.box) > 1 then
+      local step_x = from_x <= to_x and step_x or -step_x
+      for x = from_x + step_x, to_x, step_x do
+        i = i + 1
+        local line = lines[i]
+        if line then
+          line.from = { x = x, y = from_y }
+          line.to = { x = x, y = to_y }
+          line.color = color
+          line.visible = true
+          line.draw_on_ground = draw_on_ground
+        else
+          line = rendering.draw_line({
+            color = color,
+            width = width,
+            from = { x = x, y = from_y },
+            to = { x = x, y = to_y },
+            surface = self.surface,
+            players = { self.player },
+            draw_on_ground = draw_on_ground,
+          })
+          lines[i] = line
+        end
       end
     end
 
-    local step_y = from_y <= to_y and step or -step
-    for y = from_y + step_y, to_y, step_y do
-      i = i + 1
-      local line = lines[i]
-      if line then
-        line.from = { x = from_x, y = y }
-        line.to = { x = to_x, y = y }
-        line.color = color
-        line.visible = true
-        line.draw_on_ground = draw_on_ground
-      else
-        line = rendering.draw_line({
-          color = color,
-          width = width,
-          from = { x = from_x, y = y },
-          to = { x = to_x, y = y },
-          surface = self.surface,
-          players = { self.player },
-          draw_on_ground = draw_on_ground,
-        })
-        lines[i] = line
+    if flib_bounding_box.height(self.box) > 1 then
+      local step_y = from_y <= to_y and step_y or -step_y
+      for y = from_y + step_y, to_y, step_y do
+        i = i + 1
+        local line = lines[i]
+        if line then
+          line.from = { x = from_x, y = y }
+          line.to = { x = to_x, y = y }
+          line.color = color
+          line.visible = true
+          line.draw_on_ground = draw_on_ground
+        else
+          line = rendering.draw_line({
+            color = color,
+            width = width,
+            from = { x = from_x, y = y },
+            to = { x = to_x, y = y },
+            surface = self.surface,
+            players = { self.player },
+            draw_on_ground = draw_on_ground,
+          })
+          lines[i] = line
+        end
       end
     end
   end
@@ -188,7 +199,16 @@ local function update_tape(self)
     draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
     draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
   else
-    -- TODO:
+    draw_lines(
+      self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]],
+      flib_bounding_box.width(self.box) / self.settings.splits,
+      flib_bounding_box.height(self.box) / self.settings.splits
+    )
+    draw_lines(
+      self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]],
+      flib_bounding_box.width(self.box) / 2,
+      flib_bounding_box.height(self.box) / 2
+    )
   end
 
   for i = i + 1, #lines do
@@ -397,6 +417,18 @@ local function on_clear_cursor(e)
   update_tape(tape)
 end
 
+--- @param e EventData.CustomInputEvent
+local function on_change_mode(e)
+  local tape = storage.editing[e.player_index]
+  if tape then
+    tape.settings.mode = tape.settings.mode == "subgrid" and "split" or "subgrid"
+    update_tape(tape)
+    return
+  end
+  local settings = storage.player_settings[e.player_index]
+  settings.mode = settings.mode == "subgrid" and "split" or "subgrid"
+end
+
 local tape = {}
 
 function tape.on_init()
@@ -414,9 +446,11 @@ tape.events = {
   [defines.events.on_player_alt_selected_area] = on_player_selected_area,
   [defines.events.on_player_selected_area] = on_player_selected_area,
   [defines.events.on_tick] = on_tick,
-  ["tl-edit-tape"] = on_edit_tape,
   ["tl-delete-tape"] = on_delete_tape,
+  ["tl-edit-tape"] = on_edit_tape,
   ["tl-linked-clear-cursor"] = on_clear_cursor,
+  ["tl-next-mode"] = on_change_mode,
+  ["tl-previous-mode"] = on_change_mode,
 }
 
 return tape
