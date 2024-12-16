@@ -48,7 +48,7 @@ end
 local function on_player_cursor_stack_changed(e)
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   local player_tool = get_tool(player)
-  if player_tool then
+  if player_tool and not storage.holding_tool[e.player_index] then
     storage.holding_tool[player.index] = true
     set_tool(player, storage.editing[e.player_index] or storage.drawing[e.player_index])
   elseif not player_tool and storage.holding_tool[player.index] then
