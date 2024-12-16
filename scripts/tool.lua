@@ -53,7 +53,6 @@ local function on_player_cursor_stack_changed(e)
     set_tool(player, storage.editing[e.player_index] or storage.drawing[e.player_index])
   elseif not player_tool and storage.holding_tool[player.index] then
     storage.holding_tool[player.index] = nil
-    -- FIXME: Handle player controller changes
     if player.controller_type == defines.controllers.character and player.character_build_distance_bonus >= 1000000 then
       player.character_build_distance_bonus = player.character_build_distance_bonus - 1000000
     end
@@ -93,14 +92,12 @@ local function on_player_selected_area(e)
   set_tool(player, storage.editing[e.player_index])
 end
 
-local function on_init()
+local tool = {}
+
+function tool.on_init()
   --- @type table<uint, boolean>
   storage.holding_tool = {}
 end
-
-local tool = {}
-
-tool.on_init = on_init
 
 tool.events = {
   [defines.events.on_built_entity] = on_built_entity,
