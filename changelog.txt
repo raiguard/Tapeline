@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.0
-Date: ????
+Date: 2024-12-16
   Changes:
     - Updated to Factorio 2.0.
     - Rewrote the mod from scratch.
