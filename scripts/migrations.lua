@@ -7,6 +7,11 @@ local tool = require("scripts.tool")
 local versions = {
   ["3.0.0"] = function()
     rendering.clear(script.mod_name)
+    for _, surface in pairs(game.surfaces) do
+      for _, box in pairs(surface.find_entities_filtered({ name = "tl-highlight-box" })) do
+        box.destroy()
+      end
+    end
     storage = {}
     settings.on_init()
     tape.on_init()
