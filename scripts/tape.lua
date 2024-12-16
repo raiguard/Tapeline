@@ -2,7 +2,6 @@
 --- @field anchor MapPosition
 --- @field box BoundingBox
 --- @field cursor MapPosition
---- @field entity LuaEntity
 --- @field editing boolean
 --- @field editing_box LuaEntity?
 --- @field move_drag_anchor MapPosition?
@@ -42,33 +41,33 @@ local function get_tape_at_position(player, position)
 end
 
 --- @param player LuaPlayer
---- @param entity LuaEntity
+--- @param position MapPosition
+--- @param surface LuaSurface
 --- @return Tape
-local function new_tape(player, entity)
+local function new_tape(player, position, surface)
   local id = storage.next_tape_id
   storage.next_tape_id = id + 1
-  local box = flib_bounding_box.from_position(entity.position, true)
+  local box = flib_bounding_box.from_position(position, true)
   local center = flib_bounding_box.center(box)
   local width = flib_bounding_box.width(box)
   local height = flib_bounding_box.height(box)
 
   --- @type Tape
   local self = {
-    anchor = entity.position,
+    anchor = position,
     box = box,
-    cursor = entity.position,
+    cursor = position,
     editing = false,
-    entity = entity,
     id = id,
     player = player,
     tick_to_die = math.huge,
     settings = flib_table.deep_copy(storage.player_settings[player.index]),
-    surface = entity.surface,
+    surface = surface,
     background = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-background-color"].value --[[@as Color]],
       filled = true,
       players = { player },
-      surface = entity.surface,
+      surface = surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
     }),
@@ -77,13 +76,13 @@ local function new_tape(player, entity)
       filled = false,
       width = player.mod_settings["tl-tape-line-width"].value --[[@as double]],
       players = { player },
-      surface = entity.surface,
+      surface = surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
     }),
     label_north = rendering.draw_text({
       text = tostring(width),
-      surface = entity.surface,
+      surface = surface,
       target = { x = center.x, y = box.left_top.y },
       color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
       scale = 2,
@@ -93,7 +92,7 @@ local function new_tape(player, entity)
     }),
     label_west = rendering.draw_text({
       text = tostring(height),
-      surface = entity.surface,
+      surface = surface,
       target = { x = box.left_top.x, y = center.y },
       color = player.mod_settings["tl-tape-label-color"].value --[[@as Color]],
       scale = 2,
@@ -246,15 +245,10 @@ local function update_tape(self)
 end
 
 --- @param self Tape
---- @param entity LuaEntity
-local function resize_tape(self, entity)
-  local old = self.entity
-  if old and old.valid then
-    old.destroy()
-  end
-  self.entity = entity
-  local position = entity.position
-  if entity.type ~= "entity-ghost" then
+--- @param position MapPosition
+--- @param constrained boolean
+local function resize_tape(self, position, constrained)
+  if constrained then
     local delta = flib_position.abs(flib_position.sub(self.anchor, position))
     if delta.x > delta.y then
       position.y = self.anchor.y
@@ -271,23 +265,18 @@ local function resize_tape(self, entity)
 end
 
 --- @param self Tape
---- @param entity LuaEntity
-local function move_tape(self, entity)
-  local old = self.entity
-  if old and old.valid then
-    old.destroy()
-  end
-  self.entity = entity
+--- @param position MapPosition
+local function move_tape(self, position)
   if not self.move_drag_anchor then
-    if flib_bounding_box.contains_position(self.box, entity.position) then
-      self.move_drag_anchor = entity.position
+    if flib_bounding_box.contains_position(self.box, position) then
+      self.move_drag_anchor = position
     end
     return
   end
-  local delta = flib_position.sub(entity.position, self.move_drag_anchor --[[@as MapPosition]])
+  local delta = flib_position.sub(position, self.move_drag_anchor --[[@as MapPosition]])
   self.anchor = flib_position.add(self.anchor, delta)
   self.box = flib_bounding_box.move(self.box, delta)
-  self.move_drag_anchor = entity.position
+  self.move_drag_anchor = position
   update_tape(self)
 end
 
@@ -309,11 +298,6 @@ local function destroy_tape(self)
     if line.valid then
       line.destroy()
     end
-  end
-
-  local entity = self.entity
-  if entity and entity.valid then
-    entity.destroy()
   end
 
   if self.editing_box and self.editing_box.valid then
@@ -342,17 +326,37 @@ local function on_built_entity(e)
   if name ~= "tl-dummy-entity" then
     return
   end
+  local is_ghost = entity.name == "entity-ghost"
+  local position, surface = entity.position, entity.surface
+  entity.destroy()
+  local last_position = storage.last_position[e.player_index]
+  if last_position and flib_position.eq(position, last_position.position) and surface == last_position.surface then
+    return
+  end
+  storage.last_position[e.player_index] = { position = position, surface = surface }
+
+  local should_cancel = last_position and surface ~= last_position.surface
+
   local editing = storage.editing[e.player_index]
   if editing then
-    move_tape(editing, entity)
+    if should_cancel then
+      destroy_tape(editing)
+      return
+    end
+    move_tape(editing, position)
     return
   end
   local drawing = storage.drawing[e.player_index]
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
   if drawing then
-    resize_tape(drawing, entity)
+    if should_cancel then
+      destroy_tape(drawing)
+      storage.drawing[e.player_index] = nil
+      return
+    end
+    resize_tape(drawing, position, not is_ghost)
   else
-    drawing = new_tape(player, e.entity)
+    drawing = new_tape(player, position, surface)
     storage.drawing[e.player_index] = drawing
   end
 end
@@ -497,6 +501,8 @@ function tape.on_init()
   storage.editing = {}
   --- @type table<uint, Tape>
   storage.drawing = {}
+  --- @type table<uint, {position: MapPosition, surface: LuaSurface}>
+  storage.last_position = {}
   storage.next_tape_id = 1
   --- @type table<uint, Tape>
   storage.tapes = {}
