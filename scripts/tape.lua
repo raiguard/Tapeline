@@ -115,19 +115,23 @@ local function update_tape(self)
 
   local box = self.box
   local draw_on_ground = self.player.mod_settings["tl-draw-tape-on-ground"].value --[[@as boolean]]
+  self.background.color = self.player.mod_settings["tl-tape-background-color"].value --[[@as Color]]
   self.background.left_top = box.left_top
   self.background.right_bottom = box.right_bottom
   self.background.draw_on_ground = draw_on_ground
+  self.border.color = self.player.mod_settings["tl-tape-border-color"].value --[[@as Color]]
   self.border.left_top = box.left_top
   self.border.right_bottom = box.right_bottom
   self.border.draw_on_ground = draw_on_ground
   self.border.width = line_width
   local center = flib_bounding_box.center(box)
+  self.label_north.color = self.player.mod_settings["tl-tape-label-color"].value --[[@as Color]]
   self.label_north.target = { x = center.x, y = box.left_top.y }
   local width = flib_bounding_box.width(box)
   self.label_north.text = tostring(width)
   self.label_north.visible = width > 1
   local height = flib_bounding_box.height(box)
+  self.label_west.color = self.player.mod_settings["tl-tape-label-color"].value --[[@as Color]]
   self.label_west.target = { x = box.left_top.x, y = center.y }
   self.label_west.text = height
   self.label_west.visible = height > 1
