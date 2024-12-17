@@ -70,6 +70,7 @@ local function new_tape(player, position, surface)
       surface = surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
+      draw_on_ground = player.mod_settings["tl-draw-tape-on-ground"].value --[[@as boolean]],
     }),
     border = rendering.draw_rectangle({
       color = player.mod_settings["tl-tape-border-color"].value --[[@as Color]],
@@ -79,6 +80,7 @@ local function new_tape(player, position, surface)
       surface = surface,
       left_top = box.left_top,
       right_bottom = box.right_bottom,
+      draw_on_ground = player.mod_settings["tl-draw-tape-on-ground"].value --[[@as boolean]],
     }),
     label_north = rendering.draw_text({
       text = tostring(width),
