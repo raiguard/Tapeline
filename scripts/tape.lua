@@ -311,8 +311,6 @@ local function destroy_tape(self)
   else
     storage.tapes[self.id] = nil
   end
-
-  tool.set(self.player)
 end
 
 --- @param e EventData.on_built_entity

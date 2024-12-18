@@ -4,6 +4,7 @@ Date: ????
   Bugfixes:
     - Fixed that the initial square of a tape would not respect the "draw on ground" setting. (#37)
     - Fixed that the tapeline tool would be put into your cursor whenever you used ANY selection tool. (#40)
+    - Fixed that the tapeline tool would be put into your cursor whenever a tape was destroyed. (#39)
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.0
 Date: 2024-12-16
