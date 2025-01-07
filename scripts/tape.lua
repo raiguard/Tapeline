@@ -2,6 +2,7 @@
 --- @field anchor MapPosition
 --- @field box BoundingBox
 --- @field cursor MapPosition
+--- @field drawing boolean
 --- @field editing boolean
 --- @field editing_box LuaEntity?
 --- @field move_drag_anchor MapPosition?
@@ -57,6 +58,7 @@ local function new_tape(player, position, surface)
     anchor = position,
     box = box,
     cursor = position,
+    drawing = true,
     editing = false,
     id = id,
     player = player,
@@ -308,6 +310,8 @@ local function destroy_tape(self)
 
   if self.editing then
     storage.editing[self.player.index] = nil
+  elseif self.drawing then
+    storage.drawing[self.player.index] = nil
   else
     storage.tapes[self.id] = nil
   end
@@ -351,7 +355,6 @@ local function on_built_entity(e)
   if drawing then
     if should_cancel then
       destroy_tape(drawing)
-      storage.drawing[e.player_index] = nil
       return
     end
     resize_tape(drawing, position, not is_ghost)
@@ -373,6 +376,7 @@ local function on_player_selected_area(e)
     return
   end
   storage.drawing[e.player_index] = nil
+  drawing_tape.drawing = false
   if e.name == defines.events.on_player_selected_area then
     local time_to_live = drawing_tape.player.mod_settings["tl-tape-clear-delay"].value --[[@as double]]
     drawing_tape.tick_to_die = game.tick + time_to_live * 60
