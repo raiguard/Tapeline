@@ -5,6 +5,7 @@ Date: ????
     - Fixed that you can delete a tape while drawing, causing various corrupted states. (#44)
     - Fixed a crash when attempting to remove a tape drawn by a player who no longer exists. (#43)
     - Fixed that it was possible to edit a temporary tape.
+    - Fixed that tape labels were visible to all players.
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.2
 Date: 2025-01-07

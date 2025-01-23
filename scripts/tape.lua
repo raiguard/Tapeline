@@ -97,6 +97,7 @@ local function new_tape(player, position, surface)
       alignment = "center",
       vertical_alignment = "bottom",
       visible = width > 1,
+      players = { player },
     }),
     label_west = rendering.draw_text({
       text = tostring(height),
@@ -108,6 +109,7 @@ local function new_tape(player, position, surface)
       vertical_alignment = "bottom",
       orientation = 0.75,
       visible = height > 1,
+      players = { player },
     }),
     lines = {},
   }
