@@ -159,7 +159,7 @@ local function update_tape(self)
     local to_y = self.anchor.y > center.y and box.left_top.y or box.right_bottom.y
 
     if flib_bounding_box.width(self.box) > 1 then
-      local step_x = from_x <= to_x and step_x or -step_x
+      step_x = from_x <= to_x and step_x or -step_x
       for x = from_x + step_x, to_x, step_x do
         i = i + 1
         local line = lines[i]
@@ -186,7 +186,7 @@ local function update_tape(self)
     end
 
     if flib_bounding_box.height(self.box) > 1 then
-      local step_y = from_y <= to_y and step_y or -step_y
+      step_y = from_y <= to_y and step_y or -step_y
       for y = from_y + step_y, to_y, step_y do
         i = i + 1
         local line = lines[i]
@@ -232,8 +232,8 @@ local function update_tape(self)
     )
   end
 
-  for i = i + 1, #lines do
-    lines[i].visible = false
+  for j = i + 1, #lines do
+    lines[j].visible = false
   end
 
   self.border.bring_to_front()
