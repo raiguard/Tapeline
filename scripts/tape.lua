@@ -10,6 +10,7 @@
 --- @field settings TapeSettings
 --- @field id integer
 --- @field player LuaPlayer
+--- @field player_index uint
 --- @field surface LuaSurface
 --- @field background LuaRenderObject
 --- @field border LuaRenderObject
@@ -62,6 +63,7 @@ local function new_tape(player, position, surface)
     editing = false,
     id = id,
     player = player,
+    player_index = player.index,
     tick_to_die = math.huge,
     settings = flib_table.deep_copy(storage.player_settings[player.index]),
     surface = surface,
