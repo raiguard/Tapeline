@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.3
-Date: ????
+Date: 2025-01-23
   Bugfixes:
     - Fixed that you can delete a tape while drawing, causing various corrupted states. (#44)
     - Fixed a crash when attempting to remove a tape drawn by a player who no longer exists. (#43)
