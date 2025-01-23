@@ -64,7 +64,7 @@ data:extend({
     collision_mask = { layers = { tapeline = true } },
     selectable_in_game = false,
     build_sound = { filename = "__core__/sound/silence-1sec.ogg" },
-    created_smoke = { smoke_name = "tl-empty-smoke" },
+    created_smoke = { smoke_name = "tl-empty-smoke" }, --- @diagnostic disable-line
     alert_when_damaged = false,
   },
   {
