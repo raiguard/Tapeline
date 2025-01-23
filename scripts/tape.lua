@@ -415,6 +415,10 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_delete_tape(e)
+  if storage.drawing[e.player_index] then
+    return
+  end
+
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
 
   local editing = storage.editing[e.player_index]
