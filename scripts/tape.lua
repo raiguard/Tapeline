@@ -508,6 +508,23 @@ local function on_runtime_mod_setting_changed(e)
   end
 end
 
+--- @param e EventData.on_player_removed
+local function on_player_removed(e)
+  local editing = storage.editing[e.player_index]
+  if editing then
+    destroy_tape(editing)
+  end
+  local drawing = storage.drawing[e.player_index]
+  if drawing then
+    destroy_tape(drawing)
+  end
+  for _, tape in pairs(storage.tapes) do
+    if tape.player_index == e.player_index then
+      destroy_tape(tape)
+    end
+  end
+end
+
 local tape = {}
 
 function tape.on_init()
@@ -535,6 +552,7 @@ tape.events = {
   ["tl-increase-divisor"] = on_change_divisor,
   ["tl-decrease-divisor"] = on_change_divisor,
   [defines.events.on_runtime_mod_setting_changed] = on_runtime_mod_setting_changed,
+  [defines.events.on_player_removed] = on_player_removed,
 }
 
 return tape

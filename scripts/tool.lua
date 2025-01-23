@@ -95,6 +95,11 @@ local function on_player_selected_area(e)
   set_tool(player, storage.editing[e.player_index])
 end
 
+--- @param e EventData.on_player_removed
+local function on_player_removed(e)
+  storage.holding_tool[e.player_index] = nil
+end
+
 local tool = {}
 
 function tool.on_init()
@@ -107,6 +112,7 @@ tool.events = {
   [defines.events.on_player_alt_selected_area] = on_player_selected_area,
   [defines.events.on_player_cursor_stack_changed] = on_player_cursor_stack_changed,
   [defines.events.on_player_selected_area] = on_player_selected_area,
+  [defines.events.on_player_removed] = on_player_removed,
 }
 
 tool.set = set_tool
