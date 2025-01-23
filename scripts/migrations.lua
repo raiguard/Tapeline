@@ -17,6 +17,21 @@ local versions = {
     tape.on_init()
     tool.on_init()
   end,
+  ["3.0.3"] = function()
+    --- @param tbl table<uint, Tape>
+    local function migrate_tapes(tbl)
+      for key, tape_data in pairs(tbl) do
+        if tape_data.player.valid then
+          tape_data.player_index = tape_data.player.index
+        else
+          tbl[key] = nil
+        end
+      end
+    end
+    migrate_tapes(storage.drawing)
+    migrate_tapes(storage.editing)
+    migrate_tapes(storage.tapes)
+  end,
 }
 
 local migrations = {}
