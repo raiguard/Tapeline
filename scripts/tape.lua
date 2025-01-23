@@ -244,7 +244,7 @@ local function update_tape(self)
       position = flib_bounding_box.center(self.box),
       bounding_box = flib_bounding_box.resize(self.box, 0.3),
       cursor_box_type = "electricity",
-      render_player_index = self.player.index,
+      render_player_index = self.player_index,
       blink_interval = 30,
     })
   end
@@ -313,9 +313,9 @@ local function destroy_tape(self)
   end
 
   if self.editing then
-    storage.editing[self.player.index] = nil
+    storage.editing[self.player_index] = nil
   elseif self.drawing then
-    storage.drawing[self.player.index] = nil
+    storage.drawing[self.player_index] = nil
   else
     storage.tapes[self.id] = nil
   end
