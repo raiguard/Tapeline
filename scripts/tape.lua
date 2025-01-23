@@ -26,12 +26,14 @@ local tool = require("scripts.tool")
 
 --- @param player LuaPlayer
 --- @param position MapPosition
-local function get_tape_at_position(player, position)
+--- @param include_temporary_tapes boolean
+local function get_tape_at_position(player, position, include_temporary_tapes)
   --- @type Tape?
   local result
   for _, stored_tape in pairs(storage.tapes) do
     if
-      stored_tape.player == player
+      (include_temporary_tapes or stored_tape.tick_to_die == math.huge)
+      and stored_tape.player == player
       and stored_tape.surface == player.surface
       and flib_bounding_box.contains_position(stored_tape.box, position)
       and (not result or result.id < stored_tape.id)
@@ -405,7 +407,7 @@ local function on_edit_tape(e)
     return
   end
   local player = game.get_player(e.player_index) --[[@as LuaPlayer]]
-  local tape = get_tape_at_position(player, e.cursor_position)
+  local tape = get_tape_at_position(player, e.cursor_position, false)
   if not tape then
     return
   end
@@ -429,7 +431,7 @@ local function on_delete_tape(e)
     return
   end
 
-  local tape = get_tape_at_position(player, e.cursor_position)
+  local tape = get_tape_at_position(player, e.cursor_position, true)
   if tape then
     destroy_tape(tape)
   end
