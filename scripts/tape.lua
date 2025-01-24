@@ -214,11 +214,12 @@ local function update_tape(self)
   end
 
   draw_lines(self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]], 1)
-
   if self.settings.mode == "subgrid" then
-    draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
-    draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
-    draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
+    if self.settings.subgrid_size > 1 then
+      draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
+      draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
+      draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
+    end
   else
     draw_lines(
       self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]],
