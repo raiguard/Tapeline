@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.4
-Date: ????
+Date: 2025-01-24
   Changes:
     - It is now impossible to set subgrid size to zero. (#47)
     - Subgrid lines will not be drawn when subgrid size is set to one. (#47)
