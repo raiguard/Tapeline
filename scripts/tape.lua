@@ -216,11 +216,9 @@ local function update_tape(self)
   draw_lines(self.player.mod_settings["tl-tape-line-color-1"].value --[[@as Color]], 1)
 
   if self.settings.mode == "subgrid" then
-    if self.settings.subgrid_size > 1 then
-      draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
-      draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
-      draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
-    end
+    draw_lines(self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]], self.settings.subgrid_size)
+    draw_lines(self.player.mod_settings["tl-tape-line-color-3"].value --[[@as Color]], self.settings.subgrid_size ^ 2)
+    draw_lines(self.player.mod_settings["tl-tape-line-color-4"].value --[[@as Color]], self.settings.subgrid_size ^ 3)
   else
     draw_lines(
       self.player.mod_settings["tl-tape-line-color-2"].value --[[@as Color]],
@@ -477,7 +475,7 @@ local function on_change_divisor(e)
     return
   end
   if settings.mode == "subgrid" then
-    settings.subgrid_size = math.max(1, settings.subgrid_size + delta)
+    settings.subgrid_size = math.max(0, settings.subgrid_size + delta)
   else
     settings.splits = math.max(2, settings.splits + delta)
   end
