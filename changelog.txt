@@ -6,6 +6,7 @@ Date: ????
     - Subgrid lines will not be drawn when subgrid size is set to one. (#47)
   Bugfixes:
     - Fixed a freeze when subgrid size was set to zero. (#45, #47)
+    - Fixed that edit, delete, and settings hotkeys did not check for the Tapeline tool. (#46)
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.3
 Date: 2025-01-23

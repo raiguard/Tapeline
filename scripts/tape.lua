@@ -407,6 +407,9 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_edit_tape(e)
+  if not storage.holding_tool[e.player_index] then
+    return
+  end
   if storage.editing[e.player_index] then
     return
   end
@@ -423,6 +426,9 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_delete_tape(e)
+  if not storage.holding_tool[e.player_index] then
+    return
+  end
   if storage.drawing[e.player_index] then
     return
   end
@@ -455,6 +461,9 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_change_mode(e)
+  if not storage.holding_tool[e.player_index] then
+    return
+  end
   local tape = storage.editing[e.player_index]
   if tape then
     tape.settings.mode = tape.settings.mode == "subgrid" and "split" or "subgrid"
@@ -470,6 +479,9 @@ end
 
 --- @param e EventData.CustomInputEvent
 local function on_change_divisor(e)
+  if not storage.holding_tool[e.player_index] then
+    return
+  end
   local delta = e.input_name == "tl-increase-divisor" and 1 or -1
   local tape = storage.editing[e.player_index]
   local settings = tape and tape.settings or storage.player_settings[e.player_index]
