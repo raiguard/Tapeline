@@ -475,7 +475,7 @@ local function on_change_divisor(e)
     return
   end
   if settings.mode == "subgrid" then
-    settings.subgrid_size = math.max(0, settings.subgrid_size + delta)
+    settings.subgrid_size = math.max(1, settings.subgrid_size + delta)
   else
     settings.splits = math.max(2, settings.splits + delta)
   end
